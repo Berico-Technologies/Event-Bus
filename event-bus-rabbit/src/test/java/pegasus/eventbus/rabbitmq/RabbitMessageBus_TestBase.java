@@ -7,6 +7,7 @@ import org.junit.*;
 import org.mockito.*;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
+import pegasus.eventbus.amqp.ConnectionParameters;
 import pegasus.eventbus.testsupport.RabbitManagementApiHelper;
 
 import com.rabbitmq.client.ConnectionFactory;
@@ -16,9 +17,10 @@ public class RabbitMessageBus_TestBase {
 
 	protected Logger log = Logger.getLogger(this.getClass());
 
-	protected ConnectionFactory connectionFactory;
+	protected ConnectionParameters connectionParameters;
 	protected RabbitMessageBus rabbitBus;
 	protected RabbitManagementApiHelper rabbitManagementApi;
+	protected ConnectionFactory connectionFactory;
 
 	private FileSystemXmlApplicationContext context;
 	
@@ -28,11 +30,16 @@ public class RabbitMessageBus_TestBase {
 		MockitoAnnotations.initMocks(this);
 		
 		context = new FileSystemXmlApplicationContext("src/test/resources/eventbus-context.xml");
-		connectionFactory = context.getBean(ConnectionFactory.class);
-
-		rabbitManagementApi = new RabbitManagementApiHelper(connectionFactory);
-		
-		rabbitBus = new RabbitMessageBus(connectionFactory);
+		connectionParameters = context.getBean(ConnectionParameters.class);
+		rabbitManagementApi = new RabbitManagementApiHelper(connectionParameters);
+		connectionFactory = new ConnectionFactory();
+		connectionFactory.setUsername(connectionParameters.getUsername());
+		connectionFactory.setPassword(connectionParameters.getPassword());
+		connectionFactory.setHost(connectionParameters.getHost());
+		connectionFactory.setVirtualHost(connectionParameters.getVirtualHost());
+		connectionFactory.setPort(connectionParameters.getPort());
+        
+		rabbitBus = new RabbitMessageBus(connectionParameters);
 	}
 	
 	@After

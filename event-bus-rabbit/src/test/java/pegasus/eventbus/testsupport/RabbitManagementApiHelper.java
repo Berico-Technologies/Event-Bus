@@ -17,7 +17,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 
-import com.rabbitmq.client.ConnectionFactory;
+import pegasus.eventbus.amqp.ConnectionParameters;
 
 public class RabbitManagementApiHelper {
 	private String hostName; 
@@ -31,9 +31,9 @@ public class RabbitManagementApiHelper {
 		this.virtualHostName = virtualHostName;
 	}
 
-	public RabbitManagementApiHelper(ConnectionFactory factory) {
-		this.hostName = factory.getHost();
-		this.virtualHostName = factory.getVirtualHost();
+	public RabbitManagementApiHelper(ConnectionParameters connectionProperties) {
+		this.hostName = connectionProperties.getHost();
+		this.virtualHostName = connectionProperties.getVirtualHost();
 	}
 
 	public void createVirtualHost(){

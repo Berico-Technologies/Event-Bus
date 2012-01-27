@@ -57,7 +57,14 @@ public class AmqpEventManager_ClientNameValidationTest {
 		//circumstance.
 		boolean nameWasAccepted = true;
 		try{
-			new AmqpEventManager(name, null, null, null, null);
+		    Configuration configuration = new Configuration();
+	        configuration.setClientName(name);
+	        configuration.setAmqpMessageBus(null);
+	        configuration.setEventTypeToTopicMapper(null);
+	        configuration.setTopicToRoutingMapper(null);
+	        configuration.setSerializer(null);
+	        
+	        new AmqpEventManager(configuration);
 		}catch(IllegalArgumentException e){
 			nameWasAccepted = false;
 		}

@@ -12,6 +12,7 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.GetResponse;
 
 import pegasus.eventbus.amqp.AmqpMessageBus;
+import pegasus.eventbus.amqp.ConnectionParameters;
 import pegasus.eventbus.amqp.RoutingInfo;
 import pegasus.eventbus.client.Envelope;
 
@@ -19,14 +20,20 @@ public class RabbitMessageBus implements AmqpMessageBus {
 
 	final static String TOPIC_HEADER_KEY = "pegasus.eventbus.event.topic";
 			
-	protected ConnectionFactory config;
+	protected ConnectionParameters config;
 	private Connection connection;
 	private Channel commandChannel;
 	
-	public RabbitMessageBus(ConnectionFactory conectionFactory) {
-		this.config = conectionFactory;
+	public RabbitMessageBus(ConnectionParameters connectionParameters) {
+		this.config = connectionParameters;
 		try {
-			this.connection = conectionFactory.newConnection();
+	        ConnectionFactory connectionFactory = new ConnectionFactory();
+	        connectionFactory.setUsername(config.getUsername());
+	        connectionFactory.setPassword(config.getPassword());
+	        connectionFactory.setVirtualHost(config.getVirtualHost());
+	        connectionFactory.setHost(config.getHost());
+	        connectionFactory.setPort(config.getPort());
+			this.connection = connectionFactory.newConnection();
 		} catch (IOException e) {
 			throw new RuntimeException("Failed to open connection to RabbitMq: " + e.getMessage() + "See inner exception for details", e);
 		}

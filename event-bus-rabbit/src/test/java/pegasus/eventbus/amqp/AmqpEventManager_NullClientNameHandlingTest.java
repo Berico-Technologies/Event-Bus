@@ -56,7 +56,14 @@ public class AmqpEventManager_NullClientNameHandlingTest extends AmqpEventManage
 	}
 
 	private void testCreationOfManagerWithClientNameOf(String expectedFinalClientName) {
-		manager = new AmqpEventManager(clientNameOnConstructor, messageBus, eventTopicMapper, routingProvider, serializer);
+
+        configuration.setClientName(clientNameOnConstructor);
+        configuration.setAmqpMessageBus(messageBus);
+        configuration.setEventTypeToTopicMapper(eventTopicMapper);
+        configuration.setTopicToRoutingMapper(routingProvider);
+        configuration.setSerializer(serializer);
+        
+        manager = new AmqpEventManager(configuration);
 		
 		manager.subscribe(new TestEventHandler(TestSendEvent.class));
 		

@@ -11,9 +11,9 @@ import org.junit.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
-import com.rabbitmq.client.ConnectionFactory;
-
 import pegasus.eventbus.amqp.AmqpEventManager;
+import pegasus.eventbus.amqp.Configuration;
+import pegasus.eventbus.amqp.ConnectionParameters;
 import pegasus.eventbus.client.EventManager;
 import pegasus.eventbus.testsupport.RabbitManagementApiHelper;
 import pegasus.eventbus.testsupport.TestSendEvent;
@@ -33,10 +33,10 @@ public class IntegrationTestBase {
 		
 		FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext("src/test/resources/eventbus-context.xml");
 
-		final ConnectionFactory factory = context.getBean(ConnectionFactory.class);
-		assertFalse("Cannot use default vhost for tests", "/" == factory.getVirtualHost());
+		final ConnectionParameters connectionParameters = context.getBean(ConnectionParameters.class);
+		assertFalse("Cannot use default vhost for tests", "/" == connectionParameters.getVirtualHost());
 		
-		rabbitManagementApi = new RabbitManagementApiHelper(factory);
+		rabbitManagementApi = new RabbitManagementApiHelper(connectionParameters);
 		resetVirtualHost();
 		
 		manager = context.getBean(EventManager.class);
@@ -81,7 +81,14 @@ public class IntegrationTestBase {
 	}
 	
 	protected EventManager createEventManager() {
-		return new AmqpEventManager(this.getClass().getSimpleName(), null, null, null, null);
+	    Configuration configuration = new Configuration();
+        configuration.setClientName(this.getClass().getSimpleName());
+        configuration.setAmqpMessageBus(null);
+        configuration.setEventTypeToTopicMapper(null);
+        configuration.setTopicToRoutingMapper(null);
+        configuration.setSerializer(null);
+        
+        return new AmqpEventManager(configuration);
 	}
 
 	protected String getExchangeName() {

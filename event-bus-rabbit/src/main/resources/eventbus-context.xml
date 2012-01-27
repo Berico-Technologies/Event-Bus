@@ -1,41 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://www.springframework.org/schema/beans" xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:util="http://www.springframework.org/schema/util"
-	xsi:schemaLocation="http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit-1.0.xsd
+    xmlns="http://www.springframework.org/schema/beans" xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:util="http://www.springframework.org/schema/util"
+    xsi:schemaLocation="http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit-1.0.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-	<context:property-placeholder 
-		ignore-unresolvable="false" 
-		ignore-resource-not-found="true"
-		location="classpath:eventbus.properties,file:eventbus.properties"/>
-		
-	<bean id="eventManager" class="pegasus.eventbus.amqp.AmqpEventManager" destroy-method="close">
-		<constructor-arg value="${event.bus.clientName:}"/>
-		<constructor-arg>
-			<bean class="pegasus.eventbus.rabbitmq.RabbitMessageBus">
-				<constructor-arg>
-					<bean class="com.rabbitmq.client.ConnectionFactory">
-						<property name="host" value="${event.bus.host:rabbit.pegasus.gov}"/>
-						<property name="port" value="${event.bus.port:5672}"/>
-						<property name="virtualHost" value="${event.bus.virtualhost:/}"/>
-						<property name="username" value="${event.bus.username:guest}"/>
-						<property name="password" value="${event.bus.password:guest}"/>
-					</bean>
-				</constructor-arg>
-			</bean>
-		</constructor-arg>
-		<constructor-arg>
-			<bean class="pegasus.eventbus.routing.BasicTypeToTopicMapper" />
-		</constructor-arg>
-		<constructor-arg>
-			<bean class="pegasus.eventbus.routing.BasicTopicToRoutingMapper" />
-		</constructor-arg>
-		<constructor-arg>
-			<bean class="pegasus.eventbus.gson.GsonSerializer" />
-		</constructor-arg>
-	</bean>
-	
+    <context:property-placeholder
+        ignore-unresolvable="false" ignore-resource-not-found="true"
+        location="classpath:eventbus.properties,file:eventbus.properties" />
+
+    <bean id="connectionParameters" class="pegasus.eventbus.amqp.ConnectionParameters">
+        <property name="username" value="${event.bus.username:guest}" />
+        <property name="password" value="${event.bus.password:guest}" />
+        <property name="host" value="${event.bus.host:rabbit.pegasus.gov}" />
+        <property name="virtualHost" value="${event.bus.virtualhost:/}" />
+        <property name="port" value="${event.bus.port:5672}" />
+    </bean>
+
+    <bean id="configuration" class="Configuration">
+        <property name="clientName" value="${event.bus.clientName:}" />
+        <property name="connectionParameters" ref="connectionParameters" />
+        <property name="amqpMessageBus">
+            <bean class="pegasus.eventbus.rabbitmq.RabbitMessageBus">
+                <constructor-arg ref="connectionParamters" />
+            </bean>
+        </property>
+        <property name="eventTypeToTopicMapper">
+            <bean class="pegasus.eventbus.routing.BasicTypeToTopicMapper" />
+        </property>
+        <property name="topicToRoutingMapper">
+            <bean class="pegasus.eventbus.routing.BasicTopicToRoutingMapper" />
+        </property>
+        <property name="serializer">
+            <bean class="pegasus.eventbus.gson.GsonSerializer" />
+        </property>
+    </bean>
+
+    <bean id="eventManager" class="pegasus.eventbus.amqp.AmqpEventManager" destroy-method="close">
+        <constructor-arg ref="configuration" />
+    </bean>
+
 </beans>

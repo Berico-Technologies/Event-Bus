@@ -18,30 +18,18 @@ The Pegasus Event Bus Client abstracts the messaging and protocol details of the
 The EventManager interface defines the primary API to the event bus. AmqpEventManager is the concrete implementation for the Pegasus Event Bus. The following code connects an application to the bus:
 
 ```java
-    import com.rabbitmq.client.ConnectionFactory;
-
     import pegasus.eventbus.amqp.AmqpEventManager; 
-    import pegasus.eventbus.client.EventManager; 
-    import pegasus.eventbus.rabbitmq.RabbitMessageBus; 
-    import pegasus.eventbus.routing.BasicTypeToTopicMapper; 
-    import pegasus.eventbus.routing.BasicTopicToRoutingMapper;
-    import pegasus.eventbus.gson.GsonSerializer;
+    import pegasus.eventbus.amqp.Configuration; 
+    import pegasus.eventbus.amqp.ConnectionParameters;
 
-    ConnectionFactory connectionFactory = new ConnectionFactory();
-    connectionFactory.setUsername("guest");
-    connectionFactory.setPassword("guest");
-    connectionFactory.setVirtualHost("/");
-    connectionFactory.setHost("localhost");
-    connectionFactory.setPort(5672);
-    RabbitMessageBus rabbitMessageBus = new RabbitMessageBus(connectionFactory);
-    BasicTypeToTopicMapper basicTypeToTopicMapper = new BasicTypeToTopicMapper();
-    BasicTopicToRoutingMapper basicTopicToRoutingMapper = new BasicTopicToRoutingMapper();
-    GsonSerializer gsonSerializer = new GsonSerializer();
-    eventManager = new AmqpEventManager(clientName, 
-                                        rabbitMessageBus, 
-                                        basicTypeToTopicMapper, 
-                                        basicTopicToRoutingMapper, 
-                                        gsonSerializer);
+    ConnectionParameters connectionParameters = new ConnectionParameters();
+    connectionParameters.setUsername("guest");
+    connectionParameters.setPassword("guest");
+    connectionParameters.setVirtualHost("/");
+    connectionParameters.setHost("localhost");
+    connectionParameters.setPort(5672);
+    Configuration configuration = Configuration.getDefault(clientName, connectionParameters);
+    eventManager = new AmqpEventManager(configuration);
 ```
 
 All of the configuration parameters (clientName, userName, password, virtualHost, hostName and portNumber) are provided by the event bus administrator. Once eventManager is instantiated, a connection is open to the bus and the client is ready to begin publishing or subscribing to messages. 
@@ -173,23 +161,16 @@ public class SimpleClient {
         startChatSession();
         monitorCommandLine();
     }
-        
+
     protected void initEventManager() {
-        ConnectionFactory connectionFactory = new ConnectionFactory();
-        connectionFactory.setUsername("guest");
-        connectionFactory.setPassword("guest");
-        connectionFactory.setVirtualHost("/");
-        connectionFactory.setHost("localhost");
-        connectionFactory.setPort(5672);
-        RabbitMessageBus rabbitMessageBus = new RabbitMessageBus(connectionFactory);
-        BasicTypeToTopicMapper basicTypeToTopicMapper = new BasicTypeToTopicMapper();
-        BasicTopicToRoutingMapper basicTopicToRoutingMapper = new BasicTopicToRoutingMapper();
-        GsonSerializer gsonSerializer = new GsonSerializer();
-        eventManager = new AmqpEventManager(clientName, 
-                                            rabbitMessageBus, 
-                                            basicTypeToTopicMapper, 
-                                            basicTopicToRoutingMapper, 
-                                            gsonSerializer);
+        ConnectionParameters connectionParameters = new ConnectionParameters();
+        connectionParameters.setUsername("guest");
+        connectionParameters.setPassword("guest");
+        connectionParameters.setVirtualHost("/");
+        connectionParameters.setHost("localhost");
+        connectionParameters.setPort(5672);
+        Configuration configuration = Configuration.getDefault(clientName, connectionParameters);
+        eventManager = new AmqpEventManager(configuration);
     }
         
     protected void startChatSession() {
