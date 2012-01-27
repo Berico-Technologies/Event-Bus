@@ -196,8 +196,6 @@ public class SimpleClient {
                         simpleMessage.from = clientName;
                         simpleMessage.message = line;
                         eventManager.publish(simpleMessage);
-                        System.out.println(simpleMessage.from);
-                        System.out.println(simpleMessage.message);
                         Thread.sleep(500);
                     } catch (Exception e) {
                         e.printStackTrace();
