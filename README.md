@@ -15,7 +15,7 @@ The Pegasus Event Bus Client abstracts the messaging and protocol details of the
 
 ## Connecting to the Bus ##
 
-The EventManager interface defines the primary API to the event bus. AmqpEventManager is the concrete implementation for the Pegasus Event Bus. The following code connects an application to the bus: 
+The EventManager interface defines the primary API to the event bus. AmqpEventManager is the concrete implementation for the Pegasus Event Bus. The following code connects an application to the bus:
 
 ```java
     import com.rabbitmq.client.ConnectionFactory;
@@ -48,7 +48,7 @@ All of the configuration parameters (clientName, userName, password, virtualHost
 
 ## Publishing Messages ##
 
-To publish a message call the publish method on eventManager. 
+To publish a message call the publish method on eventManager.
 
 ```java
     eventManager.publish(requestMessage);
@@ -85,27 +85,43 @@ To subscribe to messages call the subscribe method on eventManager. EventManager
 ```
 
 getHandledEventTypes returns the list of event types that the handler can process.
-handleEvent is called by the Pegasus Event Bus Client when messages matching getHandledEventTypes are received from the bus. Notice that the event handler returns EventResult.Handled on success and EventResult.Failed on failure. Handled 
-Once the handler in place:
+handleEvent is called by the Pegasus Event Bus Client when messages matching getHandledEventTypes are received from the bus. Notice that the event handler returns EventResult.Handled on success and EventResult.Failed on failure. Handled
+ 
+Once the handler is in place:
 
 ```java
     RequestMessageHandler eventHandler = new RequestMessageHandler();
     SubscriptionToken subscriptionToken = eventManager.subscribe(eventHandler);
 ```
-To unsubscribe from request messages: 
-```java
+
+To unsubscribe from request messages:
+
+```java 
     eventManager.unsubscribe(subscriptionToken);
 ```
-## Handling Bus Exceptions ##
-
-TBD
 
 ## Disconnecting from the Bus ##
 
 The EventManager close method unsubscribes any non-durable subscriptions and closes the connection to the bus.
+
 ```java
     eventManager.close();
 ```
+
+## Single Message Publish/Subscribe ##
+
+There may be times when subscribe may be more cumbersome than necessary. An example is the initial authentication request. In this case, the application sends a single authentication message to the authentication service and waits for a single response message containing the security token. The convenience method, getResponseTo, simplifies this problem. getResponseTo subscribes to the response message, publishes the request message and, upon receipt of the response, unsubscribes from the response message.
+
+```java
+    responseMessage = eventManager.getResponseTo(requestMessage, 30, ResponseMessage.class);
+```
+
+The other side of the coin is respondTo. Messages have id’s attached to them and respondTo writes the request message’s id value to the response message’s correlation id field. With this, the receiver knows that the message is the response to the request.
+
+```java 
+    eventManager.respondTo(requestMessage, responseMessage);
+```
+
 ## Advanced Usage ##
 
 TBD – need to discuss what scenarios to present. Handling exceptions, durable queues, custom mappers, etc.
@@ -115,16 +131,16 @@ TBD – need to discuss what scenarios to present. Handling exceptions, durable 
 The first example is a simple chat application. Messages are broadcast to all chat clients.
 
 SimleMessage.java
+
 ```java
 public class SimpleMessage {
-
     public String message;
     public String from;
-
 }
 ```
 
 SimpleClient.java
+
 ```java
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -237,4 +253,5 @@ public class SimpleClient {
     }
 
 }
+
 ```
