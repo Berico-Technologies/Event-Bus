@@ -50,7 +50,11 @@ public class AmqpEventManager implements EventManager {
     private static final Pattern NAME_FROM_COMMAND = Pattern
             .compile("((?:^([^\\s./\\\\]+?(?:\\.[^\\s./\\\\]{0,7})*?))|((?:(?:^\\S*?[./\\\\])|^)([^\\s./\\\\]+?(?:\\.[^\\s./\\\\]{0,7})*?)))(?:\\s|$)");
 
-    protected final Logger LOG = LoggerFactory.getLogger(this.getClass());
+    // Loggers for this Class and internal Classes (which can't be declared "static" from
+    // within their own definition.
+    protected static final Logger LOG = LoggerFactory.getLogger(AmqpEventManager.class);
+    protected static final Logger EEH_LOG = LoggerFactory.getLogger(EventEnvelopeHandler.class);
+    protected static final Logger QL_LOG = LoggerFactory.getLogger(QueueListener.class);
 
     private final String clientName;
     private final AmqpMessageBus messageBus;
@@ -450,7 +454,7 @@ public class AmqpEventManager implements EventManager {
 
     protected class QueueListener implements Runnable {
 
-        private final Logger log = LoggerFactory.getLogger(this.getClass());
+        
 
         private final String queueName;
         private final String threadName;
@@ -481,7 +485,7 @@ public class AmqpEventManager implements EventManager {
 
         @Override
         public void run() {
-            log.info("Starting to listen on thread [" + Thread.currentThread().getName() + "].");
+            QL_LOG.info("Starting to listen on thread [" + Thread.currentThread().getName() + "].");
             currentlyListening = true;
             while (continueListening) {
                 try {
@@ -495,7 +499,7 @@ public class AmqpEventManager implements EventManager {
                         try {
                             Thread.sleep(50);
                         } catch (InterruptedException e) {
-                            log.debug("Thread [" + threadName
+                            QL_LOG.debug("Thread [" + threadName
                                     + "] interrupted in method AmqpEventManager$QueueListener.run().");
                             break;
                         } finally {
@@ -515,7 +519,7 @@ public class AmqpEventManager implements EventManager {
                         } catch (Exception ee) {
                             id = "<message id not available>";
                         }
-                        log.error("Envelope handler of type " + envelopeHandler.getClass().getCanonicalName()
+                        QL_LOG.error("Envelope handler of type " + envelopeHandler.getClass().getCanonicalName()
                                 + " on queue " + queueName + " threw exception of type "
                                 + e.getClass().getCanonicalName() + " handling message " + id, e);
                     }
@@ -532,14 +536,14 @@ public class AmqpEventManager implements EventManager {
                         break;
                     }
                 } catch (Exception e) {
-                    log.error("Envelope handler of type " + envelopeHandler.getClass().getCanonicalName()
+                    QL_LOG.error("Envelope handler of type " + envelopeHandler.getClass().getCanonicalName()
                             + " on queue " + queueName + " threw exception of type " + e.getClass().getCanonicalName()
                             + " while retrieving next message.");
                 }
             }
             currentlyListening = false;
             backgroundThread = null;
-            log.info("Stopped listening on thread [" + threadName + "].");
+            QL_LOG.info("Stopped listening on thread [" + threadName + "].");
         }
 
         public void StopListening() {
@@ -555,10 +559,10 @@ public class AmqpEventManager implements EventManager {
             // Therefore we synchronize on the listener here and when calling
             // getNextMessageFrom so that we are sure never
             // to call interrupt while in the middle of a basicGet();
-            log.debug("Interrupting thread [" + threadName + "].");
+            QL_LOG.debug("Interrupting thread [" + threadName + "].");
             synchronized (this) {
                 if (backgroundThread == null) {
-                    log.debug("backgroundThread was null for thread [" + threadName + "].");
+                    QL_LOG.debug("backgroundThread was null for thread [" + threadName + "].");
                 } else {
                     backgroundThread.interrupt();
                 }
@@ -571,8 +575,15 @@ public class AmqpEventManager implements EventManager {
         }
     }
 
+    /**
+     * The default implementation of the EnvelopeHandler.  When an event occurs
+     * on the bus, an EventEnvelopeHandler specific to that subscription is
+     * responsible for attempting to execute the the EventHandler, and if that
+     * fails, falling back to the FallbackHandler (if present).
+     * @author Ken Baltrinic (Berico Technologies)
+     */
     private class EventEnvelopeHandler implements EnvelopeHandler {
-
+    	
         private final EventHandler<?> eventHandler;
         private final FallbackHandler fallbackHandler;
         private final ArrayList<Class<?>> handledTypes;
@@ -580,6 +591,9 @@ public class AmqpEventManager implements EventManager {
 
         public EventEnvelopeHandler(EventHandler<?> eventHandler, FallbackHandler fallbackHandler) {
 
+        	EEH_LOG.trace("EventEnvelopeHandler instantiated for EventHandler of type {} and FallbackHandler of type {}", 
+        			eventHandler.getClass().getName(), fallbackHandler.getClass().getName());
+        	
             this.eventHandler = eventHandler;
             this.fallbackHandler = fallbackHandler;
 
@@ -588,19 +602,35 @@ public class AmqpEventManager implements EventManager {
                 handledTypes.add(eventType);
             }
 
+            EEH_LOG.trace("Locating the 'Genericized' handleEvent method in the list of EventHandler's methods.");
+            
             for (Method method : eventHandler.getClass().getMethods()) {
                 if (method.getName() == "handleEvent") {
+                	
+                	EEH_LOG.trace("Found the 'handleEvent' method, saving a reference to it.");
+                	
                     handlerMethod = method;
                     break;
                 }
             }
 
             // This should never actually happen
-            if (handlerMethod == null)
+            if (handlerMethod == null) {
+            	
+            	EEH_LOG.error("EventHandler [{}] does not have a method called 'handleEvent', violating the contract of the EventHandler interface.",
+            			eventHandler.getClass().getName());
+            	
                 throw new RuntimeException("eventHandler method not found on EvenHandler of type "
                         + eventHandler.getClass());
+            }
         }
 
+        /**
+         * Implementation of FallbackDetails, which describe
+         * the reasons why an EventHandler may have not been
+         * able to handle a particular event.
+         * @author Ken Baltrinic (Berico Technologies)
+         */
         private class Details implements FallbackDetails {
 
             private FallbackReason reason;
@@ -625,33 +655,78 @@ public class AmqpEventManager implements EventManager {
             }
         };
 
+        /**
+         * An event has occurred on the Event Bus, and now it is
+         * time to handle the message Envelope.  We first begin
+         * by determining whether we can actually handle the event
+         * with the provided EventHandler.  If the event can be handled,
+         * we attempt to deserialize the event and then provide it
+         * to the EventHandler.  If the event could not be deserialized,
+         * or errors in the EventHandler, we attempt to "fallback" on an
+         * FallbackHandler (if set).  The result of either the EventHandler
+         * or the FallbackHandler (success or fail) is returned.
+         * @param envelope The envelope that represents the message.
+         * @return Resulting state of how the Event was handled.
+         */
         @Override
         public EventResult handleEnvelope(Envelope envelope) {
 
+        	EEH_LOG.debug("Handling envelope of type [{}]", envelope.getEventType());
+        	
             Details fallbackDetails = new Details();
 
             try {
                 Object event = null;
                 boolean eventIsOfWrongType = false;
+                
                 try {
                     String className = envelope.getEventType();
+                    
+                    EEH_LOG.trace("Determining if the event type is a class on this Java process's classpath.");
+                    
                     Class<? extends Object> eventType = Class.forName(className);
+                    
+                    EEH_LOG.trace("Event Class was found on classpath.");
+                    
+                    EEH_LOG.trace("Determining if the EventHandler can handle the received Event Type.");
+                    
                     if (handledTypes.contains(eventType)) {
+                    	
+                    	EEH_LOG.trace("The EventHandler can handle type, attempting to deserialize.");
+                    	
                         event = serializer.deserialize(envelope.getBody(), eventType);
+                        
+                        EEH_LOG.trace("Event deserialized without error: {}", event);
+                        
                     } else {
+                    	
+                    	EEH_LOG.trace("Event cannot be handled by this EventHandler [{}]", 
+                    			eventHandler.getClass().getName());
+                    	
                         eventIsOfWrongType = true;
                     }
                 } catch (Exception e) {
+                	
+                	EEH_LOG.error("Could not handle event type with the supplied EventHandler (deserialization or forname exception).", e);
+                	
                     fallbackDetails.setReason(FallbackReason.DeserializationError);
                     fallbackDetails.setException(e);
+                    
+                    EEH_LOG.trace("FallbackHandler called to handle Envelope.");
+                    
                     return fallbackHandler.handleEnvelope(envelope, fallbackDetails);
                 }
 
                 if (eventIsOfWrongType) {
+                	
+                	EEH_LOG.trace("FallbackHandler called to handle Envelope.");
+                	
                     fallbackDetails.setReason(FallbackReason.EventNotOfHandledType);
                     return fallbackHandler.handleEnvelope(envelope, fallbackDetails);
                 }
 
+                EEH_LOG.trace("Adding envelope to envelopesBeingHandled map.");
+                
                 // NOTE: For performance sake, we are not synchronizing our
                 // access to envelopesBeingHandled
                 // Due to the nature of our keys the kinds of concerns
@@ -668,22 +743,50 @@ public class AmqpEventManager implements EventManager {
                 envelopesBeingHandled.put(event, envelope);
 
                 try {
+                	
+                	EEH_LOG.debug("Presenting the strongly-typed event to the EventHandler.");
+                	
                     EventResult result = (EventResult) handlerMethod.invoke(eventHandler, event);
+                    
                     if (result == EventResult.Failed) {
-                        fallbackDetails.setReason(FallbackReason.EventHandlerReturnedFailure);
+                    
+                    	EEH_LOG.debug("EventHandler [{}] declared that it failed to handle the Event [{}].",
+                    			eventHandler.getClass().getName(), event.getClass().getName());
+                    	
+                    	fallbackDetails.setReason(FallbackReason.EventHandlerReturnedFailure);
+                    	
+                    	EEH_LOG.debug("FallbackHandler called to handle Envelope.");
+                    	
                         return fallbackHandler.handleEnvelope(envelope, fallbackDetails);
+                        
                     } else {
-                        return result;
+                        
+                    	EEH_LOG.debug("EventHandler [{}] successfully handled the Event [{}].",
+                    			eventHandler.getClass().getName(), event.getClass().getName());
+                    	
+                    	return result;
                     }
                 } catch (Exception e) {
+                	
+                	EEH_LOG.error("EventHandler failed to handle event (exception thrown in handler).", e);
+                	
                     fallbackDetails.setReason(FallbackReason.EventHandlerThrewException);
                     fallbackDetails.setException(e);
+                    
+                    EEH_LOG.debug("FallbackHandler called to handle Envelope.");
+                    
                     return fallbackHandler.handleEnvelope(envelope, fallbackDetails);
+                    
                 } finally {
+                	
+                	EEH_LOG.trace("Removing envelope from envelopesBeingHandled map.");
+                	
                     envelopesBeingHandled.remove(event);
                 }
             } catch (Exception e) {
-                LOG.error("Unable to handle message: '" + envelope + "'", e);
+            	
+                LOG.error("Unable to handle message: {}", envelope, e);
+                
                 return EventResult.Failed;
             }
         }
