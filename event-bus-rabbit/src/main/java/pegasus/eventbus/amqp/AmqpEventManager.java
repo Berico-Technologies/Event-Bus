@@ -14,7 +14,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import pegasus.eventbus.amqp.AmqpMessageBus.UnacceptedMessage;
 import pegasus.eventbus.client.Envelope;
@@ -48,7 +50,7 @@ public class AmqpEventManager implements EventManager {
     private static final Pattern NAME_FROM_COMMAND = Pattern
             .compile("((?:^([^\\s./\\\\]+?(?:\\.[^\\s./\\\\]{0,7})*?))|((?:(?:^\\S*?[./\\\\])|^)([^\\s./\\\\]+?(?:\\.[^\\s./\\\\]{0,7})*?)))(?:\\s|$)");
 
-    protected final Logger log = Logger.getLogger(this.getClass());
+    protected final Logger LOG = LoggerFactory.getLogger(this.getClass());
 
     private final String clientName;
     private final AmqpMessageBus messageBus;
@@ -369,7 +371,7 @@ public class AmqpEventManager implements EventManager {
                     try {
                         Thread.sleep(50);
                     } catch (InterruptedException e) {
-                        log.debug("Thread [" + Thread.currentThread().getName()
+                        LOG.debug("Thread [" + Thread.currentThread().getName()
                                 + "] interrupted in method AmqpEventManager.deactivateSubscriptions().");
                     }
                     break;
@@ -448,7 +450,7 @@ public class AmqpEventManager implements EventManager {
 
     protected class QueueListener implements Runnable {
 
-        private final Logger log = Logger.getLogger(this.getClass());
+        private final Logger log = LoggerFactory.getLogger(this.getClass());
 
         private final String queueName;
         private final String threadName;
@@ -681,7 +683,7 @@ public class AmqpEventManager implements EventManager {
                     envelopesBeingHandled.remove(event);
                 }
             } catch (Exception e) {
-                log.error("Unable to handle message: '" + envelope + "'", e);
+                LOG.error("Unable to handle message: '" + envelope + "'", e);
                 return EventResult.Failed;
             }
         }
