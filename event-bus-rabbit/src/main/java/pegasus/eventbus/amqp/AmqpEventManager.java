@@ -309,7 +309,7 @@ public class AmqpEventManager implements EventManager {
     	LOG.debug("Subscribing Handler [{}] and FallbackHandler [{}] to known queue [{}] for Event Types: {}", 
     			new Object[]{ 
     				handler.getClass().getName(), 
-    				fallbackHandler.getClass().getName(), 
+    				(fallbackHandler != null)? fallbackHandler.getClass().getName() : "null", 
     				queueName,
     				joinEventTypesAsString(handler.getHandledEventTypes()) });
     	
@@ -337,7 +337,7 @@ public class AmqpEventManager implements EventManager {
     	LOG.debug("Subscribing Handler [{}] and FallbackHandler [{}] to known queue [{}] (is durable? = {}) for Event Types: {}", 
     			new Object[]{ 
     				handler.getClass().getName(), 
-    				fallbackHandler.getClass().getName(), 
+    				(fallbackHandler != null)? fallbackHandler.getClass().getName() : "null", 
     				queueName,
     				isDurable,
     				joinEventTypesAsString(handler.getHandledEventTypes()) });
@@ -1128,7 +1128,8 @@ public class AmqpEventManager implements EventManager {
         	EEH_LOG =  LoggerFactory.getLogger(String.format("{}", EventEnvelopeHandler.class));
         	
         	EEH_LOG.trace("EventEnvelopeHandler instantiated for EventHandler of type {} and FallbackHandler of type {}", 
-        			eventHandler.getClass().getName(), fallbackHandler.getClass().getName());
+        			eventHandler.getClass().getName(), 
+        			(fallbackHandler != null)? fallbackHandler.getClass().getName() : "null");
         	
             this.eventHandler = eventHandler;
             this.fallbackHandler = fallbackHandler;
