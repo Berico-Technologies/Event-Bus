@@ -30,6 +30,10 @@ import pegasus.eventbus.client.Subscription;
 import pegasus.eventbus.client.SubscriptionToken;
 import pegasus.eventbus.client.FallbackDetails.FallbackReason;
 
+/**
+ * An implementation of the Event Manager based on the AMQP specification.
+ * @author Ken Baltrinic (Berico Technologies)
+ */
 public class AmqpEventManager implements EventManager {
 
     // DO NOT change these values, they are based on the in the AMPQ spec.
@@ -66,23 +70,10 @@ public class AmqpEventManager implements EventManager {
     private Map<Object, Envelope> envelopesBeingHandled = new HashMap<Object, Envelope>();
 
     /**
-     * 
-     * @param clientName
-     *            the Name of the client application, used when creating random
-     *            queues in order to make the queue names identifiable according
-     *            to the applications that are using them.
-     * @param messageBus
-     *            an implementation of AmqpMessageBus that provides access to
-     *            the bus itself.
-     * @param eventTopicMapper
-     *            a mapper that maps event types to their topics
-     * @param routingProvider
-     *            a mapper that provides routing information for topic.
-     * @param serializer
-     *            provides event serialization and deserialization services.
+     * Instantiate the EventManager from configuration.
+     * @param configuration Configuration object for the Event Manager.
      */
     public AmqpEventManager(Configuration configuration) {
-        super();
 
         this.messageBus = configuration.getAmqpMessageBus();
         this.eventTopicMapper = configuration.getEventTypeToTopicMapper();
@@ -424,7 +415,7 @@ public class AmqpEventManager implements EventManager {
         private boolean isActive = true;
 
         public ActiveSubscription(String queueName, Boolean queueIsDurable, QueueListener listener) {
-            super();
+       
             this.queueName = queueName;
             this.queueIsDurable = queueIsDurable;
             this.listener = listener;
@@ -453,8 +444,6 @@ public class AmqpEventManager implements EventManager {
     }
 
     protected class QueueListener implements Runnable {
-
-        
 
         private final String queueName;
         private final String threadName;
@@ -485,7 +474,9 @@ public class AmqpEventManager implements EventManager {
 
         @Override
         public void run() {
-            QL_LOG.info("Starting to listen on thread [" + Thread.currentThread().getName() + "].");
+        	
+            QL_LOG.info("Starting to listen on thread [{}].", Thread.currentThread().getName());
+            
             currentlyListening = true;
             while (continueListening) {
                 try {
@@ -499,8 +490,8 @@ public class AmqpEventManager implements EventManager {
                         try {
                             Thread.sleep(50);
                         } catch (InterruptedException e) {
-                            QL_LOG.debug("Thread [" + threadName
-                                    + "] interrupted in method AmqpEventManager$QueueListener.run().");
+                            QL_LOG.debug("Thread [{}] interrupted in method AmqpEventManager$QueueListener.run().", 
+                            		threadName);
                             break;
                         } finally {
                         }
@@ -543,12 +534,15 @@ public class AmqpEventManager implements EventManager {
             }
             currentlyListening = false;
             backgroundThread = null;
+            
             QL_LOG.info("Stopped listening on thread [" + threadName + "].");
         }
 
         public void StopListening() {
             continueListening = false;
 
+            QL_LOG.debug("Interrupting thread [" + threadName + "].");
+            
             // This is a bit screwy but the
             // RpcTest.getResponseToShouldReceiveResponsesToResposnesToSentEvent
             // test will
@@ -559,12 +553,15 @@ public class AmqpEventManager implements EventManager {
             // Therefore we synchronize on the listener here and when calling
             // getNextMessageFrom so that we are sure never
             // to call interrupt while in the middle of a basicGet();
-            QL_LOG.debug("Interrupting thread [" + threadName + "].");
             synchronized (this) {
-                if (backgroundThread == null) {
+                
+            	if (backgroundThread == null) {
+                	
                     QL_LOG.debug("backgroundThread was null for thread [" + threadName + "].");
+                    
                 } else {
-                    backgroundThread.interrupt();
+                    
+                	backgroundThread.interrupt();
                 }
             }
 
@@ -785,7 +782,7 @@ public class AmqpEventManager implements EventManager {
                 }
             } catch (Exception e) {
             	
-                LOG.error("Unable to handle message: {}", envelope, e);
+                EEH_LOG.error("Unable to handle message: {}", envelope, e);
                 
                 return EventResult.Failed;
             }
