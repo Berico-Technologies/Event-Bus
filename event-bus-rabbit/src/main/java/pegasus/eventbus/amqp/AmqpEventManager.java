@@ -1,6 +1,5 @@
 package pegasus.eventbus.amqp;
 
-import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -18,17 +17,13 @@ import org.apache.commons.lang.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pegasus.eventbus.amqp.AmqpMessageBus.UnacceptedMessage;
 import pegasus.eventbus.client.Envelope;
 import pegasus.eventbus.client.EnvelopeHandler;
 import pegasus.eventbus.client.EventHandler;
 import pegasus.eventbus.client.EventManager;
-import pegasus.eventbus.client.EventResult;
-import pegasus.eventbus.client.FallbackDetails;
 import pegasus.eventbus.client.FallbackHandler;
 import pegasus.eventbus.client.Subscription;
 import pegasus.eventbus.client.SubscriptionToken;
-import pegasus.eventbus.client.FallbackDetails.FallbackReason;
 
 /**
  * An implementation of the Event Manager based on the AMQP specification.
@@ -59,13 +54,13 @@ public class AmqpEventManager implements EventManager {
     protected static final Logger LOG = LoggerFactory.getLogger(AmqpEventManager.class);
 
     private final String clientName;
-    private final AmqpMessageBus messageBus;
+    final AmqpMessageBus messageBus;
     private final EventTypeToTopicMapper eventTopicMapper;
     private final TopicToRoutingMapper routingProvider;
-    private final Serializer serializer;
+    final Serializer serializer;
 
     private Map<SubscriptionToken, ActiveSubscription> activeSubscriptions = new HashMap<SubscriptionToken, ActiveSubscription>();
-    private Map<Object, Envelope> envelopesBeingHandled = new HashMap<Object, Envelope>();
+    Map<Object, Envelope> envelopesBeingHandled = new HashMap<Object, Envelope>();
 
     /**
      * Instantiate the EventManager from configuration.
@@ -217,7 +212,7 @@ public class AmqpEventManager implements EventManager {
         
         	LOG.trace("Creating Routing Info for the ReplyTo queue.");
         	
-        	routing = new RoutingInfo(routing.exchange, routing.routingKey
+        	routing = new RoutingInfo(routing.getExchange(), routing.getRoutingKey()
                     + AmqpEventManager.AMQP_ROUTE_SEGMENT_DELIMITER + replyToQueue);
         	
         } else {
@@ -405,12 +400,12 @@ public class AmqpEventManager implements EventManager {
         
         	LOG.trace("EnvelopeHandler was null, creating default (EventEnvelopeHandler) instead.");
         	
-            handler = new EventEnvelopeHandler(subscription.getEventHandler(), subscription.getFallbackHandler());
+            handler = new EventEnvelopeHandler(this, subscription.getEventHandler(), subscription.getFallbackHandler());
         }
 
         LOG.trace("Creating new queue listener for subscription.");
         
-        QueueListener listener = new QueueListener(queueName, handler);
+        QueueListener listener = new QueueListener(this, queueName, handler);
         
         LOG.trace("Starting the queue listener.");
         
@@ -800,532 +795,5 @@ public class AmqpEventManager implements EventManager {
     		sb.append(", ").append(eventType.getName());
     	}
     	return sb.substring(1);
-    }
-
-    /**
-     * 
-     * @author Ken Baltrinic (Berico Technologies)
-     * @param <TResponse> Response Type Handled by the Callback
-     */
-    private class CallbackHandler<TResponse> implements EventHandler<TResponse> {
-
-        private final Class<? extends TResponse>[] handledTypes;
-        private volatile TResponse receivedResponse;
-
-        /**
-         * Types handled by the Respond To Handler
-         * @param handledTypes
-         */
-        public CallbackHandler(Class<? extends TResponse>... handledTypes) {
-
-            this.handledTypes = handledTypes;
-        }
-
-        
-        @Override
-        public Class<? extends TResponse>[] getHandledEventTypes() {
-            return handledTypes;
-        }
-
-        @Override
-        public EventResult handleEvent(TResponse event) {
-            receivedResponse = event;
-            return EventResult.Handled;
-        }
-
-        TResponse getReceivedResponse() {
-            return receivedResponse;
-        }
-    }
-
-    /**
-     * Represents a Subscription with an active queue listener,
-     * pulling messages from the Bus.
-     * @author Ken Baltrinic (Berico Technologies)
-     */
-    private class ActiveSubscription {
-
-        private final String queueName;
-        private final Boolean queueIsDurable;
-        final QueueListener listener;
-        private boolean isActive = true;
-
-        /**
-         * Instantiate the class supplying the queue information and listener
-         * @param queueName Name of the Queue being watched
-         * @param queueIsDurable Is the Queue durable?
-         * @param listener The listener watching for events
-         */
-        public ActiveSubscription(String queueName, Boolean queueIsDurable, QueueListener listener) {
-
-            this.queueName = queueName;
-            this.queueIsDurable = queueIsDurable;
-            this.listener = listener;
-        }
-
-        /**
-         * Get the Queue Name
-         * @return Queue Name
-         */
-        public String getQueueName() {
-            return queueName;
-        }
-
-        /**
-         * Is the Queue Durable?
-         * @return true if it is durable
-         */
-        public Boolean getQueueIsDurable() {
-            return queueIsDurable;
-        }
-
-        /**
-         * Get the Listener watching the Queue
-         * @return Listener
-         */
-        public QueueListener getListener() {
-            return listener;
-        }
-
-        /**
-         * Is the subscription currently Active?
-         * @return true if active.
-         */
-        public boolean isActive() {
-            return isActive;
-        }
-
-        /**
-         * Toggle whether the queue is active
-         * @param queueIsDeleted Has the queue been deleted?
-         */
-        public void setIsActive(boolean queueIsDeleted) {
-            this.isActive = queueIsDeleted;
-        }
-
-    }
-    
-    /**
-     * Watches a Queue for new messages on a background thread, calling
-     * the EnvelopeHandler when new messages arrive.
-     * @author Ken Baltrinic (Berico Technologies)
-     */
-    protected class QueueListener implements Runnable {
-    	
-    	protected final Logger QL_LOG;
-    	
-        private final String queueName;
-        private final String threadName;
-        private EnvelopeHandler envelopeHandler;
-
-        private volatile boolean currentlyListening;
-        private volatile boolean continueListening;
-
-        private Thread backgroundThread;
-
-        /**
-         * Start up an new Queue Listener bound on the supplied queue name,
-         * with the provided EnvelopeHander dealing with new messages.
-         * @param queueName Name of the Queue to watch.
-         * @param envelopeHandler EnvelopeHandler that deals with new messages.
-         */
-        public QueueListener(String queueName, EnvelopeHandler envelopeHandler) {
-
-        	//Custom Logger for Each Queue Listener.
-        	QL_LOG = LoggerFactory.getLogger(String.format("%s$>%s", this.getClass().getName(), queueName));
-        	
-            this.queueName = queueName;
-            this.threadName = "Listener for queue: " + queueName;
-            this.envelopeHandler = envelopeHandler;
-        }
-
-        /**
-         * Begin listening for messages on the Queue.
-         */
-        public void beginListening() {
-        	
-        	QL_LOG.debug("QueueListener commanded to start on a new thread.");
-        	
-            if (backgroundThread != null)
-                return;
-
-            continueListening = true;
-
-            backgroundThread = new Thread(this);
-            backgroundThread.setName(threadName);
-            backgroundThread.start();
-        }
-
-        /**
-         * Executed on a separate thread.
-         */
-        @Override
-        public void run() {
-        	
-            QL_LOG.info("Starting to listen on thread [{}].", Thread.currentThread().getName());
-            
-            currentlyListening = true;
-            while (continueListening) {
-            	
-                try {
-                    UnacceptedMessage message;
-                    synchronized (this) {
-                    	
-                    	QL_LOG.trace("Getting next message for queue [{}]", queueName);
-                    	
-                        // see not in StopListening() as to why we are
-                        // synchronizing here.
-                        message = messageBus.getNextMessageFrom(queueName);
-                    }
-                    if (message == null) {
-                    	
-                    	QL_LOG.debug("No messages received.  Waiting 50ms.");
-                    	
-                        try {
-                            Thread.sleep(50);
-                            
-                        } catch (InterruptedException e) {
-                            
-                        	QL_LOG.debug("Thread [{}] interrupted in method AmqpEventManager$QueueListener.run().", 
-                            		threadName);
-                            
-                        	break;
-                        } finally {
-                        	//?
-                        }
-                        continue;
-                    }
-
-                    QL_LOG.debug("Message received.");
-                    
-                    EventResult result;
-                    
-                    Envelope envelope = message.getEnvelope();
-                    
-                    try {
-                    
-                    	QL_LOG.trace("Handling envelope.");
-                    	
-                    	result = envelopeHandler.handleEnvelope(envelope);
-                    } catch (Exception e) {
-                        
-                    	result = EventResult.Failed;
-                        
-                        String id;
-                        
-                        try {
-                        
-                        	id = envelope.getId().toString();
-                        
-                        } catch (Exception ee) {
-                            
-                        	id = "<message id not available>";
-                        }
-                        
-                        QL_LOG.error("Envelope handler of type " + envelopeHandler.getClass().getCanonicalName()
-                                + " on queue " + queueName + " threw exception of type "
-                                + e.getClass().getCanonicalName() + " handling message " + id, e);
-                    }
-                    
-                    QL_LOG.trace("Determining how to handle EventResult [{}]", result);
-
-                    switch (result) {
-                    case Handled:
-                    
-                    	QL_LOG.trace("Accepting Message [{}]", message.getAcceptanceToken());
-                    	
-                    	messageBus.acceptMessage(message);
-                    	
-                        break;
-                    case Failed:
-                        
-                    	QL_LOG.trace("Rejecting Message [{}]", message.getAcceptanceToken());
-                    	
-                    	messageBus.rejectMessage(message, false);
-                        
-                    	break;
-                    case Retry:
-                        
-                    	QL_LOG.trace("Retrying Message [{}]", message.getAcceptanceToken());
-                    	
-                    	messageBus.rejectMessage(message, true);
-                        
-                    	break;
-                    }
-                } catch (Exception e) {
-                	
-                    QL_LOG.error("Envelope handler of type " + envelopeHandler.getClass().getCanonicalName()
-                            + " on queue " + queueName + " threw exception of type " + e.getClass().getCanonicalName()
-                            + " while retrieving next message.");
-                }
-            }
-            currentlyListening = false;
-            backgroundThread = null;
-            
-            QL_LOG.info("Stopped listening on thread [" + threadName + "].");
-        }
-
-        /**
-         * Command the QueueListener to stop listening on the queue, thereby
-         * stopping the background thread.
-         */
-        public void StopListening() {
-            continueListening = false;
-
-            QL_LOG.debug("Interrupting thread [" + threadName + "].");
-            
-            // This is a bit screwy but the
-            // RpcTest.getResponseToShouldReceiveResponsesToResposnesToSentEvent
-            // test will
-            // usually hang if interrupt() is called because the timing of the
-            // test is such that the interrupt gets called
-            // while the AMQP-client.channel.basicGet() is blocking because
-            // getBasic apparently fails to handle the interrupt correctly.
-            // Therefore we synchronize on the listener here and when calling
-            // getNextMessageFrom so that we are sure never
-            // to call interrupt while in the middle of a basicGet();
-            synchronized (this) {
-                
-            	if (backgroundThread == null) {
-                	
-                    QL_LOG.debug("backgroundThread was null for thread [" + threadName + "].");
-                    
-                } else {
-                    
-                	backgroundThread.interrupt();
-                }
-            }
-
-        }
-
-        /**
-         * Is the QueueListener currently monitoring the Queue?
-         * @return true is it is monitoring queue.
-         */
-        public boolean isCurrentlyListening() {
-            return currentlyListening;
-        }
-    }
-
-    /**
-     * The default implementation of the EnvelopeHandler.  When an event occurs
-     * on the bus, an EventEnvelopeHandler specific to that subscription is
-     * responsible for attempting to execute the the EventHandler, and if that
-     * fails, falling back to the FallbackHandler (if present).
-     * @author Ken Baltrinic (Berico Technologies)
-     */
-    public class EventEnvelopeHandler implements EnvelopeHandler {
-    	
-    	private final Logger EEH_LOG;
-    	
-        private final EventHandler<?> eventHandler;
-        private final FallbackHandler fallbackHandler;
-        private final ArrayList<Class<?>> handledTypes;
-        private Method handlerMethod;
-
-        public EventEnvelopeHandler(EventHandler<?> eventHandler, FallbackHandler fallbackHandler) {
-
-        	EEH_LOG =  LoggerFactory.getLogger(String.format("{}", EventEnvelopeHandler.class));
-        	
-        	EEH_LOG.trace("EventEnvelopeHandler instantiated for EventHandler of type {} and FallbackHandler of type {}", 
-        			eventHandler.getClass().getName(), 
-        			(fallbackHandler != null)? fallbackHandler.getClass().getName() : "null");
-        	
-            this.eventHandler = eventHandler;
-            this.fallbackHandler = fallbackHandler;
-
-            handledTypes = new ArrayList<Class<?>>();
-            for (Class<?> eventType : eventHandler.getHandledEventTypes()) {
-                handledTypes.add(eventType);
-            }
-
-            EEH_LOG.trace("Locating the 'Genericized' handleEvent method in the list of EventHandler's methods.");
-            
-            for (Method method : eventHandler.getClass().getMethods()) {
-                if (method.getName() == "handleEvent") {
-                	
-                	EEH_LOG.trace("Found the 'handleEvent' method, saving a reference to it.");
-                	
-                    handlerMethod = method;
-                    break;
-                }
-            }
-
-            // This should never actually happen
-            if (handlerMethod == null) {
-            	
-            	EEH_LOG.error("EventHandler [{}] does not have a method called 'handleEvent', violating the contract of the EventHandler interface.",
-            			eventHandler.getClass().getName());
-            	
-                throw new RuntimeException("eventHandler method not found on EvenHandler of type "
-                        + eventHandler.getClass());
-            }
-        }
-
-        /**
-         * Implementation of FallbackDetails, which describe
-         * the reasons why an EventHandler may have not been
-         * able to handle a particular event.
-         * @author Ken Baltrinic (Berico Technologies)
-         */
-        private class Details implements FallbackDetails {
-
-            private FallbackReason reason;
-            private Exception exception;
-
-            @Override
-            public FallbackReason getReason() {
-                return reason;
-            }
-
-            public void setReason(FallbackReason reason) {
-                this.reason = reason;
-            }
-
-            @Override
-            public Exception getException() {
-                return exception;
-            }
-
-            public void setException(Exception exception) {
-                this.exception = exception;
-            }
-        };
-
-        /**
-         * An event has occurred on the Event Bus, and now it is
-         * time to handle the message Envelope.  We first begin
-         * by determining whether we can actually handle the event
-         * with the provided EventHandler.  If the event can be handled,
-         * we attempt to deserialize the event and then provide it
-         * to the EventHandler.  If the event could not be deserialized,
-         * or errors in the EventHandler, we attempt to "fallback" on an
-         * FallbackHandler (if set).  The result of either the EventHandler
-         * or the FallbackHandler (success or fail) is returned.
-         * @param envelope The envelope that represents the message.
-         * @return Resulting state of how the Event was handled.
-         */
-        @Override
-        public EventResult handleEnvelope(Envelope envelope) {
-
-        	EEH_LOG.debug("Handling envelope of type [{}]", envelope.getEventType());
-        	
-            Details fallbackDetails = new Details();
-
-            try {
-                Object event = null;
-                boolean eventIsOfWrongType = false;
-                
-                try {
-                    String className = envelope.getEventType();
-                    
-                    EEH_LOG.trace("Determining if the event type is a class on this Java process's classpath.");
-                    
-                    Class<? extends Object> eventType = Class.forName(className);
-                    
-                    EEH_LOG.trace("Event Class was found on classpath.");
-                    
-                    EEH_LOG.trace("Determining if the EventHandler can handle the received Event Type.");
-                    
-                    if (handledTypes.contains(eventType)) {
-                    	
-                    	EEH_LOG.trace("The EventHandler can handle type, attempting to deserialize.");
-                    	
-                        event = serializer.deserialize(envelope.getBody(), eventType);
-                        
-                        EEH_LOG.trace("Event deserialized without error: {}", event);
-                        
-                    } else {
-                    	
-                    	EEH_LOG.trace("Event cannot be handled by this EventHandler [{}]", 
-                    			eventHandler.getClass().getName());
-                    	
-                        eventIsOfWrongType = true;
-                    }
-                } catch (Exception e) {
-                	
-                	EEH_LOG.error("Could not handle event type with the supplied EventHandler (deserialization or forname exception).", e);
-                	
-                    fallbackDetails.setReason(FallbackReason.DeserializationError);
-                    fallbackDetails.setException(e);
-                    
-                    EEH_LOG.trace("FallbackHandler called to handle Envelope.");
-                    
-                    return fallbackHandler.handleEnvelope(envelope, fallbackDetails);
-                }
-
-                if (eventIsOfWrongType) {
-                	
-                	EEH_LOG.trace("FallbackHandler called to handle Envelope.");
-                	
-                    fallbackDetails.setReason(FallbackReason.EventNotOfHandledType);
-                    return fallbackHandler.handleEnvelope(envelope, fallbackDetails);
-                }
-
-                EEH_LOG.trace("Adding envelope to envelopesBeingHandled map.");
-                
-                // NOTE: For performance sake, we are not synchronizing our
-                // access to envelopesBeingHandled
-                // Due to the nature of our keys the kinds of concerns
-                // synchronizing defends against should
-                // never occur. Rarely should any two threads ever be looking at
-                // the same event. (This would
-                // require that the handler spawn another thread and that thread
-                // call respondTo. It is this
-                // scenario that causes us not to just use ThreadLocal<Envelope>
-                // here.) And in all cases,
-                // never should there ever be the potential for an insert or
-                // remove of the same event on
-                // separate threads.
-                envelopesBeingHandled.put(event, envelope);
-
-                try {
-                	
-                	EEH_LOG.debug("Presenting the strongly-typed event to the EventHandler.");
-                	
-                    EventResult result = (EventResult) handlerMethod.invoke(eventHandler, event);
-                    
-                    if (result == EventResult.Failed) {
-                    
-                    	EEH_LOG.debug("EventHandler [{}] declared that it failed to handle the Event [{}].",
-                    			eventHandler.getClass().getName(), event.getClass().getName());
-                    	
-                    	fallbackDetails.setReason(FallbackReason.EventHandlerReturnedFailure);
-                    	
-                    	EEH_LOG.debug("FallbackHandler called to handle Envelope.");
-                    	
-                        return fallbackHandler.handleEnvelope(envelope, fallbackDetails);
-                        
-                    } else {
-                        
-                    	EEH_LOG.debug("EventHandler [{}] successfully handled the Event [{}].",
-                    			eventHandler.getClass().getName(), event.getClass().getName());
-                    	
-                    	return result;
-                    }
-                } catch (Exception e) {
-                	
-                	EEH_LOG.error("EventHandler failed to handle event (exception thrown in handler).", e);
-                	
-                    fallbackDetails.setReason(FallbackReason.EventHandlerThrewException);
-                    fallbackDetails.setException(e);
-                    
-                    EEH_LOG.debug("FallbackHandler called to handle Envelope.");
-                    
-                    return fallbackHandler.handleEnvelope(envelope, fallbackDetails);
-                    
-                } finally {
-                	
-                	EEH_LOG.trace("Removing envelope from envelopesBeingHandled map.");
-                	
-                    envelopesBeingHandled.remove(event);
-                }
-            } catch (Exception e) {
-            	
-                EEH_LOG.error("Unable to handle message: {}", envelope, e);
-                
-                return EventResult.Failed;
-            }
-        }
     }
 }

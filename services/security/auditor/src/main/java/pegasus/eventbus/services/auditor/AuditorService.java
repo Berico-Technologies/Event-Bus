@@ -24,21 +24,15 @@ public class AuditorService
 		
 		this.eventManager.subscribe(new AuditEventHandler());
 		
-		
 		this.eventManager.publish("Hi Mom!");
 	}
 	
 	
     public static void main( String[] args )
-    {
-    	ConnectionParameters connParams = new ConnectionParameters();
-    	connParams.setHost("localhost");
-    	connParams.setUsername("guest");
-    	connParams.setPassword("guest");
-    	connParams.setPort(5672);
-    	connParams.setVirtualHost("/");
-    	
-    	Configuration config = Configuration.getDefault("Orion:AuditorService", connParams);
+    {	
+    	Configuration config = Configuration.getDefault(
+    			"Orion:AuditorService", 
+    			new ConnectionParameters("amqp://guest:guest@localhost:5672/"));
     	
     	new AuditorService(new AmqpEventManager(config));
     	

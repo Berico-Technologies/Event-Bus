@@ -8,6 +8,8 @@ import java.util.HashMap;
  */
 public class ConnectionParameters {
 
+	private static final HashMap<String, String> DEFAULT_VALUES = initializeDefaults();
+		
     private final HashMap<String, String> parametersMap = new HashMap<String, String>();
 
     /**
@@ -15,9 +17,9 @@ public class ConnectionParameters {
      */
     public ConnectionParameters() {}
 
-    /**
+	/**
      * Initialize with a HashMap (Good for IOC containers)
-     * @param parametersMap
+     * @param parametersMap Parameter Map
      */
     public ConnectionParameters(HashMap<String, String> parametersMap) {
         this.parametersMap.putAll(parametersMap);
@@ -26,33 +28,32 @@ public class ConnectionParameters {
     /**
      * Initialize Parameters using a Semicolon delimited property hash:
      * "host=eventbus.orion.mil;port=5672;username=service1;password=guest;vhost=default"
+     * Or URI: "amqp://test:password123@rabbit-master.pegasus.mil:1234/"
      * @param connectionParameters Semicolon delimited property hash
      */
     public ConnectionParameters(String connectionParameters) {
-        if (connectionParameters == null) {
+        
+    	if (connectionParameters == null) {
             throw new IllegalArgumentException("ConnectionParameters has no value.");
         }
 
-        String[] connectionPairs = connectionParameters.split(";");
-        for (String connectionPair : connectionPairs) {
-            if (connectionPair == null || connectionPair.trim().equals("")) {
-                continue;
-            }
-            String[] parameterParts = connectionPair.split("=");
-            if (parameterParts.length != 2) {
-                throw new IllegalArgumentException(String.format(
-                        "Invalid connection string element: '%s' should be 'key=value'", connectionPair));
-            }
-            parametersMap.put(parameterParts[0], parameterParts[1]);
-        }
+    	if(connectionParameters.startsWith("amqp://")){
+    		
+    		parseUriString(connectionParameters);
+    	}
+    	else {
+	        
+    		parseDelimitedPropertyString(connectionParameters);
+    	}
     }
-
+    
+    
     /**
      * Get the Username of the Account accessing the bus
      * @return Username
      */
     public String getUsername() {
-        return getValue("username", "guest");
+        return getValue("username", DEFAULT_VALUES.get("username"));
     }
 
     /**
@@ -68,7 +69,7 @@ public class ConnectionParameters {
      * @return Password
      */
     public String getPassword() {
-        return getValue("password", "guest");
+        return getValue("password", DEFAULT_VALUES.get("password"));
     }
 
     /**
@@ -84,7 +85,7 @@ public class ConnectionParameters {
      * @return Hostname
      */
     public String getHost() {
-        return getValue("host", "rabbit");
+        return getValue("host", DEFAULT_VALUES.get("host"));
     }
     
     /**
@@ -101,7 +102,7 @@ public class ConnectionParameters {
      * @return Virtual Host
      */
     public String getVirtualHost() {
-        return getValue("vhost", "/");
+        return getValue("vhost", DEFAULT_VALUES.get("vhost"));
     }
 
     /**
@@ -118,7 +119,7 @@ public class ConnectionParameters {
      * @return Port number
      */
     public int getPort() {
-        return Integer.parseInt(getValue("port", "5672"));
+        return Integer.parseInt(getValue("port", DEFAULT_VALUES.get("port")));
     }
 
     /**
@@ -148,4 +149,83 @@ public class ConnectionParameters {
         parametersMap.put(key, value);
     }
 
+    /**
+     * Parse a URI connection string, setting the connection parameters.
+     * @param uri URI to Rabbit
+     */
+    public void parseUriString(String uri){
+    	
+		int position = 7;
+		
+		int usernameSep = uri.indexOf(":", position);
+		
+		setValue("username", uri.substring(position, usernameSep));
+		
+		position = usernameSep + 1;
+		
+		int hostSep = uri.indexOf("@", position);
+		
+		setValue("password", uri.substring(position, hostSep));
+		
+		position = hostSep + 1;
+		
+		int portSep = uri.indexOf(":", position);
+		
+		setValue("host", uri.substring(position, portSep));
+		
+		position = portSep + 1;
+		
+		int vhostSep = uri.indexOf("/", position);
+		
+		setValue("port", uri.substring(position, vhostSep));
+		
+		position = vhostSep;
+		
+		if(vhostSep == -1){
+		
+			setValue("vhost", "/");
+		
+		} else {
+		
+			setValue("vhost", uri.substring(position));
+		}
+    }
+    
+    /**
+     * Parse a semicolon delimited property string for the connection info
+     * @param propertyString Property String
+     */
+    public void parseDelimitedPropertyString(String propertyString){
+    	
+    	String[] connectionPairs = propertyString.split(";");
+        for (String connectionPair : connectionPairs) {
+            if (connectionPair == null || connectionPair.trim().equals("")) {
+                continue;
+            }
+            String[] parameterParts = connectionPair.split("=");
+            if (parameterParts.length != 2) {
+                throw new IllegalArgumentException(String.format(
+                        "Invalid connection string element: '%s' should be 'key=value'", connectionPair));
+            }
+            parametersMap.put(parameterParts[0], parameterParts[1]);
+        }
+    }
+    
+    /**
+     * Initialize the Default Map of Parameters.
+     * @return Default Parameter Map
+     */
+    private static HashMap<String, String> initializeDefaults() {
+		
+    	HashMap<String, String> defaults = new HashMap<String, String>();
+    	
+    	defaults.put("username", "guest");
+    	defaults.put("password", "guest");
+    	defaults.put("host", "rabbit");
+    	defaults.put("password", "5672");
+    	defaults.put("vhost", "/");
+    	
+    	return defaults;
+	}
+    	
 }

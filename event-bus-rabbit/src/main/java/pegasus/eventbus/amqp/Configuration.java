@@ -20,7 +20,7 @@ public class Configuration {
     private EventTypeToTopicMapper eventTypeToTopicMapper;
     private TopicToRoutingMapper topicToRoutingMapper;
     private Serializer serializer;
-
+   
     /**
      * Get the Name of the Client.
      * @return Client Name
@@ -149,4 +149,6 @@ public class Configuration {
         return defaultConfiguration;
     }
 
+   
+    
 }
