@@ -1114,7 +1114,7 @@ public class AmqpEventManager implements EventManager {
      * fails, falling back to the FallbackHandler (if present).
      * @author Ken Baltrinic (Berico Technologies)
      */
-    private class EventEnvelopeHandler implements EnvelopeHandler {
+    public class EventEnvelopeHandler implements EnvelopeHandler {
     	
     	private final Logger EEH_LOG;
     	

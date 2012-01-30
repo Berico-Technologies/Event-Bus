@@ -1,11 +1,12 @@
 package pegasus.eventbus.services.auditor;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import pegasus.eventbus.amqp.AmqpEventManager;
 import pegasus.eventbus.amqp.Configuration;
 import pegasus.eventbus.amqp.ConnectionParameters;
-import pegasus.eventbus.client.EventHandler;
 import pegasus.eventbus.client.EventManager;
-import pegasus.eventbus.client.EventResult;
 
 /**
  * 
@@ -13,6 +14,7 @@ import pegasus.eventbus.client.EventResult;
  */
 public class AuditorService 
 {
+	private static final Logger LOG = LoggerFactory.getLogger(AuditorService.class);
 	
 	EventManager eventManager = null;
 	
@@ -20,25 +22,10 @@ public class AuditorService
 		
 		this.eventManager = eventManager;
 		
-		this.eventManager.publish("Hi Mom!");
+		this.eventManager.subscribe(new AuditEventHandler());
 		
-		this.eventManager.subscribe(new EventHandler<String>() {
-
-			@Override
-			public Class<? extends String>[] getHandledEventTypes() {
-				
-				return new Class[]{ String.class };
-			}
-
-			@Override
-			public EventResult handleEvent(String message) {
-				
-				System.out.println(message);
-				
-				return EventResult.Handled;
-			}
-			
-		});
+		
+		this.eventManager.publish("Hi Mom!");
 	}
 	
 	
