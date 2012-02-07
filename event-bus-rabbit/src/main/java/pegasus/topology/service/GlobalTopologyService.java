@@ -28,22 +28,29 @@ public class GlobalTopologyService implements TopologyManager {
     }
 
     public void start(EventManager eventManager) {
+
+        LOG.trace("Global Topology Service Manager starting.");
+
         this.eventManager = eventManager;
+
+        LOG.trace("Subscribing to topology update events.");
+
         subscriptionToken = eventManager.subscribe(new TopologyUpdateHandler());
+
         RegisterClient registerClientEvent = new RegisterClient();
         registerClientEvent.setClientName(clientName);
         try {
+
+            LOG.trace("Registering client {} with Global Topology Service.", clientName);
+
             @SuppressWarnings("unchecked")
             TopologyUpdate topologyUpdateResponseEvent = eventManager.getResponseTo(registerClientEvent, 30000, TopologyUpdate.class);
             topologyRegistry = topologyUpdateResponseEvent.getTopologyRegistry();
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (TimeoutException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (Exception e) {
+
+            LOG.error("Error starting Global Topology Service.", e);
+
         }
-        eventManager.getResponseTo(registerClientEvent, new TopologyUpdateHandler());
     }
 
     @Override
@@ -57,14 +64,14 @@ public class GlobalTopologyService implements TopologyManager {
     @Override
     public RoutingInfo getRoutingInfoForEvent(Class<?> eventType) {
 
-        LOG.info("Looking for route for event type [{}] in global topology service.", eventType.getCanonicalName());
+        LOG.trace("Looking for route for event type [{}] in global topology service.", eventType.getCanonicalName());
 
         RoutingInfo route = null;
         String topic = eventType.getCanonicalName();
         if (topologyRegistry.hasEventRoute(topic)) {
             route = topologyRegistry.getEventRoute(topic);
 
-            LOG.info("Found route [{}] in global topology service.", route);
+            LOG.trace("Found route [{}] in global topology service.", route);
         }
         return route;
     }
@@ -72,13 +79,13 @@ public class GlobalTopologyService implements TopologyManager {
     @Override
     public RoutingInfo[] getRoutingInfoForNamedEventSet(String eventSetName) {
 
-        LOG.info("Looking for routes for event set name [{}] in global topology service.", eventSetName);
+        LOG.trace("Looking for routes for event set name [{}] in global topology service.", eventSetName);
 
         RoutingInfo[] routes = null;
         if (topologyRegistry.hasEventSetRoutes(eventSetName)) {
             routes = topologyRegistry.getEventSetRoutes(eventSetName);
 
-            LOG.info("Found routes [{}] in global topology service.", routes);
+            LOG.trace("Found routes [{}] in global topology service.", routes);
         }
         return routes;
     }
@@ -93,6 +100,9 @@ public class GlobalTopologyService implements TopologyManager {
 
         @Override
         public EventResult handleEvent(TopologyUpdate event) {
+
+            LOG.trace("Received topology update.");
+
             topologyRegistry = event.getTopologyRegistry();
             return EventResult.Handled;
         }

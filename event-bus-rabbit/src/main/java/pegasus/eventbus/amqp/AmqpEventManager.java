@@ -21,7 +21,6 @@ import pegasus.eventbus.client.Envelope;
 import pegasus.eventbus.client.EnvelopeHandler;
 import pegasus.eventbus.client.EventHandler;
 import pegasus.eventbus.client.EventManager;
-import pegasus.eventbus.client.FallbackHandler;
 import pegasus.eventbus.client.Subscription;
 import pegasus.eventbus.client.SubscriptionToken;
 import pegasus.topology.service.TopologyManager;
@@ -259,25 +258,7 @@ public class AmqpEventManager implements EventManager {
 
         LOG.debug("Subscribing Handler [{}] to Event Types: {}", handler.getClass().getName(), joinEventTypesAsString(handler.getHandledEventTypes()));
 
-        return subscribe(getNewQueueName(), false, handler, getFailingFallbackHandler());
-    }
-
-    /**
-     * Subscribe to all events the supplied handler is capable of handling, but if any issue arises, use the FallbackHandler to process the envelope.
-     * 
-     * @param handler
-     *            Event Handler
-     * @param fallbackHandler
-     *            Fallback Handler that will process the envelope on failures
-     * @return Subscription Token used to unregister the handler
-     */
-    @Override
-    public SubscriptionToken subscribe(EventHandler<?> handler, FallbackHandler fallbackHandler) {
-
-        LOG.debug("Subscribing Handler [{}] and FallbackHandler [{}] to Event Types: {}", new Object[] { handler.getClass().getName(), fallbackHandler.getClass().getName(),
-                joinEventTypesAsString(handler.getHandledEventTypes()) });
-
-        return subscribe(getNewQueueName(), false, handler, fallbackHandler);
+        return subscribe(getNewQueueName(), false, handler);
     }
 
     /**
@@ -294,34 +275,7 @@ public class AmqpEventManager implements EventManager {
 
         LOG.debug("Subscribing Handler [{}] to known queue [{}] for Event Types: {}", new Object[] { handler.getClass().getName(), queueName, joinEventTypesAsString(handler.getHandledEventTypes()) });
 
-        return subscribe(queueName, handler, getFailingFallbackHandler());
-    }
-
-    /**
-     * Subscribe to all events on a known queue with the supplied Event Handler.
-     * 
-     * @param queueName
-     *            Name of the Known Queue
-     * @param handler
-     *            Event Handler
-     * @param fallbackHandler
-     *            Fallback Handler that will process the envelope on failures
-     * @return Subscription Token used to unregister the handler
-     */
-    @Override
-    public SubscriptionToken subscribe(String queueName, EventHandler<?> handler, FallbackHandler fallbackHandler) {
-
-        LOG.debug("Subscribing Handler [{}] and FallbackHandler [{}] to known queue [{}] for Event Types: {}", new Object[] { handler.getClass().getName(),
-                (fallbackHandler != null) ? fallbackHandler.getClass().getName() : "null", queueName, joinEventTypesAsString(handler.getHandledEventTypes()) });
-
-        if (queueName == null || queueName.length() == 0) {
-
-            LOG.error("QueueName may not be null nor zero length.");
-
-            throw new IllegalArgumentException("QueueName may not be null nor zero length.");
-        }
-
-        return subscribe(queueName, true, handler, fallbackHandler);
+        return subscribe(queueName, false, handler);
     }
 
     /**
@@ -337,13 +291,12 @@ public class AmqpEventManager implements EventManager {
      *            Fallback Handler that will process the envelope on failures
      * @return Subscription Token used to unregister the handler
      */
-    private SubscriptionToken subscribe(String queueName, boolean isDurable, EventHandler<?> handler, FallbackHandler fallbackHandler) {
+    private SubscriptionToken subscribe(String queueName, boolean isDurable, EventHandler<?> handler) {
 
-        LOG.debug("Subscribing Handler [{}] and FallbackHandler [{}] to known queue [{}] (is durable? = {}) for Event Types: {}", new Object[] { handler.getClass().getName(),
-                (fallbackHandler != null) ? fallbackHandler.getClass().getName() : "null", queueName, isDurable, joinEventTypesAsString(handler.getHandledEventTypes()) });
+        LOG.debug("Subscribing Handler [{}] to known queue [{}] (is durable? = {}) for Event Types: {}", new Object[] { handler.getClass().getName(), queueName, isDurable,
+                joinEventTypesAsString(handler.getHandledEventTypes()) });
 
         Subscription subscription = new Subscription(queueName, handler);
-        subscription.setFallbackHandler(fallbackHandler);
         subscription.setIsDurable(isDurable);
         return subscribe(subscription);
     }
@@ -408,7 +361,7 @@ public class AmqpEventManager implements EventManager {
 
             LOG.trace("EnvelopeHandler was null, creating default (EventEnvelopeHandler) instead.");
 
-            handler = new EventEnvelopeHandler(this, subscription.getEventHandler(), subscription.getFallbackHandler());
+            handler = new EventEnvelopeHandler(this, subscription.getEventHandler());
         }
 
         LOG.trace("Creating new queue listener for subscription.");
@@ -479,16 +432,6 @@ public class AmqpEventManager implements EventManager {
      */
     private String getNewQueueName() {
         return clientName + ":" + UUID.randomUUID().toString();
-    }
-
-    /**
-     * Assuming that this is a default FallbackHandler for EventHandlers that can't handle the message, but haven't supplied a fallback handler.
-     * 
-     * @return CURRENTLY RETURNS NULL!
-     */
-    private FallbackHandler getFailingFallbackHandler() {
-        // TODO Ask Ken about this method's purpose
-        return null;
     }
 
     private HashSet<String> exchangesKnownToExist = new HashSet<String>();

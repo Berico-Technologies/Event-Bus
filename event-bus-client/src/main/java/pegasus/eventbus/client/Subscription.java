@@ -4,7 +4,6 @@ package pegasus.eventbus.client;
 public class Subscription{
 	
 	private EventHandler<?> eventHandler;
-	private FallbackHandler fallbackHandler;
 	private EnvelopeHandler envelopeHandler;
 	private String queueName;
 	private String eventsetName;
@@ -66,15 +65,6 @@ public class Subscription{
 	 }
 	  
 	 /**
-	 * The {@link FallbackHandler} that will be called when events are received that
-	 * 		cannot be deserialized, are not of the subscribed type or for which the provided handler
-	 * 		threw an exception while handling.
-	 */
-	 public FallbackHandler getFallbackHandler(){
-		 return this.fallbackHandler;
-	 }
-	 
-	 /**
 	 * The {@link EnvelopeHandler} that will be called to handle each received event.  Will be null
 	 * 		if the subscription is an {@link EventHandler} based subscription.
 	 */
@@ -82,15 +72,6 @@ public class Subscription{
 		 return this.envelopeHandler;
 	 }
 	 
-	 /**
-	 * The {@link FallbackHandler} that will be called when events are received that
-	 * 		cannot be deserialized, are not of the subscribed type or for which the provided handler
-	 * 		threw an exception while handling.
-	 */
-	 public void setFallbackHandler(FallbackHandler fallbackHandler){
-		 this.fallbackHandler = fallbackHandler;
-	 }
-
 	 /**
 	 * The name of the queue to subscribe to.  If null, an arbitrary name will be used.
 	 *
