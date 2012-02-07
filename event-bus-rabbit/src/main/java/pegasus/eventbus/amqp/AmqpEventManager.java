@@ -24,55 +24,57 @@ import pegasus.eventbus.client.EventManager;
 import pegasus.eventbus.client.FallbackHandler;
 import pegasus.eventbus.client.Subscription;
 import pegasus.eventbus.client.SubscriptionToken;
+import pegasus.topology.service.TopologyManager;
 
 /**
  * An implementation of the Event Manager based on the AMQP specification.
+ * 
  * @author Ken Baltrinic (Berico Technologies)
  */
 public class AmqpEventManager implements EventManager {
 
     // DO NOT change these values, they are based on the in the AMPQ spec.
-    static final String AMQP_ROUTE_SEGMENT_DELIMITER = ".";
-    static final String AMQP_ROUTE_SEGMENT_WILDCARD = "#";
+    static final String                                AMQP_ROUTE_SEGMENT_DELIMITER = ".";
+    static final String                                AMQP_ROUTE_SEGMENT_WILDCARD  = "#";
 
     // Must start with Alpha, Digit or _ and be no more than 255 chars. Special
     // chars, spaces, etc. are allowed.
     // We are limiting name to 215 chars to allow us to append UUID.
-    private static final Pattern VALID_AMQP_NAME = Pattern.compile("^\\w{1}.{0,214}+$");
+    private static final Pattern                       VALID_AMQP_NAME              = Pattern.compile("^\\w{1}.{0,214}+$");
     // AMQP name may not start with amq. as this is reserved
-    private static final Pattern FIRST_CHARS_INVALID_FOR_AMQP = Pattern.compile("^(\\W|(amq\\.))");
+    private static final Pattern                       FIRST_CHARS_INVALID_FOR_AMQP = Pattern.compile("^(\\W|(amq\\.))");
 
     // Assumes command is anything prior to the first whitespace and then
     // extracts the final ., / or \ delimited segment thereof
     // however . appearing within the final 8 characters of command are included
     // in command as a presumed extension.
-    private static final Pattern NAME_FROM_COMMAND = Pattern
-            .compile("((?:^([^\\s./\\\\]+?(?:\\.[^\\s./\\\\]{0,7})*?))|((?:(?:^\\S*?[./\\\\])|^)([^\\s./\\\\]+?(?:\\.[^\\s./\\\\]{0,7})*?)))(?:\\s|$)");
+    private static final Pattern                       NAME_FROM_COMMAND            = Pattern
+                                                                                            .compile("((?:^([^\\s./\\\\]+?(?:\\.[^\\s./\\\\]{0,7})*?))|((?:(?:^\\S*?[./\\\\])|^)([^\\s./\\\\]+?(?:\\.[^\\s./\\\\]{0,7})*?)))(?:\\s|$)");
 
     // Loggers for this Class and internal Classes (which can't be declared "static" from
     // within their own definition.
-    protected static final Logger LOG = LoggerFactory.getLogger(AmqpEventManager.class);
+    protected static final Logger                      LOG                          = LoggerFactory.getLogger(AmqpEventManager.class);
 
-    private final String clientName;
-    final AmqpMessageBus messageBus;
-    private final EventTypeToTopicMapper eventTopicMapper;
-    private final TopicToRoutingMapper routingProvider;
-    final Serializer serializer;
+    private final String                               clientName;
+    final AmqpMessageBus                               messageBus;
+    private final TopologyManager                      topologyManager;
+    final Serializer                                   serializer;
 
-    private Map<SubscriptionToken, ActiveSubscription> activeSubscriptions = new HashMap<SubscriptionToken, ActiveSubscription>();
-    Map<Object, Envelope> envelopesBeingHandled = new HashMap<Object, Envelope>();
+    private Map<SubscriptionToken, ActiveSubscription> activeSubscriptions          = new HashMap<SubscriptionToken, ActiveSubscription>();
+    Map<Object, Envelope>                              envelopesBeingHandled        = new HashMap<Object, Envelope>();
 
     /**
      * Instantiate the EventManager from configuration.
-     * @param configuration Configuration object for the Event Manager.
+     * 
+     * @param configuration
+     *            Configuration object for the Event Manager.
      */
     public AmqpEventManager(Configuration configuration) {
 
-    	LOG.info("Starting the AMQP Event Manager.");
-    	
+        LOG.info("Starting the AMQP Event Manager.");
+
         this.messageBus = configuration.getAmqpMessageBus();
-        this.eventTopicMapper = configuration.getEventTypeToTopicMapper();
-        this.routingProvider = configuration.getTopicToRoutingMapper();
+        this.topologyManager = configuration.getTopologyManager();
         this.serializer = configuration.getSerializer();
 
         String tempName = getFallBackClientNameIfNeeded(configuration.getClientName());
@@ -84,22 +86,29 @@ public class AmqpEventManager implements EventManager {
         // case something
         // gets past it.
         validateClientName();
+
+        topologyManager.start(this);
+    }
+
+    public void start() {
+        topologyManager.start(this);
     }
 
     /**
-     * If client name is null, attempt to pull the host name from the
-     * environment or fall back to "UNKNOWN"
-     * @param clientName Name of this instance of the AmqpEventManager
+     * If client name is null, attempt to pull the host name from the environment or fall back to "UNKNOWN"
+     * 
+     * @param clientName
+     *            Name of this instance of the AmqpEventManager
      * @return Best client name available
      */
     private String getFallBackClientNameIfNeeded(String clientName) {
 
-    	LOG.trace("Attempting to grab the correct client name; one provided = [{}]", clientName);
-    	
+        LOG.trace("Attempting to grab the correct client name; one provided = [{}]", clientName);
+
         if (clientName == null || clientName.trim().length() == 0) {
-        	
-        	LOG.trace("Invalid client name. Attempting to pull from Environment.");
-        	
+
+            LOG.trace("Invalid client name. Attempting to pull from Environment.");
+
             // Try to get name from what command was run to start this process.
             clientName = System.getProperty("sun.java.command").trim();
             Matcher matcher = NAME_FROM_COMMAND.matcher(clientName);
@@ -109,37 +118,39 @@ public class AmqpEventManager implements EventManager {
         }
 
         if (clientName == null || clientName.trim().length() == 0) {
-        	
-        	LOG.trace("Could not find client name in environment, pulling hostname of computer instead.");
-        	
+
+            LOG.trace("Could not find client name in environment, pulling hostname of computer instead.");
+
             // Try to use computer name as client name.
             try {
-            	
+
                 clientName = InetAddress.getLocalHost().getHostName();
-            
+
             } catch (UnknownHostException e) {
-            
-            	LOG.error("Could not find the hostname. Resorting to 'UNKNOWN'.", e);
-            	
-            	clientName = "UNKNOWN";
+
+                LOG.error("Could not find the hostname. Resorting to 'UNKNOWN'.", e);
+
+                clientName = "UNKNOWN";
             }
         }
 
         LOG.trace("Final client name was [{}]", clientName);
-        
+
         return clientName;
     }
 
     /**
      * If the client name is invalid for AMQP, attempt to fix it.
-     * @param clientName Current Client Name
+     * 
+     * @param clientName
+     *            Current Client Name
      * @return Valid Client Name
      */
     private String fixNameIfInvalidForAmqp(String clientName) {
-        
-    	LOG.trace("Normalizing Client Name.");
-    	
-    	clientName = clientName.trim();
+
+        LOG.trace("Normalizing Client Name.");
+
+        clientName = clientName.trim();
 
         int length = clientName.length();
         if (length > 214) {
@@ -148,7 +159,7 @@ public class AmqpEventManager implements EventManager {
         if (FIRST_CHARS_INVALID_FOR_AMQP.matcher(clientName).find()) {
             clientName = "_" + clientName;
         }
-        
+
         LOG.trace("Normalized Client Name is [{}]", clientName);
         return clientName;
     }
@@ -157,186 +168,180 @@ public class AmqpEventManager implements EventManager {
      * Ensure the client name is valid.
      */
     private void validateClientName() {
-    	
-    	LOG.trace("Validating Client Name.");
-    	
+
+        LOG.trace("Validating Client Name.");
+
         if (!VALID_AMQP_NAME.matcher(clientName).find()) {
-        	
-        	LOG.error("The client name must begin with a letter number or underscore and be no more than 215 characters long.");
-        	
-            throw new IllegalArgumentException(
-                    "The clientName must begin with a letter number or underscore and be no more than 215 characters long.");
-            
+
+            LOG.error("The client name must begin with a letter number or underscore and be no more than 215 characters long.");
+
+            throw new IllegalArgumentException("The clientName must begin with a letter number or underscore and be no more than 215 characters long.");
+
         } else if (clientName.startsWith("amq.")) {
-        	
-        	LOG.error("The client name may not begin with 'amq.' as this is a reserved namespace.");
-        	
-            throw new IllegalArgumentException(
-                    "The clientName may not begin with 'amq.' as this is a reserved namespace.");
+
+            LOG.error("The client name may not begin with 'amq.' as this is a reserved namespace.");
+
+            throw new IllegalArgumentException("The clientName may not begin with 'amq.' as this is a reserved namespace.");
         }
     }
 
     /**
      * Publish an Event on the Bus.
-     * @param event Event (message) to publish.
+     * 
+     * @param event
+     *            Event (message) to publish.
      */
     @Override
     public void publish(Object event) {
-    	
-    	LOG.debug("Publishing event of type [{}] on the bus.", event.getClass().getName());
-    	
+
+        LOG.debug("Publishing event of type [{}] on the bus.", event.getClass().getName());
+
         publish(event, null, false);
     }
 
     /**
-     * Actual implementation of publishing a message on the bus, taking into account the need
-     * for a reply, or optionally, the publishing of this message as a reply to another event.
-     * @param event Event to publish
-     * @param replyToQueue ReplyTo Queue
-     * @param sendToReplyToQueue Is this message being sent as a reply?
+     * Actual implementation of publishing a message on the bus, taking into account the need for a reply, or optionally, the publishing of this message as a reply to another event.
+     * 
+     * @param event
+     *            Event to publish
+     * @param replyToQueue
+     *            ReplyTo Queue
+     * @param sendToReplyToQueue
+     *            Is this message being sent as a reply?
      */
     private void publish(Object event, String replyToQueue, boolean sendToReplyToQueue) {
-    	
-    	LOG.trace("Publishing event of type [{}].  Expect Response? {}; Is this a reply? = {}",
-    			new Object[]{ event.getClass().getName(), replyToQueue != null, sendToReplyToQueue });
-    	
-    	LOG.trace("Finding the correct topic for event [{}]", event.getClass().getName());
-    	
-        String topic = eventTopicMapper.getTopicFor(event.getClass());
-        
-        LOG.trace("Finding the correct RoutingInfo for the topic [{}]", topic);
-        
-        RoutingInfo routing = routingProvider.getRoutingInfoFor(topic);
-        
+
+        LOG.trace("Publishing event of type [{}].  Expect Response? {}; Is this a reply? = {}", new Object[] { event.getClass().getName(), replyToQueue != null, sendToReplyToQueue });
+
+        LOG.trace("Finding the correct routing info for event [{}]", event.getClass().getName());
+
+        RoutingInfo route = topologyManager.getRoutingInfoForEvent(event.getClass());
+
         if (sendToReplyToQueue) {
-        
-        	LOG.trace("Creating Routing Info for the ReplyTo queue.");
-        	
-        	routing = new RoutingInfo(routing.getExchange(), routing.getRoutingKey()
-                    + AmqpEventManager.AMQP_ROUTE_SEGMENT_DELIMITER + replyToQueue);
-        	
+
+            LOG.trace("Creating Routing Info for the ReplyTo queue.");
+
+            route = new RoutingInfo(route.getExchange(), route.getRoutingKey() + AmqpEventManager.AMQP_ROUTE_SEGMENT_DELIMITER + replyToQueue);
+
         } else {
-        	
-        	LOG.trace("Asserting route actually exists.");
-        	
-            ensureRouteExists(routing);
+
+            LOG.trace("Asserting route actually exists.");
+
+            ensureRouteExists(route);
         }
-        
+
         LOG.trace("Serializing the event to byte array.");
-        
+
         byte[] body = serializer.serialize(event);
-        
+
         LOG.trace("Creating envelope.");
-        
+
         Envelope envelope = new Envelope();
         envelope.setId(UUID.randomUUID());
-        envelope.setTopic(routing.getRoutingKey());
+        envelope.setTopic(route.getRoutingKey());
         envelope.setEventType(event.getClass().getCanonicalName());
         envelope.setReplyTo(replyToQueue);
         envelope.setBody(body);
-        
+
         LOG.trace("Publishing to the message bus instance.");
-        
-        messageBus.publish(routing, envelope);
+
+        messageBus.publish(route, envelope);
     }
-    
-    
+
     /**
      * Subscribe to all events the supplied handler is capable of handling.
-     * @param handler Event Handler
+     * 
+     * @param handler
+     *            Event Handler
      */
     @Override
     public SubscriptionToken subscribe(EventHandler<?> handler) {
-    	
-    	LOG.debug("Subscribing Handler [{}] to Event Types: {}", 
-    			handler.getClass().getName(), joinEventTypesAsString(handler.getHandledEventTypes()));
-    	
+
+        LOG.debug("Subscribing Handler [{}] to Event Types: {}", handler.getClass().getName(), joinEventTypesAsString(handler.getHandledEventTypes()));
+
         return subscribe(getNewQueueName(), false, handler, getFailingFallbackHandler());
     }
 
     /**
-     * Subscribe to all events the supplied handler is capable of handling, but
-     * if any issue arises, use the FallbackHandler to process the envelope.
-     * @param handler Event Handler
-     * @param fallbackHandler Fallback Handler that will process the envelope on failures
+     * Subscribe to all events the supplied handler is capable of handling, but if any issue arises, use the FallbackHandler to process the envelope.
+     * 
+     * @param handler
+     *            Event Handler
+     * @param fallbackHandler
+     *            Fallback Handler that will process the envelope on failures
      * @return Subscription Token used to unregister the handler
      */
     @Override
     public SubscriptionToken subscribe(EventHandler<?> handler, FallbackHandler fallbackHandler) {
-    	
-    	LOG.debug("Subscribing Handler [{}] and FallbackHandler [{}] to Event Types: {}", 
-    			new Object[]{ 
-    				handler.getClass().getName(), 
-    				fallbackHandler.getClass().getName(), 
-    				joinEventTypesAsString(handler.getHandledEventTypes()) });
-    	
+
+        LOG.debug("Subscribing Handler [{}] and FallbackHandler [{}] to Event Types: {}", new Object[] { handler.getClass().getName(), fallbackHandler.getClass().getName(),
+                joinEventTypesAsString(handler.getHandledEventTypes()) });
+
         return subscribe(getNewQueueName(), false, handler, fallbackHandler);
     }
 
     /**
      * Subscribe to all events on a known queue with the supplied Event Handler.
-     * @param queueName Name of the Known Queue
-     * @param handler Event Handler
+     * 
+     * @param queueName
+     *            Name of the Known Queue
+     * @param handler
+     *            Event Handler
      * @return Subscription Token used to unregister the handler
      */
     @Override
     public SubscriptionToken subscribe(String queueName, EventHandler<?> handler) {
-    	
-    	LOG.debug("Subscribing Handler [{}] to known queue [{}] for Event Types: {}", 
-    			new Object[]{ 
-    				handler.getClass().getName(), 
-    				queueName,
-    				joinEventTypesAsString(handler.getHandledEventTypes()) });
-    	
+
+        LOG.debug("Subscribing Handler [{}] to known queue [{}] for Event Types: {}", new Object[] { handler.getClass().getName(), queueName, joinEventTypesAsString(handler.getHandledEventTypes()) });
+
         return subscribe(queueName, handler, getFailingFallbackHandler());
     }
 
     /**
      * Subscribe to all events on a known queue with the supplied Event Handler.
-     * @param queueName Name of the Known Queue
-     * @param handler Event Handler
-     * @param fallbackHandler Fallback Handler that will process the envelope on failures
+     * 
+     * @param queueName
+     *            Name of the Known Queue
+     * @param handler
+     *            Event Handler
+     * @param fallbackHandler
+     *            Fallback Handler that will process the envelope on failures
      * @return Subscription Token used to unregister the handler
      */
     @Override
     public SubscriptionToken subscribe(String queueName, EventHandler<?> handler, FallbackHandler fallbackHandler) {
-    	
-    	LOG.debug("Subscribing Handler [{}] and FallbackHandler [{}] to known queue [{}] for Event Types: {}", 
-    			new Object[]{ 
-    				handler.getClass().getName(), 
-    				(fallbackHandler != null)? fallbackHandler.getClass().getName() : "null", 
-    				queueName,
-    				joinEventTypesAsString(handler.getHandledEventTypes()) });
-    	
-        if (queueName == null || queueName.length() == 0){ 
-         
-        	LOG.error("QueueName may not be null nor zero length.");
-        	
-        	throw new IllegalArgumentException("QueueName may not be null nor zero length.");
+
+        LOG.debug("Subscribing Handler [{}] and FallbackHandler [{}] to known queue [{}] for Event Types: {}", new Object[] { handler.getClass().getName(),
+                (fallbackHandler != null) ? fallbackHandler.getClass().getName() : "null", queueName, joinEventTypesAsString(handler.getHandledEventTypes()) });
+
+        if (queueName == null || queueName.length() == 0) {
+
+            LOG.error("QueueName may not be null nor zero length.");
+
+            throw new IllegalArgumentException("QueueName may not be null nor zero length.");
         }
-        
+
         return subscribe(queueName, true, handler, fallbackHandler);
     }
 
     /**
      * Subscribe to all events on a known queue with the supplied Event Handler.
-     * @param queueName Name of the Known Queue
-     * @param isDurable Is the Queue Durable
-     * @param handler Event Handler
-     * @param fallbackHandler Fallback Handler that will process the envelope on failures
+     * 
+     * @param queueName
+     *            Name of the Known Queue
+     * @param isDurable
+     *            Is the Queue Durable
+     * @param handler
+     *            Event Handler
+     * @param fallbackHandler
+     *            Fallback Handler that will process the envelope on failures
      * @return Subscription Token used to unregister the handler
      */
-    private SubscriptionToken subscribe(String queueName, boolean isDurable, EventHandler<?> handler,
-            FallbackHandler fallbackHandler) {
-    	
-    	LOG.debug("Subscribing Handler [{}] and FallbackHandler [{}] to known queue [{}] (is durable? = {}) for Event Types: {}", 
-    			new Object[]{ 
-    				handler.getClass().getName(), 
-    				(fallbackHandler != null)? fallbackHandler.getClass().getName() : "null", 
-    				queueName,
-    				isDurable,
-    				joinEventTypesAsString(handler.getHandledEventTypes()) });
-    	
+    private SubscriptionToken subscribe(String queueName, boolean isDurable, EventHandler<?> handler, FallbackHandler fallbackHandler) {
+
+        LOG.debug("Subscribing Handler [{}] and FallbackHandler [{}] to known queue [{}] (is durable? = {}) for Event Types: {}", new Object[] { handler.getClass().getName(),
+                (fallbackHandler != null) ? fallbackHandler.getClass().getName() : "null", queueName, isDurable, joinEventTypesAsString(handler.getHandledEventTypes()) });
+
         Subscription subscription = new Subscription(queueName, handler);
         subscription.setFallbackHandler(fallbackHandler);
         subscription.setIsDurable(isDurable);
@@ -345,123 +350,131 @@ public class AmqpEventManager implements EventManager {
 
     /**
      * IOC friendly way to register a subscription with the bus.
-     * @param subscription Subscription to register.
+     * 
+     * @param subscription
+     *            Subscription to register.
      */
     @Override
     public SubscriptionToken subscribe(Subscription subscription) {
-    	
-    	LOG.debug("New subscription registered with the Event Bus client");
-    	
-        if (subscription == null){
-        	
-        	LOG.error("Subscription may not be null.");
-        	
-            throw new IllegalArgumentException("Subscription may not be null.");    
+
+        LOG.debug("New subscription registered with the Event Bus client");
+
+        if (subscription == null) {
+
+            LOG.error("Subscription may not be null.");
+
+            throw new IllegalArgumentException("Subscription may not be null.");
         }
-        
+
         return subscribe(subscription, AMQP_ROUTE_SEGMENT_WILDCARD);
     }
 
     /**
-     * Does the dirty work of actually subscribing to a particular queue, registering
-     * the subscription with the EventManager's internal list, and producing the token
-     * components will need to unbind their active subscriptions.
-     * @param subscription Subscription to register.
-     * @param routeSuffix Used to capture all messages in a particular namespace (wild card)
+     * Does the dirty work of actually subscribing to a particular queue, registering the subscription with the EventManager's internal list, and producing the token components will need to unbind
+     * their active subscriptions.
+     * 
+     * @param subscription
+     *            Subscription to register.
+     * @param routeSuffix
+     *            Used to capture all messages in a particular namespace (wild card)
      * @return Subscription Token that can be used to unbind the handler from the bus.
      */
     private SubscriptionToken subscribe(Subscription subscription, String routeSuffix) {
 
-    	LOG.trace("Locating route information for the provided subscription.");
-    	
-        RoutingInfo[] routes = subscription.getEventsetName() == null ? getRoutesBaseOnEventHandlerHandledTypes(
-                subscription.getEventHandler(), routeSuffix) : routingProvider
+        LOG.trace("Locating route information for the provided subscription.");
+
+        RoutingInfo[] routes = subscription.getEventsetName() == null ? getRoutesBaseOnEventHandlerHandledTypes(subscription.getEventHandler(), routeSuffix) : topologyManager
                 .getRoutingInfoForNamedEventSet(subscription.getEventsetName());
-                
-        LOG.trace("{} routes found for subscription.", (routes != null)? routes.length : 0);
-                
+
+        LOG.trace("{} routes found for subscription.", (routes != null) ? routes.length : 0);
+
         LOG.trace("Ensuring routes exist.");
-                
+
         for (RoutingInfo route : routes) {
             ensureRouteExists(route);
         }
-        
+
         String queueName = subscription.getQueueName() == null ? getNewQueueName() : subscription.getQueueName();
 
         LOG.trace("Creating new queue [{}] (or ensuring queue exists).", queueName);
-        
+
         messageBus.createQueue(queueName, routes, subscription.getIsDurable());
 
         LOG.trace("Pulling EnvelopeHandler from subscription.");
-        
+
         EnvelopeHandler handler = subscription.getEnvelopeHandler();
-        
+
         if (handler == null) {
-        
-        	LOG.trace("EnvelopeHandler was null, creating default (EventEnvelopeHandler) instead.");
-        	
+
+            LOG.trace("EnvelopeHandler was null, creating default (EventEnvelopeHandler) instead.");
+
             handler = new EventEnvelopeHandler(this, subscription.getEventHandler(), subscription.getFallbackHandler());
         }
 
         LOG.trace("Creating new queue listener for subscription.");
-        
+
         QueueListener listener = new QueueListener(this, queueName, handler);
-        
+
         LOG.trace("Starting the queue listener.");
-        
+
         listener.beginListening();
-        
+
         SubscriptionToken token = new SubscriptionToken();
-        
+
         LOG.trace("Adding new active subscription with token to the 'active subscriptions' list.");
-        
+
         activeSubscriptions.put(token, new ActiveSubscription(queueName, subscription.getIsDurable(), listener));
-        
+
         LOG.trace("Returning subscription token.");
-        
+
         return token;
     }
 
     /**
      * Determine the correct routing information based on the "handled types" provided by the EventHandler.
-     * @param eventHandler EventHandler that provided the types that need to be mapped to routes
-     * @param routeSuffix Suffix to append on route bindings
+     * 
+     * @param eventHandler
+     *            EventHandler that provided the types that need to be mapped to routes
+     * @param routeSuffix
+     *            Suffix to append on route bindings
      * @return Array of Routes that apply to that Handler
      */
     private RoutingInfo[] getRoutesBaseOnEventHandlerHandledTypes(EventHandler<?> eventHandler, String routeSuffix) {
 
-    	LOG.trace("Getting routes handled by event handler [{}]", eventHandler.getClass().getName());
-    	
+        LOG.trace("Getting routes handled by event handler [{}]", eventHandler.getClass().getName());
+
         ArrayList<RoutingInfo> routes = new ArrayList<RoutingInfo>();
-        
+
         final Class<?>[] handledEventTypes = eventHandler.getHandledEventTypes();
-        
+
         for (Class<?> eventType : handledEventTypes) {
-        	
-        	LOG.trace("Getting route for [{}]", eventType.getName());
-        	
-            RoutingInfo routingInfo = routingProvider.getRoutingInfoFor(eventTopicMapper.getTopicFor(eventType));
-            
+
+            LOG.trace("Getting route for [{}]", eventType.getName());
+
+            RoutingInfo route = topologyManager.getRoutingInfoForEvent(eventType);
+
+            LOG.info("Route: {}", route);
+
             // Assuming we want to ensure that we not only catch types that match the canonical class name
             // but also anything past it in the hierarchy. Ken?
-            
+
             if (routeSuffix == AMQP_ROUTE_SEGMENT_WILDCARD) {
-                routes.add(routingInfo);
+                routes.add(route);
             }
-            
-            routingInfo = new RoutingInfo(routingInfo.getExchange(), routingInfo.getRoutingKey()
-                    + AMQP_ROUTE_SEGMENT_DELIMITER + routeSuffix);
-            
-            routes.add(routingInfo);
+
+            route = new RoutingInfo(route.getExchange(), route.getRoutingKey() + AMQP_ROUTE_SEGMENT_DELIMITER + routeSuffix);
+
+            routes.add(route);
         }
-        
+
         LOG.trace("Found [{}] routes for event handler [{}]", routes.size(), eventHandler.getClass().getName());
-        
+
         return routes.toArray(new RoutingInfo[0]);
     }
 
     /**
      * Get random queue name for this client
+     * 
      * @return Random Queue Name
      */
     private String getNewQueueName() {
@@ -469,8 +482,8 @@ public class AmqpEventManager implements EventManager {
     }
 
     /**
-     * Assuming that this is a default FallbackHandler for EventHandlers
-     * that can't handle the message, but haven't supplied a fallback handler.
+     * Assuming that this is a default FallbackHandler for EventHandlers that can't handle the message, but haven't supplied a fallback handler.
+     * 
      * @return CURRENTLY RETURNS NULL!
      */
     private FallbackHandler getFailingFallbackHandler() {
@@ -482,200 +495,207 @@ public class AmqpEventManager implements EventManager {
 
     /**
      * Ensure the supplied route currently exists.
-     * @param routingInfo Route Info
+     * 
+     * @param routingInfo
+     *            Route Info
      */
     private void ensureRouteExists(RoutingInfo routingInfo) {
-    	
-    	LOG.trace("Ensuring route exists: {}", routingInfo);
-    	
+
+        LOG.trace("Ensuring route exists: {}", routingInfo);
+
         final String exchangeName = routingInfo.getExchange().getName();
-        
-        if (exchangesKnownToExist.contains(exchangeName)){
-         
-        	LOG.trace("Route already exists. Done.");
-        	
-        	return;
+
+        if (exchangesKnownToExist.contains(exchangeName)) {
+
+            LOG.trace("Route already exists. Done.");
+
+            return;
         }
 
-        LOG.debug("Route did not exist, attempting to create exchange [{}] to ensure it exists on the bus.",
-        		routingInfo.getExchange().getName());
-        
+        LOG.debug("Route did not exist, attempting to create exchange [{}] to ensure it exists on the bus.", routingInfo.getExchange().getName());
+
         messageBus.createExchange(routingInfo.getExchange());
-        
+
         LOG.trace("Adding route to the known routes list.");
-        
+
         exchangesKnownToExist.add(exchangeName);
     }
 
     /**
      * Handle the Responses to the supplied event with the provided Event Handler
-     * @param event Event published
-     * @param handler Event Handler taking care of responses.
+     * 
+     * @param event
+     *            Event published
+     * @param handler
+     *            Event Handler taking care of responses.
      * @return Subscription Token that can be used to unbind the handler from the bus.
      */
     @Override
     public SubscriptionToken getResponseTo(Object event, EventHandler<?> handler) {
-    	
-    	LOG.debug("Publishing event of type [{}] and handling responses with [{}]", 
-    			event.getClass().getName(), handler.getClass().getName());
-    	
+
+        LOG.debug("Publishing event of type [{}] and handling responses with [{}]", event.getClass().getName(), handler.getClass().getName());
+
         String replyToQueueName = getNewQueueName();
-        
+
         LOG.trace("Creating reply-to queue with name [{}].", replyToQueueName);
-        
+
         Subscription subscription = new Subscription(handler);
         subscription.setQueueName(replyToQueueName);
-        
+
         LOG.trace("Creating subscription to responses on the reply-to queue.");
-        
+
         SubscriptionToken token = subscribe(subscription, replyToQueueName);
-        
+
         LOG.trace("Blocking the active until consumer is registered.");
-        
+
         while (!activeSubscriptions.get(token).listener.isCurrentlyListening()) {
             try {
-            	
-            	LOG.trace("Sleeping for 10ms");
-            	
+
+                LOG.trace("Sleeping for 10ms");
+
                 Thread.sleep(10);
-                
+
             } catch (InterruptedException e) {
-            	
-            	LOG.error("Thread was interrupted when waiting for responses to the reply-to queue.", e);
-            	
+
+                LOG.error("Thread was interrupted when waiting for responses to the reply-to queue.", e);
+
                 break;
             }
         }
-        
+
         LOG.trace("Publishing the event and waiting for responses.");
-        
+
         publish(event, replyToQueueName, false);
-        
+
         LOG.trace("Returning Subscription Token");
-        
+
         return token;
     }
 
-    
     /**
-     * Handle the Responses to the supplied event, but return the result immediately (blocking until result
-     * has been received - RPC)
-     * @param event Event published
-     * @param timeoutMills Time to wait for result before quitting
-     * @param responseTypes The expected response types
+     * Handle the Responses to the supplied event, but return the result immediately (blocking until result has been received - RPC)
+     * 
+     * @param event
+     *            Event published
+     * @param timeoutMills
+     *            Time to wait for result before quitting
+     * @param responseTypes
+     *            The expected response types
      * @return Return an event of the expected TResponse type
      */
     @Override
-    public <TResponse> TResponse getResponseTo(Object event, int timeoutMills,
-            Class<? extends TResponse>... responseTypes) throws InterruptedException, TimeoutException {
+    public <TResponse> TResponse getResponseTo(Object event, int timeoutMills, Class<? extends TResponse>... responseTypes) throws InterruptedException, TimeoutException {
 
-    	LOG.debug("Publishing event of type [{}] and expecting a response of types [{}]", 
-    			event.getClass().getName(), joinEventTypesAsString(responseTypes));
-    
-    	LOG.trace("Registering a CallbackHandler for collecting the Responses");
-    	
+        LOG.debug("Publishing event of type [{}] and expecting a response of types [{}]", event.getClass().getName(), joinEventTypesAsString(responseTypes));
+
+        LOG.trace("Registering a CallbackHandler for collecting the Responses");
+
         CallbackHandler<TResponse> handler = new CallbackHandler<TResponse>(responseTypes);
-        
+
         SubscriptionToken token = getResponseTo(event, handler);
-        
+
         try {
-        
-        	LOG.trace("Waiting for response {}ms, then returning result.", timeoutMills);
-        	
-        	return waitForAndReturnResponse(handler, timeoutMills);
-        
+
+            LOG.trace("Waiting for response {}ms, then returning result.", timeoutMills);
+
+            return waitForAndReturnResponse(handler, timeoutMills);
+
         } finally {
-        
-        	LOG.debug("Unregistering subscription for getResponseTo");
-        	
-        	unsubscribe(token);
+
+            LOG.debug("Unregistering subscription for getResponseTo");
+
+            unsubscribe(token);
         }
     }
 
     /**
      * Waits for a response to occur (if the timeout doesn't occur first), then returns the result.
-     * @param handler CallbackHandler that will collect the result
-     * @param timeoutMills Time in milliseconds to wait for response.
+     * 
+     * @param handler
+     *            CallbackHandler that will collect the result
+     * @param timeoutMills
+     *            Time in milliseconds to wait for response.
      * @return The response from another service on the bus.
      * @throws InterruptedException
      * @throws TimeoutException
      */
-    private <TResponse> TResponse waitForAndReturnResponse(CallbackHandler<TResponse> handler, int timeoutMills)
-            throws InterruptedException, TimeoutException {
-    	
+    private <TResponse> TResponse waitForAndReturnResponse(CallbackHandler<TResponse> handler, int timeoutMills) throws InterruptedException, TimeoutException {
+
         int sleepInterval = Math.min(50, timeoutMills / 10);
 
         StopWatch watch = new StopWatch();
         watch.start();
-        
+
         LOG.trace("Attempting to get response.");
-        
+
         TResponse response = handler.getReceivedResponse();
-        
-        if(response == null){
-        	
-        	LOG.trace("Response was null, looping until response received or timeout reached.");
+
+        if (response == null) {
+
+            LOG.trace("Response was null, looping until response received or timeout reached.");
         }
-        
+
         while (watch.getTime() < timeoutMills && response == null) {
-            
-        	LOG.trace("Still nothing, sleeping {}ms.", sleepInterval);
-        	
-        	Thread.sleep(sleepInterval);
-            
-        	LOG.trace("Attempting to get Response from bus again.");
-        	
+
+            LOG.trace("Still nothing, sleeping {}ms.", sleepInterval);
+
+            Thread.sleep(sleepInterval);
+
+            LOG.trace("Attempting to get Response from bus again.");
+
             response = handler.getReceivedResponse();
         }
-        
+
         watch.stop();
 
         if (response == null) {
-         
-        	LOG.error("Response was not received within the time specified.");
-        	
-        	throw new TimeoutException("Response was not received within the time specified.");
+
+            LOG.error("Response was not received within the time specified.");
+
+            throw new TimeoutException("Response was not received within the time specified.");
         }
 
         LOG.trace("Response of type [{}] received.", response.getClass().getName());
-        
+
         return response;
     }
 
     /**
      * Respond to an event with another event.
-     * @param originalRequest Original Event
-     * @param response The Event used to Respond to the first.
+     * 
+     * @param originalRequest
+     *            Original Event
+     * @param response
+     *            The Event used to Respond to the first.
      */
     @Override
     public void respondTo(Object originalRequest, Object response) {
-    	
-    	LOG.debug("Responding to event [{}] with event [{}]", 
-    			originalRequest.getClass().getName(),
-    			response.getClass().getName());
-    	
-    	LOG.trace("Pulling original event's envelope.");
-    	
+
+        LOG.debug("Responding to event [{}] with event [{}]", originalRequest.getClass().getName(), response.getClass().getName());
+
+        LOG.trace("Pulling original event's envelope.");
+
         Envelope originalRequestEnvelope = envelopesBeingHandled.get(originalRequest);
-        
+
         if (originalRequestEnvelope.getReplyTo() == null) {
-        
-        	LOG.warn("No reply-to address on the original event, publishing response as normal event.");
-        	
-        	publish(response);
-        
+
+            LOG.warn("No reply-to address on the original event, publishing response as normal event.");
+
+            publish(response);
+
         } else {
-            
-        	LOG.trace("Publishing response [{}] to reply-to queue [{}].", 
-        			response.getClass().getName(), originalRequestEnvelope.getReplyTo());
-        	
-        	publish(response, originalRequestEnvelope.getReplyTo(), true);
+
+            LOG.trace("Publishing response [{}] to reply-to queue [{}].", response.getClass().getName(), originalRequestEnvelope.getReplyTo());
+
+            publish(response, originalRequestEnvelope.getReplyTo(), true);
         }
     }
 
     /**
      * Unsubscribe a handler from a particular event using the Subscription Token.
-     * @param token Subscription Token
+     * 
+     * @param token
+     *            Subscription Token
      */
     @Override
     public void unsubscribe(SubscriptionToken token) {
@@ -684,35 +704,36 @@ public class AmqpEventManager implements EventManager {
 
     /**
      * Unsubscribe a handler from a particular event using the Subscription Token.
-     * @param token Subscription Token
-     * @param deleteQueue Should the queue be removed too? 
+     * 
+     * @param token
+     *            Subscription Token
+     * @param deleteQueue
+     *            Should the queue be removed too?
      */
     @Override
     public void unsubscribe(SubscriptionToken token, boolean deleteQueue) {
-    	
-    	LOG.debug("Unsubscribing handlers corresponding to this token: {}", token);
-    	
+
+        LOG.debug("Unsubscribing handlers corresponding to this token: {}", token);
+
         ActiveSubscription subscription = activeSubscriptions.get(token);
-        
+
         if (subscription == null) {
-        
-        	LOG.error("The provided token does not refer to an active subscription of this event manager.");
-        	
-            throw new IllegalStateException(
-                    "The provided token does not refer to an active subscription of this event manager.");
+
+            LOG.error("The provided token does not refer to an active subscription of this event manager.");
+
+            throw new IllegalStateException("The provided token does not refer to an active subscription of this event manager.");
         }
-        
-        
+
         ArrayList<ActiveSubscription> subscriptions = new ArrayList<ActiveSubscription>();
-        
+
         subscriptions.add(subscription);
-        
+
         LOG.trace("Deactivating the handlers corresponding to the subscription (delete queue? = {})", deleteQueue);
-        
+
         deactivateSubscriptions(subscriptions, deleteQueue);
-        
+
         LOG.trace("Removing token from the 'active subscriptions' list.");
-        
+
         activeSubscriptions.remove(token);
     }
 
@@ -722,78 +743,82 @@ public class AmqpEventManager implements EventManager {
     @Override
     public void close() {
 
-    	LOG.info("Shutting down the Event Manager.");
-    	
-    	LOG.trace("Deactivating all subscriptions.");
-    	
+        LOG.info("Shutting down the Event Manager.");
+
+        LOG.trace("Deactivating all subscriptions.");
+
         deactivateSubscriptions(activeSubscriptions.values(), false);
-        
+
         activeSubscriptions.clear();
-        
+
         LOG.trace("Closing the connection to the broker.");
-        
+
         messageBus.close();
     }
 
     /**
      * Deactivate activate subscriptions listed in the provided subscriptions list (and optionally, delete the queues).
-     * @param subscriptions List of subscriptions to be deactivated
-     * @param deleteDurableQueues Should these queues be deleted?
+     * 
+     * @param subscriptions
+     *            List of subscriptions to be deactivated
+     * @param deleteDurableQueues
+     *            Should these queues be deleted?
      */
     private void deactivateSubscriptions(Collection<ActiveSubscription> subscriptions, boolean deleteDurableQueues) {
-        
-    	LOG.debug("Deactivating subscriptions, stopping all listeners.");
-    	
-    	for (ActiveSubscription subscription : subscriptions) {
+
+        LOG.debug("Deactivating subscriptions, stopping all listeners.");
+
+        for (ActiveSubscription subscription : subscriptions) {
             subscription.getListener().StopListening();
         }
 
         boolean someListenersAreStillListening = !subscriptions.isEmpty();
-        
+
         while (someListenersAreStillListening) {
             someListenersAreStillListening = false;
             for (ActiveSubscription subscription : subscriptions) {
                 if (subscription.getListener().isCurrentlyListening()) {
                     someListenersAreStillListening = true;
                     try {
-                    	
-                    	LOG.trace("Some of the subscriptions are taking a while to shutdown.  Sleeping for 50ms.");
-                    	
+
+                        LOG.trace("Some of the subscriptions are taking a while to shutdown.  Sleeping for 50ms.");
+
                         Thread.sleep(50);
                     } catch (InterruptedException e) {
-                        LOG.debug("Thread [" + Thread.currentThread().getName()
-                                + "] interrupted in method AmqpEventManager.deactivateSubscriptions().");
+                        LOG.debug("Thread [" + Thread.currentThread().getName() + "] interrupted in method AmqpEventManager.deactivateSubscriptions().");
                     }
                     break;
                 }
             }
         }
 
-        if(deleteDurableQueues){
-        	
-        	LOG.trace("Deleting all queues provided in the deactivated subscriptions list.");
+        if (deleteDurableQueues) {
+
+            LOG.trace("Deleting all queues provided in the deactivated subscriptions list.");
         }
-        
+
         for (ActiveSubscription subscription : subscriptions) {
             if (deleteDurableQueues || !subscription.getQueueIsDurable()) {
-            	
-            	LOG.trace("Deleting queue [{}]", subscription.getQueueName());
-            	
+
+                LOG.trace("Deleting queue [{}]", subscription.getQueueName());
+
                 messageBus.deleteQueue(subscription.getQueueName());
             }
         }
     }
-    
+
     /**
      * Joins a list of event types into a comma separated string
-     * @param eventTypes List of event types
+     * 
+     * @param eventTypes
+     *            List of event types
      * @return list of event types as a comma separated string
      */
-    private static String joinEventTypesAsString(Class<?>[] eventTypes){
-    	StringBuilder sb = new StringBuilder();
-    	for(Class<?> eventType : eventTypes){
-    		sb.append(", ").append(eventType.getName());
-    	}
-    	return sb.substring(1);
+    private static String joinEventTypesAsString(Class<?>[] eventTypes) {
+        StringBuilder sb = new StringBuilder();
+        for (Class<?> eventType : eventTypes) {
+            sb.append(", ").append(eventType.getName());
+        }
+        return sb.substring(1);
     }
 }

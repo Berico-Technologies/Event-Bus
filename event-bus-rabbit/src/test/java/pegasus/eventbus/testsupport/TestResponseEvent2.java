@@ -1,15 +1,15 @@
-package pegasus.eventbus.testsupport;
-
-import java.util.UUID;
-
-public class TestResponseEvent2 extends TestResponseEvent{
-
-	
-	public TestResponseEvent2() {
-		super();
-	}
-	public TestResponseEvent2(UUID id) {
-		super(id);
-	}
-	
-}
+//package pegasus.eventbus.testsupport;
+//
+//import java.util.UUID;
+//
+//public class TestResponseEvent2 extends TestResponseEvent{
+//
+//	
+//	public TestResponseEvent2() {
+//		super();
+//	}
+//	public TestResponseEvent2(UUID id) {
+//		super(id);
+//	}
+//	
+//}

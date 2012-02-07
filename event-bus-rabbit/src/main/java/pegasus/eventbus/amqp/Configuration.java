@@ -2,27 +2,28 @@ package pegasus.eventbus.amqp;
 
 import pegasus.eventbus.gson.GsonSerializer;
 import pegasus.eventbus.rabbitmq.RabbitMessageBus;
-import pegasus.eventbus.routing.BasicTopicToRoutingMapper;
-import pegasus.eventbus.routing.BasicTypeToTopicMapper;
+import pegasus.topology.service.CompositeTopologyManager;
+import pegasus.topology.service.StaticTopologyManager;
+import pegasus.topology.service.GlobalTopologyService;
+import pegasus.topology.service.TopologyManager;
 
 /**
- * Container for all the nasty settings and providers necessary
- * to make the AmqpEventManager work.  We recommend using the default
- * configuration, accessed by the static functions "getDefault", which
- * simplifies  
+ * Container for all the nasty settings and providers necessary to make the AmqpEventManager work. We recommend using the default configuration, accessed by the static functions "getDefault", which
+ * simplifies
+ * 
  * @author Asa Martin (Berico Technologies)
  */
 public class Configuration {
 
-    private String clientName;
+    private String               clientName;
     private ConnectionParameters connectionParameters;
-    private AmqpMessageBus amqpMessageBus;
-    private EventTypeToTopicMapper eventTypeToTopicMapper;
-    private TopicToRoutingMapper topicToRoutingMapper;
-    private Serializer serializer;
-   
+    private AmqpMessageBus       amqpMessageBus;
+    private TopologyManager      topologyManager;
+    private Serializer           serializer;
+
     /**
      * Get the Name of the Client.
+     * 
      * @return Client Name
      */
     public String getClientName() {
@@ -31,7 +32,9 @@ public class Configuration {
 
     /**
      * Set the Name of the Client.
-     * @param clientName Client Name
+     * 
+     * @param clientName
+     *            Client Name
      */
     public void setClientName(String clientName) {
         this.clientName = clientName;
@@ -39,6 +42,7 @@ public class Configuration {
 
     /**
      * Get the AMQP Connection Parameters.
+     * 
      * @return Connection Parameters
      */
     public ConnectionParameters getConnectionParameters() {
@@ -47,7 +51,8 @@ public class Configuration {
 
     /**
      * Set the AMQP Connection Parameters
-     * @param connectionParameters 
+     * 
+     * @param connectionParameters
      */
     public void setConnectionParameters(ConnectionParameters connectionParameters) {
         this.connectionParameters = connectionParameters;
@@ -55,6 +60,7 @@ public class Configuration {
 
     /**
      * Get the AMQP provider.
+     * 
      * @return AMQP provider
      */
     public AmqpMessageBus getAmqpMessageBus() {
@@ -63,46 +69,35 @@ public class Configuration {
 
     /**
      * Set the AMQP provider
-     * @param amqpMessageBus AMQP provider
+     * 
+     * @param amqpMessageBus
+     *            AMQP provider
      */
     public void setAmqpMessageBus(AmqpMessageBus amqpMessageBus) {
         this.amqpMessageBus = amqpMessageBus;
     }
 
     /**
-     * Get the Mapper between Event Types and Topics
-     * @return Mapper
+     * Get the Topology Manager
+     * 
+     * @return TopologyManager
      */
-    public EventTypeToTopicMapper getEventTypeToTopicMapper() {
-        return eventTypeToTopicMapper;
+    public TopologyManager getTopologyManager() {
+        return topologyManager;
     }
 
     /**
-     * Set the Mapper between Event Types and Topics
-     * @param eventTypeToTopicMapper Mapper
+     * Set the Topology Manager
+     * 
+     * @param TopologyManager
      */
-    public void setEventTypeToTopicMapper(EventTypeToTopicMapper eventTypeToTopicMapper) {
-        this.eventTypeToTopicMapper = eventTypeToTopicMapper;
-    }
-
-    /**
-     * Get the Mapper between Topics and Routing Information
-     * @return Mapper
-     */
-    public TopicToRoutingMapper getTopicToRoutingMapper() {
-        return topicToRoutingMapper;
-    }
-
-    /**
-     * Set the Mapper between Topics and Routing Information
-     * @param topicToRoutingMapper Mapper
-     */
-    public void setTopicToRoutingMapper(TopicToRoutingMapper topicToRoutingMapper) {
-        this.topicToRoutingMapper = topicToRoutingMapper;
+    public void setTopologyManager(TopologyManager topologyManager) {
+        this.topologyManager = topologyManager;
     }
 
     /**
      * Get the Serializer.
+     * 
      * @return The Serializer
      */
     public Serializer getSerializer() {
@@ -111,7 +106,9 @@ public class Configuration {
 
     /**
      * Set the Serializer.
-     * @param serializer Serializer used to SerDe objects
+     * 
+     * @param serializer
+     *            Serializer used to SerDe objects
      */
     public void setSerializer(Serializer serializer) {
         this.serializer = serializer;
@@ -119,7 +116,9 @@ public class Configuration {
 
     /**
      * Get the default configuration for the EventManager
-     * @param clientName Unique name for this client instance
+     * 
+     * @param clientName
+     *            Unique name for this client instance
      * @return Default Configuration
      */
     public static Configuration getDefault(String clientName) {
@@ -128,27 +127,30 @@ public class Configuration {
 
     /**
      * Get the default configuration for the EventManager
-     * @param clientName Unique name for this client instance
-     * @param connectionParameters Connection Parameters.
+     * 
+     * @param clientName
+     *            Unique name for this client instance
+     * @param connectionParameters
+     *            Connection Parameters.
      * @return Default Configuration
      */
     public static Configuration getDefault(String clientName, ConnectionParameters connectionParameters) {
         AmqpMessageBus amqpMessageBus = new RabbitMessageBus(connectionParameters);
-        EventTypeToTopicMapper eventTypeToTopicMapper = new BasicTypeToTopicMapper();
-        TopicToRoutingMapper topicToRoutingMapper = new BasicTopicToRoutingMapper();
+        CompositeTopologyManager compositeTopologyManager = new CompositeTopologyManager();
+        TopologyManager fixedTopologyManager = new StaticTopologyManager();
+        compositeTopologyManager.addManager(fixedTopologyManager);
+        TopologyManager globalTopologyService = new GlobalTopologyService(clientName);
+        compositeTopologyManager.addManager(globalTopologyService);
         Serializer serializer = new GsonSerializer();
 
         Configuration defaultConfiguration = new Configuration();
         defaultConfiguration.setClientName(clientName);
         defaultConfiguration.setConnectionParameters(connectionParameters);
         defaultConfiguration.setAmqpMessageBus(amqpMessageBus);
-        defaultConfiguration.setEventTypeToTopicMapper(eventTypeToTopicMapper);
-        defaultConfiguration.setTopicToRoutingMapper(topicToRoutingMapper);
+        defaultConfiguration.setTopologyManager(compositeTopologyManager);
         defaultConfiguration.setSerializer(serializer);
 
         return defaultConfiguration;
     }
 
-   
-    
 }

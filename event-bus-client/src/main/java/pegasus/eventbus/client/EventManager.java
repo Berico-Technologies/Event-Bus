@@ -134,6 +134,11 @@ public interface EventManager {
 	void unsubscribe(SubscriptionToken token, boolean deleteQueue);
 	
 	/**
+	 * Starts the event manager and notifies all life cycle listeners
+	 */
+	void start();
+	
+	/**
 	 * Closes the event manager and unsubscribes any non-durable subscriptions.  
 	 */
 	void close();
