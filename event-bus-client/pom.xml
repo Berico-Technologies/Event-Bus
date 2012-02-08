@@ -8,7 +8,7 @@
         <relativePath>..</relativePath>
     </parent>
     <artifactId>event-bus-client</artifactId>
-    <name>Pegasus Event Bus API</name>
+    <name>Event Bus API</name>
     <description>The event bus API</description>
     <properties>
         <bundle.symbolicName>pegasus.eventbus.client</bundle.symbolicName>

@@ -3,10 +3,12 @@ package pegasus.topology.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pegasus.eventbus.client.EventHandler;
-import pegasus.eventbus.client.EventManager;
-import pegasus.eventbus.client.EventResult;
-import pegasus.eventbus.client.SubscriptionToken;
+import eventbus.client.api.EventHandler;
+import eventbus.client.api.EventManager;
+import eventbus.client.api.EventResult;
+import eventbus.client.api.SubscriptionToken;
+
+
 import pegasus.topology.event.RegisterClient;
 import pegasus.topology.event.Registration;
 import pegasus.topology.event.UnregisterClient;
