@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 import java.util.concurrent.TimeoutException;
 
 import org.junit.Test;
+import org.mockito.InOrder;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -20,6 +21,13 @@ public class AmqpEventManager_BlockingRPCBasicSubscribeTest extends
 		AmqpEventManager_BasicSubscribeTestBase {
 
 	private boolean delegateFirstSubscribeCallToBase;
+	
+	@Override
+	public void beforeEachTest(){
+		super.beforeEachTest();
+		hasStartedListening = false;
+		hadStartedListeningPriorToEnvelopePublication = false;
+	}
 	
 	@Override
 	protected SubscriptionToken subscribe() {
@@ -63,23 +71,12 @@ public class AmqpEventManager_BlockingRPCBasicSubscribeTest extends
 	private boolean hadStartedListeningPriorToEnvelopePublication;
 	@Test
 	public void theEnvelopeShouldNotBePublishedBeforeTheResponseHandlerIsPolling(){
-		doAnswer(new Answer<Object>() {
-		     public Object answer(InvocationOnMock invocation) {
-		    	 log.debug("getNextMessage called for queue;" + invocation.getArguments()[0].toString());
-		         hasStartedListening = true;
-		         return null;
-		     }
-		 }).when(messageBus).getNextMessageFrom(anyString());
-		doAnswer(new Answer<Object>() {
-		     public Object answer(InvocationOnMock invocation) {
-		    	 log.debug("publish called.");
-		         hadStartedListeningPriorToEnvelopePublication = hasStartedListening;
-		         return null;
-		     }
-		 }).when(messageBus).publish(any(RoutingInfo.class), any(Envelope.class));
+
+		InOrder inOrder = inOrder(messageBus);
 		
 		subscribe();
 		
-		assertTrue(hadStartedListeningPriorToEnvelopePublication);
+		inOrder.verify(messageBus).getNextMessageFrom(anyString());
+		inOrder.verify(messageBus).publish(any(RoutingInfo.class), any(Envelope.class));		
 	}
 }
