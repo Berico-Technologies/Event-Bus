@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.springframework.org/schema/beans" xmlns:context="http://www.springframework.org/schema/context" xmlns:util="http://www.springframework.org/schema/util"
+    xsi:schemaLocation="http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit-1.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:property-placeholder ignore-unresolvable="false" ignore-resource-not-found="true" location="classpath:eventbus.properties" />
+
+    <bean id="connectionParameters" class="pegasus.eventbus.amqp.ConnectionParameters">
+        <property name="username" value="${event.bus.username:guest}" />
+        <property name="password" value="${event.bus.password:guest}" />
+        <property name="host" value="${event.bus.host:rabbit.pegasus.gov}" />
+        <property name="virtualHost" value="${event.bus.virtualhost:/}" />
+        <property name="port" value="${event.bus.port:5672}" />
+    </bean>
+    
+    <bean id="amqpMessageBus" class="pegasus.eventbus.rabbitmq.RabbitMessageBus">
+        <constructor-arg ref="connectionParameters" />
+    </bean>
+    
+    <bean id="staticTopologyManager" class="pegasus.eventbus.topology.StaticTopologyManager" />
+
+    <bean id="gsonSerializer" class="pegasus.eventbus.gson.GsonSerializer" />
+    
+    <bean id="configuration" class="pegasus.eventbus.amqp.AmqpConfiguration">
+        <property name="clientName" value="${event.bus.clientName:}" />
+        <property name="connectionParameters" ref="connectionParameters" />
+        <property name="amqpMessageBus" ref="amqpMessageBus" />
+        <property name="topologyManager" ref="staticTopologyManager" />
+        <property name="serializer" ref="gsonSerializer" />
+    </bean>
+
+    <bean id="eventManager" class="pegasus.eventbus.amqp.AmqpEventManager" destroy-method="close">
+        <constructor-arg ref="configuration" />
+    </bean>
+
+    <bean id="clientRegistry" class="pegasus.topology.service.ClientRegistry" />
+
+    <bean id="topologyRegistry" class="pegasus.eventbus.topology.TopologyRegistry">
+        <property name="eventMap">
+            <map>
+                <entry>
+                    <key>
+                        <value>chat.simpleClient.SimpleMessage</value>
+                    </key>
+                    <bean class="pegasus.eventbus.amqp.RoutingInfo">
+                        <constructor-arg name="exchangeName" value="pegasus" />
+                        <constructor-arg name="routingKey" value="chat.simpleClient.SimpleMessage" />
+                    </bean>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="registrationHandler" class="pegasus.topology.service.RegistrationHandler">
+        <constructor-arg ref="eventManager" />
+        <constructor-arg ref="clientRegistry" />
+        <constructor-arg ref="topologyRegistry" />
+    </bean>
+
+    <bean id="topologyService" class="pegasus.topology.service.TopologyService">
+        <constructor-arg ref="registrationHandler" />
+    </bean>
+
+</beans>

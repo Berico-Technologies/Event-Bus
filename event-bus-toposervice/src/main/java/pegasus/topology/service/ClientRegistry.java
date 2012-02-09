@@ -16,8 +16,7 @@ public class ClientRegistry implements Iterable<RegisterClient> {
 
     private Map<String, RegisterClient> registeredClients = new HashMap<String, RegisterClient>();
 
-    public void handleRegisterClientEvent(RegisterClient event) {
-        RegisterClient registerEvent = (RegisterClient) event;
+    public void registerClient(RegisterClient registerEvent) {
         String clientName = registerEvent.getClientName();
 
         LOG.trace("Registering client {} in Topology Service.", clientName);
@@ -30,8 +29,7 @@ public class ClientRegistry implements Iterable<RegisterClient> {
         registeredClients.put(clientName, registerEvent);
     }
 
-    public void handleUnregisterClientEvent(UnregisterClient event) {
-        UnregisterClient unregisterEvent = (UnregisterClient) event;
+    public void unregisterClient(UnregisterClient unregisterEvent) {
         String clientName = unregisterEvent.getClientName();
 
         LOG.trace("Unregistering client {} in Topology Service.", clientName);

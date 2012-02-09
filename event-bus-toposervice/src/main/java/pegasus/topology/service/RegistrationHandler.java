@@ -52,7 +52,7 @@ public class RegistrationHandler implements EventHandler<Registration> {
 
                 LOG.info("Received RegisterClient event [{}]", registerEvent);
 
-                clientRegistry.handleRegisterClientEvent(registerEvent);
+                clientRegistry.registerClient(registerEvent);
                 // respond with topology registry
                 TopologyUpdate topologyUpdateEvent = new TopologyUpdate();
                 topologyUpdateEvent.setTopologyRegistry(topologyRegistry);
@@ -67,7 +67,7 @@ public class RegistrationHandler implements EventHandler<Registration> {
 
                 LOG.info("Received UnregisterClient event [{}]", unregisterEvent);
 
-                clientRegistry.handleUnregisterClientEvent(unregisterEvent);
+                clientRegistry.unregisterClient(unregisterEvent);
                 return EventResult.Handled;
             } else {
                 // unknown event type
