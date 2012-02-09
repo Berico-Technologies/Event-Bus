@@ -15,6 +15,7 @@ public interface AmqpMessageBus {
      * 
      * @param eventManager
      */
+	//TODO: remove this dependency on eventManager.
     void start(EventManager eventManager);
 
     /**

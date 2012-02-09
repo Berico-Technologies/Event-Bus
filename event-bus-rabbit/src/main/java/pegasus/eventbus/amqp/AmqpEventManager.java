@@ -300,6 +300,7 @@ public class AmqpEventManager implements EventManager {
             throw new IllegalArgumentException("Subscription may not be null.");
         }
 
+        //TODO: I think this is the wrong place to put this notification code, it should go in the private subscribe(subscription, routeSuffix) method.
         LOG.trace("Notifying all subscribe listeners.");
 
         for (SubscribeListener listener : subscribeListeners) {
