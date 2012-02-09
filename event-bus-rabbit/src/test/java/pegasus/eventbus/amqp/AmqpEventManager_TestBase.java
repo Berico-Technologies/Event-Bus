@@ -119,6 +119,8 @@ public class AmqpEventManager_TestBase {
 
     protected class TestEnvelopeHandler implements EnvelopeHandler {
 
+    	private String eventSetName;
+    	
         @Override
         public EventResult handleEnvelope(Envelope envelope) {
             // TODO Auto-generated method stub
@@ -127,14 +129,12 @@ public class AmqpEventManager_TestBase {
 
         @Override
         public String getEventSetName() {
-            // TODO Auto-generated method stub
-            return null;
+            return eventSetName;
         }
 
         @Override
         public void setEventSetName(String eventSetName) {
-            // TODO Auto-generated method stub
-
+        	this.eventSetName = eventSetName;
         }
 
     }
