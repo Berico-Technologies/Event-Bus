@@ -326,9 +326,9 @@ public class AmqpEventManager implements EventManager {
 
         RoutingInfo[] routes = null;
         if (subscription.getEventHandler() == null) {
-            routes = getRoutesBaseOnEventHandlerHandledTypes(subscription.getEventHandler(), routeSuffix);
-        } else {
             routes = topologyManager.getRoutingInfoForNamedEventSet(subscription.getEnvelopeHandler().getEventSetName());
+        } else {
+            routes = getRoutesBaseOnEventHandlerHandledTypes(subscription.getEventHandler(), routeSuffix);
         }
 
         LOG.trace("{} routes found for subscription.", (routes != null) ? routes.length : 0);

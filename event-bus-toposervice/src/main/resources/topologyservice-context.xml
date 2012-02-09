@@ -19,11 +19,11 @@
         <constructor-arg ref="connectionParameters" />
     </bean>
     
-    <bean id="staticTopologyManager" class="pegasus.topology.service.StaticTopologyManager" />
+    <bean id="staticTopologyManager" class="pegasus.eventbus.topology.StaticTopologyManager" />
 
     <bean id="gsonSerializer" class="pegasus.eventbus.gson.GsonSerializer" />
     
-    <bean id="configuration" class="pegasus.eventbus.amqp.Configuration">
+    <bean id="configuration" class="pegasus.eventbus.amqp.AmqpConfiguration">
         <property name="clientName" value="${event.bus.clientName:}" />
         <property name="connectionParameters" ref="connectionParameters" />
         <property name="amqpMessageBus" ref="amqpMessageBus" />
@@ -37,7 +37,7 @@
 
     <bean id="clientRegistry" class="pegasus.topology.service.ClientRegistry" />
 
-    <bean id="topologyRegistry" class="pegasus.topology.service.TopologyRegistry">
+    <bean id="topologyRegistry" class="pegasus.eventbus.topology.TopologyRegistry">
         <property name="eventMap">
             <map>
                 <entry>

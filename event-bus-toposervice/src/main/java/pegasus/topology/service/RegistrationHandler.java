@@ -30,6 +30,7 @@ public class RegistrationHandler implements EventHandler<Registration> {
     }
 
     public void start() {
+        eventManager.start();
         subscriptionToken = eventManager.subscribe(this);
     }
 
