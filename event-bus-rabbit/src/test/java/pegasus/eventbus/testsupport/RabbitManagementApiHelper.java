@@ -3,6 +3,7 @@ package pegasus.eventbus.testsupport;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,13 +40,13 @@ public class RabbitManagementApiHelper {
 	public void createVirtualHost(){
 		HttpClient client = getClientForRabbitManagementRestApi();
 
-		PutMethod method = new PutMethod("http://" + hostName + ":55672/api/vhosts/" + virtualHostName);
+		PutMethod method = new PutMethod("http://" + hostName + ":55672/api/vhosts/" + urlEncode(virtualHostName));
 		final Header contentType = new Header("content-type","application/json");
 		method.addRequestHeader(contentType);
 		try {
 			client.executeMethod(method);
 			
-			method = new PutMethod("http://" + hostName + ":55672/api/permissions/"+virtualHostName+"/"+userName);
+			method = new PutMethod("http://" + hostName + ":55672/api/permissions/" +urlEncode(virtualHostName) + "/" + urlEncode(userName));
 			method.setRequestEntity(new StringRequestEntity(
 					"{\"configure\":\".*\",\"write\":\".*\",\"read\":\".*\"}",
 					"application/json",
@@ -61,9 +62,12 @@ public class RabbitManagementApiHelper {
 	}
 
 	public void deleteVirtualHost(String vhostName){
+		
+		if(vhostName == "/") return;
+		
 		HttpClient client = getClientForRabbitManagementRestApi();
 
-		DeleteMethod method = new DeleteMethod("http://" + hostName + ":55672/api/vhosts/" + vhostName);
+		DeleteMethod method = new DeleteMethod("http://" + hostName + ":55672/api/vhosts/" + urlEncode(vhostName));
 		final Header contentType = new Header("content-type","application/json");
 		method.addRequestHeader(contentType);
 		try {
@@ -124,7 +128,7 @@ public class RabbitManagementApiHelper {
 	}
 
 	public ArrayList<String> getBindingsForQueue(String queueName, boolean omitBindingToDefaultExchange) {
-		GetMethod getBindings = getUrl( getRabbitApiUrl() + "queues/"+virtualHostName+"/" + queueName + "/bindings");
+		GetMethod getBindings = getUrl( getRabbitApiUrl() + "queues/"+urlEncode(virtualHostName)+"/" + urlEncode(queueName) + "/bindings");
 		assertEquals(200, getBindings.getStatusCode());
 		String bindingListJson;
 		try {
@@ -186,19 +190,19 @@ public class RabbitManagementApiHelper {
 	}
 
 	private String getUrlForExchange(String exchangeName) {
-		return getRabbitApiUrl() + "exchanges/"+virtualHostName+"/" + exchangeName;
+		return getRabbitApiUrl() + "exchanges/"+ urlEncode(virtualHostName)+"/" + urlEncode(exchangeName);
 	}
 	
 	private String getUrlForQueue(String queueName) {
-		return getUrlForQueues() + "/" + queueName;
+		return getUrlForQueues() + "/" + urlEncode(queueName);
 	}
 
 	private String getUrlForQueues() {
-		return getRabbitApiUrl() + "queues/"+virtualHostName;
+		return getRabbitApiUrl() + "queues/"+urlEncode(virtualHostName);
 	}
 	
 	private String getRabbitApiUrl(){
-		return "http://" + hostName + ":55672/api/";
+		return "http://" + urlEncode(hostName) + ":55672/api/";
 	}
 
 	private HttpClient getClientForRabbitManagementRestApi() {
@@ -208,5 +212,13 @@ public class RabbitManagementApiHelper {
 		Credentials defaultcreds = new UsernamePasswordCredentials(userName, userPassword);
 		client.getState().setCredentials(new AuthScope(hostName, 55672, AuthScope.ANY_REALM), defaultcreds);
 		return client;
+	}
+	
+	private static String urlEncode(String rawString){
+		try {
+			return java.net.URLEncoder.encode(rawString, "ISO-8859-1");
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e.getMessage());
+		}
 	}
 }
