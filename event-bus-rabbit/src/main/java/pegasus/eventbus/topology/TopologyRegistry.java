@@ -5,12 +5,16 @@ import java.util.Map;
 
 import pegasus.eventbus.amqp.RoutingInfo;
 
-
-
 public class TopologyRegistry {
+
+    private static final String        Version     = "1.0";
 
     private Map<String, RoutingInfo>   eventMap    = new HashMap<String, RoutingInfo>();
     private Map<String, RoutingInfo[]> eventSetMap = new HashMap<String, RoutingInfo[]>();
+
+    public String getVersion() {
+        return Version;
+    }
 
     public boolean hasEventRoute(String topic) {
         return eventMap.containsKey(topic);

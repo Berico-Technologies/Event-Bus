@@ -14,8 +14,6 @@ import pegasus.eventbus.client.EventManager;
 import pegasus.eventbus.client.EventResult;
 import pegasus.eventbus.client.SubscriptionToken;
 
-
-
 public class GlobalTopologyServiceManager implements TopologyManager {
 
     protected static final Logger LOG              = LoggerFactory.getLogger(GlobalTopologyServiceManager.class);
@@ -40,8 +38,7 @@ public class GlobalTopologyServiceManager implements TopologyManager {
 
         subscriptionToken = eventManager.subscribe(new TopologyUpdateHandler());
 
-        RegisterClient registerClientEvent = new RegisterClient();
-        registerClientEvent.setClientName(clientName);
+        RegisterClient registerClientEvent = new RegisterClient(clientName, topologyRegistry.getVersion());
         try {
 
             LOG.trace("Registering client {} with Global Topology Service.", clientName);
@@ -59,8 +56,7 @@ public class GlobalTopologyServiceManager implements TopologyManager {
     @Override
     public void close() {
         eventManager.unsubscribe(subscriptionToken);
-        UnregisterClient unregisterClientEvent = new UnregisterClient();
-        unregisterClientEvent.setClientName(clientName);
+        UnregisterClient unregisterClientEvent = new UnregisterClient(clientName);
         eventManager.publish(unregisterClientEvent);
     }
 
