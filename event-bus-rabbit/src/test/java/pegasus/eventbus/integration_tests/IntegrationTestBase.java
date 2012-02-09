@@ -37,9 +37,10 @@ public class IntegrationTestBase {
         assertFalse("Cannot use default vhost for tests", "/" == connectionParameters.getVirtualHost());
 
         rabbitManagementApi = new RabbitManagementApiHelper(connectionParameters);
-        resetVirtualHost();
+        rabbitManagementApi.createVirtualHost();
 
         manager = context.getBean(EventManager.class);
+        manager.start();
 
         sendEvent = new TestSendEvent("John Doe", new Date(1324058322000L), 101, "weather", "wind", "age");
     }
@@ -91,7 +92,7 @@ public class IntegrationTestBase {
     }
 
     protected String getExchangeName() {
-        return "pegasus";
+        return "pegasus-test";
     }
 
 }
