@@ -190,7 +190,7 @@ public class AmqpEventManager implements EventManager {
     @Override
     public SubscriptionToken subscribe(EventHandler<?> handler) {
 
-        LOG.debug("Subscribing Handler [{}] to Event Types: {}", handler.getClass().getName(), joinEventTypesAsString(handler.getHandledEventTypes()));
+        LOG.debug("Subscribing Handler [{}] to Event Types: {}", getTypeNameSafely(handler), joinEventTypesAsString(handler));
 
         return subscribe(handler, getNewQueueName(), false);
     }
@@ -207,7 +207,7 @@ public class AmqpEventManager implements EventManager {
     @Override
     public SubscriptionToken subscribe(EventHandler<?> handler, String queueName) {
 
-        LOG.debug("Subscribing Handler [{}] to known queue [{}] for Event Types: {}", new Object[] { handler.getClass().getName(), queueName, joinEventTypesAsString(handler.getHandledEventTypes()) });
+        LOG.debug("Subscribing Handler [{}] to known queue [{}] for Event Types: {}", new Object[] { getTypeNameSafely(handler), queueName, joinEventTypesAsString(handler) });
 
         return subscribe(handler, queueName, true);
     }
@@ -221,7 +221,7 @@ public class AmqpEventManager implements EventManager {
     @Override
     public SubscriptionToken subscribe(EnvelopeHandler handler) {
 
-        LOG.debug("Subscribing Envelope Handler [{}]", handler.getClass().getName());
+        LOG.debug("Subscribing Envelope Handler [{}]", getTypeNameSafely(handler));
 
         return subscribe(handler, getNewQueueName(), false);
     }
@@ -238,7 +238,7 @@ public class AmqpEventManager implements EventManager {
     @Override
     public SubscriptionToken subscribe(EnvelopeHandler handler, String queueName) {
 
-        LOG.debug("Subscribing Envelope Handler [{}] to known queue [{}]", new Object[] { handler.getClass().getName(), queueName });
+        LOG.debug("Subscribing Envelope Handler [{}] to known queue [{}]", new Object[] { getTypeNameSafely(handler), queueName });
 
         return subscribe(handler, queueName, true);
     }
@@ -256,8 +256,8 @@ public class AmqpEventManager implements EventManager {
      */
     private SubscriptionToken subscribe(EventHandler<?> handler, String queueName, boolean isDurable) {
 
-        LOG.debug("Subscribing Handler [{}] to known queue [{}] (is durable? = {}) for Event Types: {}", new Object[] { handler.getClass().getName(), queueName, isDurable,
-                joinEventTypesAsString(handler.getHandledEventTypes()) });
+        LOG.debug("Subscribing Handler [{}] to known queue [{}] (is durable? = {}) for Event Types: {}", new Object[] { getTypeNameSafely(handler), queueName, isDurable,
+                joinEventTypesAsString(handler) });
 
         Subscription subscription = new Subscription(handler, queueName);
         subscription.setIsDurable(isDurable);
@@ -277,7 +277,7 @@ public class AmqpEventManager implements EventManager {
      */
     private SubscriptionToken subscribe(EnvelopeHandler handler, String queueName, boolean isDurable) {
 
-        LOG.debug("Subscribing Handler [{}] to known queue [{}] (is durable? = {}) for Event Types: {}", new Object[] { handler.getClass().getName(), queueName, isDurable });
+        LOG.debug("Subscribing Handler [{}] to known queue [{}] (is durable? = {}) for Event Types: {}", new Object[] { getTypeNameSafely(handler), queueName, isDurable });
 
         Subscription subscription = new Subscription(handler, queueName);
         subscription.setIsDurable(isDurable);
@@ -468,7 +468,7 @@ public class AmqpEventManager implements EventManager {
     @Override
     public SubscriptionToken getResponseTo(Object event, EventHandler<?> handler) {
 
-        LOG.debug("Publishing event of type [{}] and handling responses with [{}]", event.getClass().getName(), handler.getClass().getName());
+        LOG.debug("Publishing event of type [{}] and handling responses with [{}]", event.getClass().getName(), getTypeNameSafely(handler));
 
         String replyToQueueName = getNewQueueName();
 
@@ -736,6 +736,15 @@ public class AmqpEventManager implements EventManager {
      *            List of event types
      * @return list of event types as a comma separated string
      */
+    private static String getTypeNameSafely(Object obj) {
+    	return obj == null ?  "NULL" : obj.getClass().getName();
+    }
+
+    private static String joinEventTypesAsString(EventHandler<?> handler) {
+    	if(handler == null) return "NULL";
+        return joinEventTypesAsString(handler.getHandledEventTypes());
+    }
+
     private static String joinEventTypesAsString(Class<?>[] eventTypes) {
         StringBuilder sb = new StringBuilder();
         for (Class<?> eventType : eventTypes) {
