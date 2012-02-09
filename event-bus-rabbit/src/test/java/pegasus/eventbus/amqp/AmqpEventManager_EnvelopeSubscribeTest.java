@@ -8,7 +8,7 @@ import pegasus.eventbus.client.EventHandler;
 import pegasus.eventbus.client.Subscription;
 import pegasus.eventbus.client.SubscriptionToken;
 
-public class AmqpEventManager_EnvelopeSubscribeTest extends AmqpEventManager_NamedEventsetSubscribeTest {
+public class AmqpEventManager_EnvelopeSubscribeTest extends AmqpEventManager_BasicSubscribeWithSubscriptionObjectTest {
 
     EnvelopeHandler envelopeHandler = new TestEnvelopeHandler();
 
@@ -85,4 +85,9 @@ public class AmqpEventManager_EnvelopeSubscribeTest extends AmqpEventManager_Nam
         subscription.setIsDurable(true);
         return super.subscribe(subscription);
     }
+    
+	@Override
+	protected RoutingInfo[] getExpectedRoutes() {
+		return routesForNamedEventSet;
+	}
 }
