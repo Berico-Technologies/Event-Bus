@@ -90,12 +90,24 @@ public class EventEnvelopeHandler implements EnvelopeHandler {
 
                 LOG.trace("Event Class was found on classpath.");
 
-                LOG.trace("Attempting to serialize the event.");
-
-                event = this.amqpEventManager.getSerializer().deserialize(envelope.getBody(), eventType);
-
-                LOG.trace("Event deserialized without error: {}", event);
-
+                LOG.trace("Determining if the EventHandler can handle the received Event Type.");
+                
+                if (handledTypes.contains(eventType)) {
+                	
+                	LOG.trace("The EventHandler can handle type, attempting to deserialize.");
+                	
+                    event = this.amqpEventManager.getSerializer().deserialize(envelope.getBody(), eventType);
+                    
+                    LOG.trace("Event deserialized without error: {}", event);
+                    
+                } else {
+                	
+                	LOG.trace("Event cannot be handled by this EventHandler [{}].  Failing the event.", 
+                			eventHandler.getClass().getName());
+                	
+                	return EventResult.Failed;
+                }
+             
             } catch (Exception e) {
 
                 LOG.error("Could not handle event type with the supplied EventHandler (deserialization or forname exception).", e);
@@ -103,7 +115,7 @@ public class EventEnvelopeHandler implements EnvelopeHandler {
                 // re-throwing exception to be handled in parent catch
                 throw e;
             }
-
+            
             LOG.trace("Adding envelope to envelopesBeingHandled map.");
 
             // NOTE: For performance sake, we are not synchronizing our

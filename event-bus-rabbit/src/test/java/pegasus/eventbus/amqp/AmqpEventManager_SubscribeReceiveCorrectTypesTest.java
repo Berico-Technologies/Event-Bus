@@ -7,6 +7,7 @@ import static com.jayway.awaitility.Awaitility.*;
 import static org.hamcrest.Matchers.*;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.junit.*;
 
@@ -61,9 +62,11 @@ public class AmqpEventManager_SubscribeReceiveCorrectTypesTest extends AmqpEvent
 		manager.subscribe(eventHandler);
 		
 		try {
-			waitAtMost(1, TimeUnit.SECONDS).untilCall(to(eventHandler.getReceivedEvents()).size(), equalTo(2));
-		} catch (Exception e) {
+			waitAtMost(1, TimeUnit.SECONDS).untilCall(to(eventHandler.getReceivedEvents()).size(), greaterThanOrEqualTo(2));
+		} catch (TimeoutException e) {
 			fail("Events not received by handler within expected time period.");
+		} catch (Exception e) {
+			fail(e.getMessage());
 		} finally{
 			manager.close();
 		}
