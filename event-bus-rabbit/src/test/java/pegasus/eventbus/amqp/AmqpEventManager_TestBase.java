@@ -42,7 +42,7 @@ public class AmqpEventManager_TestBase {
     protected TopologyManager     topologyManager;
     @Mock
     protected Serializer          serializer;
-    @Mock
+    
     protected AmqpConfiguration   configuration;
 
     protected AmqpEventManager    manager;
@@ -59,6 +59,7 @@ public class AmqpEventManager_TestBase {
 
         MockitoAnnotations.initMocks(this);
 
+        configuration = new AmqpConfiguration();
         configuration.setClientName(clientName);
         configuration.setAmqpMessageBus(messageBus);
         configuration.setTopologyManager(topologyManager);
