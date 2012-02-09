@@ -3,14 +3,13 @@ package pegasus.eventbus.amqp;
 import org.apache.commons.lang.NotImplementedException;
 import org.junit.Test;
 
-import pegasus.eventbus.client.EnvelopeHandler;
 import pegasus.eventbus.client.EventHandler;
 import pegasus.eventbus.client.Subscription;
 import pegasus.eventbus.client.SubscriptionToken;
 
 public class AmqpEventManager_EnvelopeSubscribeTest extends AmqpEventManager_BasicSubscribeWithSubscriptionObjectTest {
 
-    EnvelopeHandler envelopeHandler = new TestEnvelopeHandler();
+	TestEnvelopeHandler envelopeHandler = new TestEnvelopeHandler();
 
     @Override
     @Test

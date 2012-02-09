@@ -62,7 +62,6 @@ public class AmqpEventManager_EnvelopeSubscribeReceiveAcceptanceTest extends Amq
             return eventSetName;
         }
 
-        @Override
         public void setEventSetName(String eventSetName) {
             this.eventSetName = eventSetName;
         }

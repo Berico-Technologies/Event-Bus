@@ -195,7 +195,6 @@ public class SubscriptionTest extends IntegrationTestBase {
             return eventSetName;
         }
 
-        @Override
         public void setEventSetName(String eventSetName) {
             this.eventSetName = eventSetName;
         }

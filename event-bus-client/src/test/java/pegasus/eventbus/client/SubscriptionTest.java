@@ -122,11 +122,5 @@ public class SubscriptionTest {
             // TODO Auto-generated method stub
             return null;
         }
-
-        @Override
-        public void setEventSetName(String eventSetName) {
-            // TODO Auto-generated method stub
-
-        }
     }
 }
