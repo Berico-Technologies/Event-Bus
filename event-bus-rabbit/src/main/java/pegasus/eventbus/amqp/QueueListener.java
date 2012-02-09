@@ -42,7 +42,8 @@ class QueueListener implements Runnable {
 
         this.amqpEventManager = amqpEventManager;
         // Custom Logger for Each Queue Listener.
-        LOG = LoggerFactory.getLogger(String.format("%s$>%s", this.getClass().getName(), queueName));
+        //TODO: Need to add tests to assert that this logger name is always valid (i.e. queue names with . and any other illegal chars are correctly mangled.)
+        LOG = LoggerFactory.getLogger(String.format("%s$>%s", this.getClass().getName(), queueName.replace('.', '_')));
 
         this.queueName = queueName;
         this.threadName = "Listener for queue: " + queueName;
