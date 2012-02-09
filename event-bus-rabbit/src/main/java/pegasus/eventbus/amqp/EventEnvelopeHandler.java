@@ -13,7 +13,7 @@ import pegasus.eventbus.client.EventResult;
 
 /**
  * The default implementation of the EnvelopeHandler. When an event occurs on the bus, an EventEnvelopeHandler specific to that subscription is responsible for attempting to execute the the
- * EventHandler, and if that fails, falling back to the FallbackHandler (if present).
+ * EventHandler.
  * 
  * @author Ken Baltrinic (Berico Technologies)
  */
@@ -65,8 +65,7 @@ public class EventEnvelopeHandler implements EnvelopeHandler {
 
     /**
      * An event has occurred on the Event Bus, and now it is time to handle the message Envelope. We first begin by determining whether we can actually handle the event with the provided EventHandler.
-     * If the event can be handled, we attempt to deserialize the event and then provide it to the EventHandler. The result of either the EventHandler or the FallbackHandler (success or fail) is
-     * returned.
+     * If the event can be handled, we attempt to deserialize the event and then provide it to the EventHandler. The result of the EventHandler is returned.
      * 
      * @param envelope
      *            The envelope that represents the message.

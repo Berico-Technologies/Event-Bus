@@ -2,7 +2,7 @@ package pegasus.eventbus.client;
 
 /**
  * An enumeration that defines the values that may be returned from the {@link EventHandler#handleEvent} 
- * 		and {FallbackHandler#HandleEnvelope} methods.
+ * 		and {EnvelopeHandler#HandleEnvelope} methods.
  */
 public enum EventResult {
 	/**
