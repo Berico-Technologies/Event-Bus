@@ -9,7 +9,8 @@ import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
 
-import eventbus.client.api.Envelope;
+import pegasus.eventbus.client.Envelope;
+
 
 
 

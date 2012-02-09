@@ -1,20 +1,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>cip</groupId>
+    <groupId>pegasus.cip</groupId>
     <artifactId>event-bus</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>Event Bus Client</name>
-    <description>The Event Bus Client for the Collective Intelligence Platform</description>
+    <name>Pegasus Event Bus Client</name>
+    <description>The Pegasus Event Bus Client for the Pegasus High Computing Environment</description>
 
     <modules>
-        <module>event-bus-client-api</module>
         <module>event-bus-client</module>
-<<<<<<< HEAD
         <module>event-bus-rabbit</module>
+        <module>event-bus-toposervice</module>
         <module>event-stream-processor</module>
-=======
->>>>>>> commiting to rebase InterTopo branch
     </modules>
 
     <properties>

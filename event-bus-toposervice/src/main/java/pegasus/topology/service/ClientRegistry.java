@@ -3,8 +3,8 @@ package pegasus.topology.service;
 import java.util.HashSet;
 import java.util.Set;
 
-import pegasus.topology.event.RegisterClient;
-import pegasus.topology.event.UnregisterClient;
+import pegasus.eventbus.topology.event.RegisterClient;
+import pegasus.eventbus.topology.event.UnregisterClient;
 
 public class ClientRegistry {
 

@@ -4,13 +4,11 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import eventbus.client.api.Envelope;
-import eventbus.client.api.EnvelopeHandler;
-import eventbus.client.api.EventHandler;
-import eventbus.client.api.EventResult;
-import eventbus.client.api.Subscription;
-
-
+import pegasus.eventbus.client.Envelope;
+import pegasus.eventbus.client.EnvelopeHandler;
+import pegasus.eventbus.client.EventHandler;
+import pegasus.eventbus.client.EventResult;
+import pegasus.eventbus.client.Subscription;
 
 public class SubscriptionTest {
 
@@ -32,8 +30,8 @@ public class SubscriptionTest {
         new Subscription(nonNullEventHandler, "");
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void creatingSubscriptionWithNullEventQueueNameShouldThrow() {
+    @Test
+    public void creatingSubscriptionWithNullEventQueueNameShouldntThrow() {
         new Subscription(nonNullEventHandler, null);
     }
 
@@ -47,8 +45,8 @@ public class SubscriptionTest {
         new Subscription(nonNullEnvelopeHandler, "");
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void creatingSubscriptionWithNullEnvelopeQueueNameShouldThrow() {
+    @Test
+    public void creatingSubscriptionWithNullEnvelopeQueueNameShouldntThrow() {
         new Subscription(nonNullEnvelopeHandler, null);
     }
 
