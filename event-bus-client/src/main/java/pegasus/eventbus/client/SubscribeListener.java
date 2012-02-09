@@ -7,7 +7,10 @@ public interface SubscribeListener {
 
     /**
      * This method will be invoked when the {@link EventManager} subscribes to an event.
+     * 
+     * @param subscription
+     *            The subscription object EventManager generates to track the subscripton
      */
-    void onSubscribe();
+    void onSubscribe(Subscription subscription);
 
 }

@@ -1,7 +1,6 @@
 package pegasus.eventbus.amqp;
 
 import pegasus.eventbus.client.Envelope;
-import pegasus.eventbus.client.EventManager;
 
 /**
  * A source of indirection between a specific AMQP client (like RabbitMQ) and the AmqpEventManager.
@@ -15,8 +14,7 @@ public interface AmqpMessageBus {
      * 
      * @param eventManager
      */
-	//TODO: remove this dependency on eventManager.
-    void start(EventManager eventManager);
+    void start();
 
     /**
      * Close the underlying connection the bus.

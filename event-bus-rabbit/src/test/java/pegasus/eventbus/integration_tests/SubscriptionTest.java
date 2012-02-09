@@ -92,8 +92,6 @@ public class SubscriptionTest extends IntegrationTestBase {
     @Test
     public void anEnvelopeSubscriptionShouldReceiveEvents() throws Exception {
         TestEnvelopeHandler handler = new TestEnvelopeHandler();
-
-        handler.setEventSetName("all-test-events");
         Subscription subscription = new Subscription(handler);
         manager.subscribe(subscription);
 
@@ -178,7 +176,6 @@ public class SubscriptionTest extends IntegrationTestBase {
     public class TestEnvelopeHandler implements EnvelopeHandler {
 
         private boolean wasReveived;
-        private String  eventSetName;
 
         @Override
         public EventResult handleEnvelope(Envelope envelope) {
@@ -192,11 +189,8 @@ public class SubscriptionTest extends IntegrationTestBase {
 
         @Override
         public String getEventSetName() {
-            return eventSetName;
+            return "all-test-events";
         }
 
-        public void setEventSetName(String eventSetName) {
-            this.eventSetName = eventSetName;
-        }
     }
 }

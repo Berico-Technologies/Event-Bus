@@ -80,7 +80,7 @@ public interface EventManager {
      *            The {@link Subscription} instance that provides the details of the subscription.
      * @return a {@link SubscriptionToken} that uniquely identifies this subscription and can be used when invoking {@link EnvelopeHandler#unsubscribe(SubscriptionToken)}.
      */
-     SubscriptionToken subscribe(Subscription subscription);
+    SubscriptionToken subscribe(Subscription subscription);
 
     /**
      * Publishes an event and awaits for a single responding event. If more than one response is received, only the first is returned. Use {@link EventHandler#getResponseTo(Event, EventHandler<?

@@ -42,7 +42,7 @@ public class AmqpEventManager_TestBase {
     protected TopologyManager     topologyManager;
     @Mock
     protected Serializer          serializer;
-    
+
     protected AmqpConfiguration   configuration;
 
     protected AmqpEventManager    manager;
@@ -119,8 +119,6 @@ public class AmqpEventManager_TestBase {
 
     protected class TestEnvelopeHandler implements EnvelopeHandler {
 
-    	private String eventSetName;
-    	
         @Override
         public EventResult handleEnvelope(Envelope envelope) {
             // TODO Auto-generated method stub
@@ -129,11 +127,7 @@ public class AmqpEventManager_TestBase {
 
         @Override
         public String getEventSetName() {
-            return eventSetName;
-        }
-
-        public void setEventSetName(String eventSetName) {
-        	this.eventSetName = eventSetName;
+            return NAMED_EVENT_SET_NAME;
         }
 
     }

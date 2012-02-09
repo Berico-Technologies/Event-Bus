@@ -8,8 +8,6 @@ import java.util.concurrent.TimeoutException;
 
 import org.junit.Test;
 import org.mockito.InOrder;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import pegasus.eventbus.client.Envelope;
 import pegasus.eventbus.client.SubscriptionToken;
@@ -25,8 +23,6 @@ public class AmqpEventManager_BlockingRPCBasicSubscribeTest extends
 	@Override
 	public void beforeEachTest(){
 		super.beforeEachTest();
-		hasStartedListening = false;
-		hadStartedListeningPriorToEnvelopePublication = false;
 	}
 	
 	@Override
@@ -67,8 +63,6 @@ public class AmqpEventManager_BlockingRPCBasicSubscribeTest extends
 	}
 	
 
-	private boolean hasStartedListening;
-	private boolean hadStartedListeningPriorToEnvelopePublication;
 	@Test
 	public void theEnvelopeShouldNotBePublishedBeforeTheResponseHandlerIsPolling(){
 

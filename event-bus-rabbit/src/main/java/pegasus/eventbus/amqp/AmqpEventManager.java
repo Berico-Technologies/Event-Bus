@@ -76,9 +76,8 @@ public class AmqpEventManager implements EventManager {
 
         LOG.trace("Notifying all named members.");
 
-        messageBus.start(this);
+        messageBus.start();
         topologyManager.start(this);
-        serializer.start(this);
 
         LOG.trace("Notifying all start listeners.");
 
@@ -112,7 +111,6 @@ public class AmqpEventManager implements EventManager {
         LOG.trace("Closing the connection to the broker.");
 
 
-        serializer.close();
         topologyManager.close();
         messageBus.close();
     }
@@ -300,13 +298,6 @@ public class AmqpEventManager implements EventManager {
             throw new IllegalArgumentException("Subscription may not be null.");
         }
 
-        //TODO: I think this is the wrong place to put this notification code, it should go in the private subscribe(subscription, routeSuffix) method.
-        LOG.trace("Notifying all subscribe listeners.");
-
-        for (SubscribeListener listener : subscribeListeners) {
-            listener.onSubscribe();
-        }
-
         return subscribe(subscription, AMQP_ROUTE_SEGMENT_WILDCARD);
     }
 
@@ -358,17 +349,23 @@ public class AmqpEventManager implements EventManager {
 
         LOG.trace("Creating new queue listener for subscription.");
 
-        QueueListener listener = new QueueListener(this, queueName, handler);
+        QueueListener queueListener = new QueueListener(this, queueName, handler);
 
         LOG.trace("Starting the queue listener.");
 
-        listener.beginListening();
+        queueListener.beginListening();
 
         SubscriptionToken token = new SubscriptionToken();
 
         LOG.trace("Adding new active subscription with token to the 'active subscriptions' list.");
 
-        activeSubscriptions.put(token, new ActiveSubscription(queueName, subscription.getIsDurable(), listener));
+        activeSubscriptions.put(token, new ActiveSubscription(queueName, subscription.getIsDurable(), queueListener));
+
+        LOG.trace("Notifying all subscribe listeners.");
+
+        for (SubscribeListener listener : subscribeListeners) {
+            listener.onSubscribe(subscription);
+        }
 
         LOG.trace("Returning subscription token.");
 

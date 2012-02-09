@@ -5,8 +5,6 @@ import java.io.UnsupportedEncodingException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import pegasus.eventbus.client.EventManager;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,16 +30,6 @@ public class GsonSerializer implements Serializer {
         gson = new GsonBuilder().enableComplexMapKeySerialization().create();
 
         LOG.debug("Gson object instantiated.  Is not null? = {}", gson != null);
-    }
-
-    @Override
-    public void start(EventManager eventManager) {
-        // do nothing - gson serializer doesn't care
-    }
-
-    @Override
-    public void close() {
-        // do nothing - gson serializer doesn't care
     }
 
     @Override

@@ -42,7 +42,7 @@ public class RabbitMessageBus_TestBase {
 		rabbitManagementApi.createVirtualHost();
 
 		rabbitBus = context.getBean(RabbitMessageBus.class);
-		rabbitBus.start(null);
+		rabbitBus.start();
 	}
 	
 	@After

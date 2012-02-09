@@ -98,13 +98,11 @@ public class SubscriptionTest {
 
         @Override
         public Class<? extends Object>[] getHandledEventTypes() {
-            // TODO Auto-generated method stub
             return null;
         }
 
         @Override
         public EventResult handleEvent(Object event) {
-            // TODO Auto-generated method stub
             return null;
         }
     }
@@ -113,13 +111,11 @@ public class SubscriptionTest {
 
         @Override
         public EventResult handleEnvelope(Envelope envelope) {
-            // TODO Auto-generated method stub
             return null;
         }
 
         @Override
         public String getEventSetName() {
-            // TODO Auto-generated method stub
             return null;
         }
     }

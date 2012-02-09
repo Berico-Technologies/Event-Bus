@@ -19,7 +19,6 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.GetResponse;
 
 import pegasus.eventbus.client.Envelope;
-import pegasus.eventbus.client.EventManager;
 
 /**
  * RabbitMQ implementation of our AmqpMessageBus interface.
@@ -47,7 +46,7 @@ public class RabbitMessageBus implements AmqpMessageBus {
     }
 
     @Override
-    public void start(EventManager eventManager) {
+    public void start() {
 
         LOG.trace("Starting the RabbitMessageBus");
 

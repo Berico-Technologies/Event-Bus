@@ -1,17 +1,11 @@
 package pegasus.eventbus.amqp;
 
-import pegasus.eventbus.client.EventManager;
-
 /**
  * Defines the requirements of a Serializer/Deserializer used within the Event Bus client.
  * 
  * @author Ken Baltrinic (Berico Technologies)
  */
 public interface Serializer {
-
-    void start(EventManager eventManager);
-
-    void close();
 
     /**
      * Given an object, produce a byte array representation of it.

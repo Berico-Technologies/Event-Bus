@@ -48,7 +48,6 @@ public class AmqpEventManager_EnvelopeSubscribeTest extends AmqpEventManager_Bas
 
     @Override
     protected SubscriptionToken subscribe() {
-        envelopeHandler.setEventSetName(NAMED_EVENT_SET_NAME);
         Subscription subscription = new Subscription(envelopeHandler);
         return super.subscribe(subscription);
     }
@@ -61,7 +60,6 @@ public class AmqpEventManager_EnvelopeSubscribeTest extends AmqpEventManager_Bas
 
     @Override
     protected void subscribe(String queueName) {
-        envelopeHandler.setEventSetName(NAMED_EVENT_SET_NAME);
         Subscription subscription = new Subscription(envelopeHandler);
         subscription.setQueueName(queueName);
         super.subscribe(subscription);
@@ -69,7 +67,6 @@ public class AmqpEventManager_EnvelopeSubscribeTest extends AmqpEventManager_Bas
 
     @Override
     protected SubscriptionToken subscribeWithANonDurableQueue() {
-        envelopeHandler.setEventSetName(NAMED_EVENT_SET_NAME);
         Subscription subscription = new Subscription(envelopeHandler);
         subscription.setQueueName(NON_DURABLE_QUEUE_NAME);
         subscription.setIsDurable(false);
@@ -78,7 +75,6 @@ public class AmqpEventManager_EnvelopeSubscribeTest extends AmqpEventManager_Bas
 
     @Override
     protected SubscriptionToken subscribeWithADurableQueue() {
-        envelopeHandler.setEventSetName(NAMED_EVENT_SET_NAME);
         Subscription subscription = new Subscription(envelopeHandler);
         subscription.setQueueName(DURABLE_QUEUE_NAME);
         subscription.setIsDurable(true);

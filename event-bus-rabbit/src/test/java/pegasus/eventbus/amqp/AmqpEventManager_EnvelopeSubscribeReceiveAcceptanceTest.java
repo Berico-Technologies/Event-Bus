@@ -30,7 +30,6 @@ public class AmqpEventManager_EnvelopeSubscribeReceiveAcceptanceTest extends Amq
     }
 
     private void subscribeAndWaitForMessage(ResponseTrackingEnvelopeHandler testEnvelopeHandler) {
-        testEnvelopeHandler.setEventSetName(NAMED_EVENT_SET_NAME);
         manager.subscribe(new Subscription(testEnvelopeHandler));
 
         try {
@@ -60,10 +59,6 @@ public class AmqpEventManager_EnvelopeSubscribeReceiveAcceptanceTest extends Amq
         @Override
         public String getEventSetName() {
             return eventSetName;
-        }
-
-        public void setEventSetName(String eventSetName) {
-            this.eventSetName = eventSetName;
         }
     }
 
