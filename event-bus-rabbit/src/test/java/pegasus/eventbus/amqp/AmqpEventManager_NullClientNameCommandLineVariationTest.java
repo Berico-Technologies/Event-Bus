@@ -91,8 +91,7 @@ public class AmqpEventManager_NullClientNameCommandLineVariationTest extends Amq
 
         configuration.setClientName(null);
         configuration.setAmqpMessageBus(messageBus);
-        configuration.setEventTypeToTopicMapper(eventTopicMapper);
-        configuration.setTopicToRoutingMapper(routingProvider);
+        configuration.setTopologyManager(topologyManager);
         configuration.setSerializer(serializer);
         
         manager = new AmqpEventManager(configuration);

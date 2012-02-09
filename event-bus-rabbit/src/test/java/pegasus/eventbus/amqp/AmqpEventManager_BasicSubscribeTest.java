@@ -100,7 +100,7 @@ public class AmqpEventManager_BasicSubscribeTest extends
 	}
 	
 	protected void subscribe(String queueName){
-		manager.subscribe(queueName, handler);
+		manager.subscribe(handler, queueName);
 	}
 
 	private LongRunningHandler performActionWhileLongRunningEventHandlerIsHandlingAnEvent(BackgroundActor actor) 

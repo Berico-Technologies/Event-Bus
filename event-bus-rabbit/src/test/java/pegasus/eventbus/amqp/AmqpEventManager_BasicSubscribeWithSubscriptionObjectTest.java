@@ -121,7 +121,7 @@ public class AmqpEventManager_BasicSubscribeWithSubscriptionObjectTest extends
 	
 	@Override
 	protected void subscribe(String queueName){
-		Subscription subscription = new Subscription(queueName, handler);
+		Subscription subscription = new Subscription(handler, queueName);
 		subscribe(subscription);
 	}
 

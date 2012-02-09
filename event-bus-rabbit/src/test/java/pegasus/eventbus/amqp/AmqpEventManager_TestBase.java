@@ -29,37 +29,30 @@ import pegasus.eventbus.testsupport.TestSendEvent2;
  */
 public class AmqpEventManager_TestBase {
 
-    protected static final String NAMED_EVENT_SET_NAME = "test-event-set";
+    protected static final String NAMED_EVENT_SET_NAME   = "test-event-set";
 
-    protected final Logger log = Logger.getLogger(this.getClass());
+    protected final Logger        log                    = Logger.getLogger(this.getClass());
 
-    protected String clientName = this.getClass().getSimpleName();
-    protected TestSendEvent sendEvent = new TestSendEvent("John Doe", new Date(), 101, "weather", "wind", "age");;
+    protected String              clientName             = this.getClass().getSimpleName();
+    protected TestSendEvent       sendEvent              = new TestSendEvent("John Doe", new Date(), 101, "weather", "wind", "age");                                                                ;
 
     @Mock
-    protected AmqpMessageBus messageBus;
+    protected AmqpMessageBus      messageBus;
     @Mock
-    protected EventTypeToTopicMapper eventTopicMapper;
+    protected TopologyManager     topologyManager;
     @Mock
-    protected TopicToRoutingMapper routingProvider;
+    protected Serializer          serializer;
     @Mock
-    protected Serializer serializer;
-    @Mock
-    protected Configuration configuration;
+    protected AmqpConfiguration   configuration;
 
-    protected AmqpEventManager manager;
+    protected AmqpEventManager    manager;
 
-    protected RoutingInfo routingInfo = new RoutingInfo("test-exchange", RoutingInfo.ExchangeType.Topic, false,
-            "test-route-key");
-    protected RoutingInfo routingInfo2 = new RoutingInfo("test-exchange", RoutingInfo.ExchangeType.Topic, false,
-            "test-route-key2");
-    protected RoutingInfo returnRoutingInfo = new RoutingInfo("return-exchange", RoutingInfo.ExchangeType.Topic, false,
-            "return-route-key");
+    protected RoutingInfo         routingInfo            = new RoutingInfo("test-exchange", RoutingInfo.ExchangeType.Topic, false, "test-route-key");
+    protected RoutingInfo         routingInfo2           = new RoutingInfo("test-exchange", RoutingInfo.ExchangeType.Topic, false, "test-route-key2");
+    protected RoutingInfo         returnRoutingInfo      = new RoutingInfo("return-exchange", RoutingInfo.ExchangeType.Topic, false, "return-route-key");
 
-    protected RoutingInfo[] routesForNamedEventSet = {
-            new RoutingInfo("test-exchange", RoutingInfo.ExchangeType.Topic, false, "named-route-1"),
-            new RoutingInfo("test-exchange", RoutingInfo.ExchangeType.Topic, false, "named-route-2"),
-            new RoutingInfo("test-exchange2", RoutingInfo.ExchangeType.Topic, false, "named-route-3"), };
+    protected RoutingInfo[]       routesForNamedEventSet = { new RoutingInfo("test-exchange", RoutingInfo.ExchangeType.Topic, false, "named-route-1"),
+            new RoutingInfo("test-exchange", RoutingInfo.ExchangeType.Topic, false, "named-route-2"), new RoutingInfo("test-exchange2", RoutingInfo.ExchangeType.Topic, false, "named-route-3"), };
 
     @Before
     public void beforeEachTest() {
@@ -68,21 +61,17 @@ public class AmqpEventManager_TestBase {
 
         configuration.setClientName(clientName);
         configuration.setAmqpMessageBus(messageBus);
-        configuration.setEventTypeToTopicMapper(eventTopicMapper);
-        configuration.setTopicToRoutingMapper(routingProvider);
+        configuration.setTopologyManager(topologyManager);
         configuration.setSerializer(serializer);
-        
+
         manager = new AmqpEventManager(configuration);
 
-        when(eventTopicMapper.getTopicFor(TestSendEvent.class)).thenReturn("test-topic");
-        when(routingProvider.getRoutingInfoFor("test-topic")).thenReturn(routingInfo);
-        when(routingProvider.getRoutingInfoForNamedEventSet(NAMED_EVENT_SET_NAME)).thenReturn(routesForNamedEventSet);
+        when(topologyManager.getRoutingInfoForEvent(TestSendEvent.class)).thenReturn(routingInfo);
+        when(topologyManager.getRoutingInfoForNamedEventSet(NAMED_EVENT_SET_NAME)).thenReturn(routesForNamedEventSet);
 
-        when(eventTopicMapper.getTopicFor(TestSendEvent2.class)).thenReturn("test-topic2");
-        when(routingProvider.getRoutingInfoFor("test-topic2")).thenReturn(routingInfo2);
+        when(topologyManager.getRoutingInfoForEvent(TestSendEvent2.class)).thenReturn(routingInfo2);
 
-        when(eventTopicMapper.getTopicFor(TestResponseEvent.class)).thenReturn("return-topic");
-        when(routingProvider.getRoutingInfoFor("return-topic")).thenReturn(returnRoutingInfo);
+        when(topologyManager.getRoutingInfoForEvent(TestResponseEvent.class)).thenReturn(returnRoutingInfo);
     }
 
     @After
@@ -101,7 +90,7 @@ public class AmqpEventManager_TestBase {
 
     protected class TestEventHandler implements EventHandler<Object> {
 
-        private Class<?>[] handledTypes;
+        private Class<?>[]        handledTypes;
         private ArrayList<Object> receivedEvents = new ArrayList<Object>();
 
         public TestEventHandler(Class<?>... handledTypes) {
@@ -133,6 +122,18 @@ public class AmqpEventManager_TestBase {
         public EventResult handleEnvelope(Envelope envelope) {
             // TODO Auto-generated method stub
             return null;
+        }
+
+        @Override
+        public String getEventSetName() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public void setEventSetName(String eventSetName) {
+            // TODO Auto-generated method stub
+
         }
 
     }

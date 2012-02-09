@@ -6,46 +6,45 @@ import pegasus.eventbus.client.EventHandler;
 import pegasus.eventbus.client.Subscription;
 import pegasus.eventbus.testsupport.TestSendEvent;
 
-public class AmqpEventManager_SubscribeValidationTest extends AmqpEventManager_TestBase{
+public class AmqpEventManager_SubscribeValidationTest extends AmqpEventManager_TestBase {
 
-	protected TestSendEvent sendEvent;
-	
-	protected byte[] bytesFromSerializer = {39,84,72,30,87,50,98,75,0};
-	
-	
-	private TestEventHandler eventHandler;
+    protected TestSendEvent  sendEvent;
 
-	@Before
-	@Override
-	public void beforeEachTest() {
-		
-		super.beforeEachTest();
+    protected byte[]         bytesFromSerializer = { 39, 84, 72, 30, 87, 50, 98, 75, 0 };
 
-		eventHandler = new TestEventHandler(TestSendEvent.class);	
-	}
-	
-	@Test(expected=IllegalArgumentException.class)
-	public void subscribingWithNullQueueNameShouldThrow() {
-		manager.subscribe(null, eventHandler);
-	}
-	
-	@Test(expected=IllegalArgumentException.class)
-	public void subscribingWithZeroLengthQueueNameShouldThrow() {
-		manager.subscribe("", eventHandler);
-	}
+    private TestEventHandler eventHandler;
 
-	@Test(expected=IllegalArgumentException.class)
-	public void subscribingWithNullEventHanlderShouldThrow() {
-		manager.subscribe((EventHandler<?>)null);
-	}
+    @Before
+    @Override
+    public void beforeEachTest() {
 
-	@Test(expected=IllegalArgumentException.class)
-	public void subscribingWithAQueueNameAndNullEventHanlderShouldThrow() {
-		manager.subscribe("queueName", (EventHandler<?>)null);
-	}
+        super.beforeEachTest();
 
-	@Test(expected=IllegalArgumentException.class)
-	public void subscribingWithNullSubcriptionShouldThrow() {
-		manager.subscribe((Subscription)null);
-	}
+        eventHandler = new TestEventHandler(TestSendEvent.class);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void subscribingWithNullQueueNameShouldThrow() {
+        manager.subscribe(eventHandler, null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void subscribingWithZeroLengthQueueNameShouldThrow() {
+        manager.subscribe(eventHandler, "");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void subscribingWithNullEventHanlderShouldThrow() {
+        manager.subscribe((EventHandler<?>) null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void subscribingWithAQueueNameAndNullEventHanlderShouldThrow() {
+        manager.subscribe((EventHandler<?>) null, "queueName");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void subscribingWithNullSubcriptionShouldThrow() {
+        manager.subscribe((Subscription) null);
+    }
 }

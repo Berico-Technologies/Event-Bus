@@ -19,58 +19,52 @@ import org.mockito.ArgumentCaptor;
 import pegasus.eventbus.testsupport.TestSendEvent;
 
 @RunWith(value = Parameterized.class)
-public class AmqpEventManager_NullClientNameHandlingTest extends AmqpEventManager_TestBase{
+public class AmqpEventManager_NullClientNameHandlingTest extends AmqpEventManager_TestBase {
 
-	@Parameters
-	public static Collection<Object[]> testObjectsToSerialize(){
-		
-		Object[][] data = new Object[][] { 
-				{ null }, 
-				{ "" },
-				{ "  " }
-				};
-		return Arrays.asList(data);
-	}
+    @Parameters
+    public static Collection<Object[]> testObjectsToSerialize() {
 
-	private final String clientNameOnConstructor;
-	
-	public AmqpEventManager_NullClientNameHandlingTest(
-			String clientNameOnConstructor) {
-		super();
-		this.clientNameOnConstructor = clientNameOnConstructor;
-	}
+        Object[][] data = new Object[][] { { null }, { "" }, { "  " } };
+        return Arrays.asList(data);
+    }
 
-	@Test
-	public void clientNameFirstUsesNameOfCurrentlyExecutingCommand(){
+    private final String clientNameOnConstructor;
 
-		System.setProperty("sun.java.command", "myCommand");
-		testCreationOfManagerWithClientNameOf("myCommand");  
-	}
+    public AmqpEventManager_NullClientNameHandlingTest(String clientNameOnConstructor) {
+        super();
+        this.clientNameOnConstructor = clientNameOnConstructor;
+    }
 
-	@Test
-	public void clientNameUsesNameOfComputerWhenCurrentlyExecutingCommandNotAvailable() throws UnknownHostException{
-		
-		System.setProperty("sun.java.command", "");
+    @Test
+    public void clientNameFirstUsesNameOfCurrentlyExecutingCommand() {
 
-		testCreationOfManagerWithClientNameOf(InetAddress.getLocalHost().getHostName());  
-	}
+        System.setProperty("sun.java.command", "myCommand");
+        testCreationOfManagerWithClientNameOf("myCommand");
+    }
 
-	private void testCreationOfManagerWithClientNameOf(String expectedFinalClientName) {
+    @Test
+    public void clientNameUsesNameOfComputerWhenCurrentlyExecutingCommandNotAvailable() throws UnknownHostException {
+
+        System.setProperty("sun.java.command", "");
+
+        testCreationOfManagerWithClientNameOf(InetAddress.getLocalHost().getHostName());
+    }
+
+    private void testCreationOfManagerWithClientNameOf(String expectedFinalClientName) {
 
         configuration.setClientName(clientNameOnConstructor);
         configuration.setAmqpMessageBus(messageBus);
-        configuration.setEventTypeToTopicMapper(eventTopicMapper);
-        configuration.setTopicToRoutingMapper(routingProvider);
+        configuration.setTopologyManager(topologyManager);
         configuration.setSerializer(serializer);
-        
+
         manager = new AmqpEventManager(configuration);
-		
-		manager.subscribe(new TestEventHandler(TestSendEvent.class));
-		
-		ArgumentCaptor<String> queueNameCaptor = ArgumentCaptor.forClass(String.class);
-		
-		verify(messageBus, times(1)).createQueue(queueNameCaptor.capture(), any(RoutingInfo[].class), anyBoolean());
-			
-		assertTrue(queueNameCaptor.getValue().startsWith(expectedFinalClientName));
-	}
+
+        manager.subscribe(new TestEventHandler(TestSendEvent.class));
+
+        ArgumentCaptor<String> queueNameCaptor = ArgumentCaptor.forClass(String.class);
+
+        verify(messageBus, times(1)).createQueue(queueNameCaptor.capture(), any(RoutingInfo[].class), anyBoolean());
+
+        assertTrue(queueNameCaptor.getValue().startsWith(expectedFinalClientName));
+    }
 }

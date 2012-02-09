@@ -290,7 +290,7 @@ public class AmqpEventManager implements EventManager {
      * @param subscription
      *            Subscription to register.
      */
-    private SubscriptionToken subscribe(Subscription subscription) {
+    public SubscriptionToken subscribe(Subscription subscription) {
 
         LOG.debug("New subscription registered with the Event Bus client");
 
