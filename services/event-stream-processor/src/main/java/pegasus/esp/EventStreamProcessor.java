@@ -81,6 +81,12 @@ class EventStreamProcessor {
             sendEvent(envelope);
             return EventResult.Handled;
         }
+
+		@Override
+		public String getEventSetName() {
+			return "ALL";
+		}
+
     }
 
     // TODO: consider making this a constructor parameter to allow for multiple instances
@@ -109,7 +115,7 @@ class EventStreamProcessor {
 
     public void attachToEventBus() {
         EnvelopeHandler envelopeHandler = new EventbusListener(this);
-        Subscription subscription = new Subscription("ALL", envelopeHandler);
+        Subscription subscription = new Subscription(envelopeHandler);
         token = eventbus.subscribe(subscription);
     }
 
