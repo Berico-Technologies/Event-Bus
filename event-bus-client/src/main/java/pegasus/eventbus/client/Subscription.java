@@ -72,22 +72,6 @@ public class Subscription {
         this.isDurable = true;
     }
 
-    // /**
-    // * Subscribes an {@link EnvelopeHandler} to a named subscription to receive all events defined for the named event set. This enables handling of disparate event types in an abstract manner by
-    // * providing access to the raw event data. No attempt to cast the serialized event data to its statically defined event type is made.
-    // *
-    // * @param eventsetName
-    // * The name of the event set to subscribe to.
-    // * @param handler
-    // * The envelop handler that will handle the events.
-    // */
-    // public Subscription(String eventsetName, EnvelopeHandler handler) {
-    // if (handler == null)
-    // throw new IllegalArgumentException("Handler cannot be null.");
-    // this.envelopeHandler = handler;
-    // setEventsetName(eventsetName);
-    // }
-
     /**
      * The {@link EventHandler} implementation that will handle the subscribed events. Will be null if the subscription is an {@link EnvelopeHandler} based subscription.
      */
@@ -127,30 +111,6 @@ public class Subscription {
 
         this.queueName = queueName;
     }
-
-    // /**
-    // * Named event sets are a means to subscribe to a set of events with needing to specify the exact event types in code. The events contained within a named event set are determined
-    // * administratively.
-    // *
-    // * @return the event set name if any.
-    // */
-    // public String getEventsetName() {
-    // return eventsetName;
-    // }
-
-    // /**
-    // * Named event sets are a means to subscribe to a set of events with needing to specify the exact event types in code. The events contained within a named event set are determined
-    // * administratively.
-    // */
-    // public void setEventsetName(String eventsetName) {
-    // if (envelopeHandler != null) {
-    // if (eventsetName == "" || eventsetName == null)
-    // throw new IllegalArgumentException("EventsetName cannot be null or a zero length string when creating an envelope-based subscription.");
-    // } else if (eventsetName == "")
-    // throw new IllegalArgumentException("EventsetName cannot be set to an empty string, use null instead.");
-    //
-    // this.eventsetName = eventsetName;
-    // }
 
     /**
      * Indicates if the subscription should survive the {@link EventManager} being closed. Non-durable subscriptions are "unsubscribed" when the EventManager closes. Durable subscriptions will not
