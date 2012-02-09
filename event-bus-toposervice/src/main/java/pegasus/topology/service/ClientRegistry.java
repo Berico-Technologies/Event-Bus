@@ -38,7 +38,7 @@ public class ClientRegistry implements Iterable<RegisterClient> {
             registeredClients.remove(clientName);
         }
     }
-
+    
     @Override
     public Iterator<RegisterClient> iterator() {
         return registeredClients.values().iterator();
