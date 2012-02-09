@@ -96,11 +96,7 @@ public class AmqpEventManager implements EventManager {
         LOG.info("Shutting down the Event Manager.");
 
         LOG.trace("Notifying all named members.");
-
-        messageBus.close();
-        topologyManager.close();
-        serializer.close();
-
+        
         LOG.trace("Notifying all close listeners.");
 
         for (CloseListener listener : closeListeners) {
@@ -115,6 +111,9 @@ public class AmqpEventManager implements EventManager {
 
         LOG.trace("Closing the connection to the broker.");
 
+
+        serializer.close();
+        topologyManager.close();
         messageBus.close();
     }
 
