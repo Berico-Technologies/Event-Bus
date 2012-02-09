@@ -132,7 +132,6 @@ public class AmqpEventManager_TestBase {
             return eventSetName;
         }
 
-        @Override
         public void setEventSetName(String eventSetName) {
         	this.eventSetName = eventSetName;
         }

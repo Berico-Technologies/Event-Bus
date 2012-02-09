@@ -171,10 +171,4 @@ public class EventEnvelopeHandler implements EnvelopeHandler {
     public String getEventSetName() {
         return eventSetName;
     }
-
-    @Override
-    public void setEventSetName(String eventSetName) {
-        this.eventSetName = eventSetName;
-    }
-
 }

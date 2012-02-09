@@ -21,13 +21,4 @@ public interface EnvelopeHandler {
      * @return String
      */
     String getEventSetName();
-
-    /**
-     * The EventSetName setter.
-     * 
-     * @param String
-     *            The event set name value;
-     */
-    void setEventSetName(String eventSetName);
-
 }
