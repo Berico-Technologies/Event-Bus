@@ -15,7 +15,7 @@
         <property name="port" value="${event.bus.port:5672}" />
     </bean>
 
-    <bean id="configuration" class="pegasus.eventbus.amqp.Configuration" factory-method="getDefault">
+    <bean id="configuration" class="pegasus.eventbus.amqp.AmqpConfiguration" factory-method="getDefault">
         <constructor-arg name="clientName" value="${event.bus.clientName:}" />
         <constructor-arg name="connectionParameters" ref="connectionParameters" />
     </bean>

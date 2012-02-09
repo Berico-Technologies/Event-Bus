@@ -31,7 +31,6 @@ public class RabbitMessageBus_TestBase {
 		
 		context = new FileSystemXmlApplicationContext("src/test/resources/eventbus-context.xml");
 		connectionParameters = context.getBean(ConnectionParameters.class);
-		rabbitManagementApi = new RabbitManagementApiHelper(connectionParameters);
 		connectionFactory = new ConnectionFactory();
 		connectionFactory.setUsername(connectionParameters.getUsername());
 		connectionFactory.setPassword(connectionParameters.getPassword());
@@ -39,7 +38,11 @@ public class RabbitMessageBus_TestBase {
 		connectionFactory.setVirtualHost(connectionParameters.getVirtualHost());
 		connectionFactory.setPort(connectionParameters.getPort());
         
-		rabbitBus = new RabbitMessageBus(connectionParameters);
+		rabbitManagementApi = new RabbitManagementApiHelper(connectionParameters);
+		rabbitManagementApi.createVirtualHost();
+
+		rabbitBus = context.getBean(RabbitMessageBus.class);
+		rabbitBus.start(null);
 	}
 	
 	@After
