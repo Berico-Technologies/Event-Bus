@@ -211,6 +211,26 @@
         </plugins>
     </build>
 
+   <distributionManagement>
+        <site>
+            <id>Pegasus</id>
+            <url>scp://berico.jira.com/wiki/display/PEGA/Project+Pegasus</url>
+        </site>
+        <!-- Publish the versioned releases here -->
+        <repository>
+            <id>pegasus-nexus</id>
+            <name>pegasus nexus</name>
+            <url>http://ci.pegasus.gov:11111/nexus/content/repositories/releases</url>
+        </repository>
+
+        <!-- Publish the versioned releases here -->
+        <snapshotRepository>
+            <id>pegasus-nexus</id>
+            <name>pegasus nexus</name>
+            <url>http://ci.pegasus.gov:11111/nexus/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <organization>
         <name>Berico Technologies</name>
         <url>http://www.bericotechnologies.com</url>
