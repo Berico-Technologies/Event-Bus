@@ -332,10 +332,6 @@ public class AmqpEventManager implements EventManager {
 
         String queueName = subscription.getQueueName() == null ? getNewQueueName() : subscription.getQueueName();
 
-        LOG.trace("Creating new queue [{}] (or ensuring queue exists).", queueName);
-
-        messageBus.createQueue(queueName, routes, subscription.getIsDurable());
-
         LOG.trace("Pulling EnvelopeHandler from subscription.");
 
         EnvelopeHandler handler = subscription.getEnvelopeHandler();
@@ -347,12 +343,13 @@ public class AmqpEventManager implements EventManager {
             handler = new EventEnvelopeHandler(this, subscription.getEventHandler());
         }
 
-        LOG.trace("Creating new queue listener for subscription.");
 
-        QueueListener queueListener = new QueueListener(this, queueName, handler);
+        LOG.trace("Creating new queue listener for subscription.");
+        
+        QueueListener queueListener = new QueueListener(messageBus, queueName, subscription.getIsDurable(), routes, handler);
 
         LOG.trace("Starting the queue listener.");
-
+        
         queueListener.beginListening();
 
         SubscriptionToken token = new SubscriptionToken();

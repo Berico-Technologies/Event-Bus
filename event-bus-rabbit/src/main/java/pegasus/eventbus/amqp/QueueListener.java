@@ -18,8 +18,11 @@ class QueueListener implements Runnable {
 
     protected final Logger         LOG;
 
-    private final AmqpEventManager amqpEventManager;
+    private final AmqpMessageBus   messageBus;
     private final String           queueName;
+	private final Boolean          queueIsDurable;
+    private final RoutingInfo[]    routes;
+
     private final String           threadName;
     private EnvelopeHandler        envelopeHandler;
 
@@ -38,22 +41,33 @@ class QueueListener implements Runnable {
      * @param amqpEventManager
      *            TODO
      */
-    public QueueListener(AmqpEventManager amqpEventManager, String queueName, EnvelopeHandler envelopeHandler) {
+    public QueueListener(
+			AmqpMessageBus messageBus, 
+			String queueName,
+			Boolean queueIsDurable,
+			RoutingInfo[] routes, 
+			EnvelopeHandler envelopeHandler){
+		this.messageBus = messageBus;
+		this.queueName = queueName;
+		this.queueIsDurable = queueIsDurable;
+		this.routes = routes;
+		this.envelopeHandler = envelopeHandler;
 
-        this.amqpEventManager = amqpEventManager;
         // Custom Logger for Each Queue Listener.
         //TODO: Need to add tests to assert that this logger name is always valid (i.e. queue names with . and any other illegal chars are correctly mangled.)
         LOG = LoggerFactory.getLogger(String.format("%s$>%s", this.getClass().getName(), queueName.replace('.', '_')));
 
-        this.queueName = queueName;
         this.threadName = "Listener for queue: " + queueName;
-        this.envelopeHandler = envelopeHandler;
     }
 
     /**
      * Begin listening for messages on the Queue.
      */
     public void beginListening() {
+
+        LOG.trace("Creating new queue [{}] (if not already existing).", queueName);
+
+        messageBus.createQueue(queueName, routes, queueIsDurable);
 
         LOG.debug("QueueListener commanded to start on a new thread.");
 
@@ -86,7 +100,7 @@ class QueueListener implements Runnable {
 
                     // see not in StopListening() as to why we are
                     // synchronizing here.
-                    message = this.amqpEventManager.getAmqpMessageBus().getNextMessageFrom(queueName);
+                    message = this.messageBus.getNextMessageFrom(queueName);
                 }
                 if (message == null) {
 
@@ -143,21 +157,21 @@ class QueueListener implements Runnable {
 
                         LOG.trace("Accepting Message [{}]", message.getAcceptanceToken());
 
-                        this.amqpEventManager.getAmqpMessageBus().acceptMessage(message);
+                        this.messageBus.acceptMessage(message);
 
                         break;
                     case Failed:
 
                         LOG.trace("Rejecting Message [{}]", message.getAcceptanceToken());
 
-                        this.amqpEventManager.getAmqpMessageBus().rejectMessage(message, false);
+                        this.messageBus.rejectMessage(message, false);
 
                         break;
                     case Retry:
 
                         LOG.trace("Retrying Message [{}]", message.getAcceptanceToken());
 
-                        this.amqpEventManager.getAmqpMessageBus().rejectMessage(message, true);
+                        this.messageBus.rejectMessage(message, true);
 
                         break;
                 }
