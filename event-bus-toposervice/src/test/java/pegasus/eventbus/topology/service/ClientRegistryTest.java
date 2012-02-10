@@ -1,4 +1,4 @@
-package pegasus.topology.service;
+package pegasus.eventbus.topology.service;
 
 import static org.junit.Assert.*;
 
@@ -11,6 +11,7 @@ import java.util.Iterator;
 
 import pegasus.eventbus.topology.event.RegisterClient;
 import pegasus.eventbus.topology.event.UnregisterClient;
+import pegasus.eventbus.topology.service.ClientRegistry;
 
 public class ClientRegistryTest {
 

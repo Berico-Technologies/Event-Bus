@@ -1,4 +1,4 @@
-package pegasus.topology.service;
+package pegasus.eventbus.topology.service;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -8,12 +8,15 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import pegasus.eventbus.topology.service.RegistrationHandler;
+import pegasus.eventbus.topology.service.TopologyService;
+
 public class TopologyServiceTest {
-    
-    private TopologyService topologyService;
+
+    private TopologyService     topologyService;
     @Mock
     private RegistrationHandler registrationHandler;
-    
+
     @Before
     public void beforeEachTest() {
 
@@ -21,15 +24,17 @@ public class TopologyServiceTest {
 
         topologyService = new TopologyService(registrationHandler);
     }
-    
+
     @Test
     public void testStart() {
+        assertNotNull(topologyService);
         topologyService.start();
         verify(registrationHandler).start();
     }
 
     @Test
     public void stop() {
+        assertNotNull(topologyService);
         topologyService.stop();
         verify(registrationHandler).stop();
     }

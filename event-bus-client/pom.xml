@@ -10,11 +10,11 @@
     <artifactId>event-bus-client</artifactId>
     <name>Event Bus API</name>
     <description>The event bus API</description>
+    
     <properties>
-        <bundle.symbolicName>pegasus.eventbus.client</bundle.symbolicName>
-        <bundle.namespace>pegasus.eventbus.client</bundle.namespace>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+    
     <build>
         <plugins>
             <plugin>
@@ -24,8 +24,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Export-Package>pegasus.eventbus.client.*</Export-Package>
-                        <!-- <Bundle-Activator>com.berico.timeprovider.internal.Activator</Bundle-Activator> -->
+                        <Bundle-SymbolicName>pegasus.eventbus.client</Bundle-SymbolicName>
                     </instructions>
                 </configuration>
             </plugin>

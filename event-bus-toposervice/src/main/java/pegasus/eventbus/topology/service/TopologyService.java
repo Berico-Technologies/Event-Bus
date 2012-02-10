@@ -1,4 +1,4 @@
-package pegasus.topology.service;
+package pegasus.eventbus.topology.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

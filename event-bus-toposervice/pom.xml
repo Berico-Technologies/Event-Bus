@@ -10,9 +10,11 @@
     <artifactId>event-bus-toposervice</artifactId>
     <name>Event Bus Topology Service</name>
     <description>The Event Bus Topology Service</description>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>pegasus.cip</groupId>
@@ -25,4 +27,21 @@
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.3.6</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Export-Package>pegasus.eventbus.topology.service</Export-Package>
+                        <Bundle-SymbolicName>pegasus.eventbus.topology.service</Bundle-SymbolicName>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

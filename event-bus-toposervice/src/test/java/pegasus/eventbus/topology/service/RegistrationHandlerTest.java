@@ -1,4 +1,4 @@
-package pegasus.topology.service;
+package pegasus.eventbus.topology.service;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -18,6 +18,8 @@ import pegasus.eventbus.topology.TopologyRegistry;
 import pegasus.eventbus.topology.event.RegisterClient;
 import pegasus.eventbus.topology.event.Registration;
 import pegasus.eventbus.topology.event.UnregisterClient;
+import pegasus.eventbus.topology.service.ClientRegistry;
+import pegasus.eventbus.topology.service.RegistrationHandler;
 
 public class RegistrationHandlerTest {
 

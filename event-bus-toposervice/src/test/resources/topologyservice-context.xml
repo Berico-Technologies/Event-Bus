@@ -14,15 +14,15 @@
         <property name="virtualHost" value="${event.bus.virtualhost:/}" />
         <property name="port" value="${event.bus.port:5672}" />
     </bean>
-    
+
     <bean id="amqpMessageBus" class="pegasus.eventbus.rabbitmq.RabbitMessageBus">
         <constructor-arg ref="connectionParameters" />
     </bean>
-    
+
     <bean id="staticTopologyManager" class="pegasus.eventbus.topology.StaticTopologyManager" />
 
     <bean id="gsonSerializer" class="pegasus.eventbus.gson.GsonSerializer" />
-    
+
     <bean id="configuration" class="pegasus.eventbus.amqp.AmqpConfiguration">
         <property name="clientName" value="${event.bus.clientName:}" />
         <property name="connectionParameters" ref="connectionParameters" />
@@ -35,7 +35,7 @@
         <constructor-arg ref="configuration" />
     </bean>
 
-    <bean id="clientRegistry" class="pegasus.topology.service.ClientRegistry" />
+    <bean id="clientRegistry" class="pegasus.eventbus.topology.service.ClientRegistry" />
 
     <bean id="topologyRegistry" class="pegasus.eventbus.topology.TopologyRegistry">
         <property name="eventMap">
@@ -53,13 +53,13 @@
         </property>
     </bean>
 
-    <bean id="registrationHandler" class="pegasus.topology.service.RegistrationHandler">
+    <bean id="registrationHandler" class="pegasus.eventbus.topology.service.RegistrationHandler">
         <constructor-arg ref="eventManager" />
         <constructor-arg ref="clientRegistry" />
         <constructor-arg ref="topologyRegistry" />
     </bean>
 
-    <bean id="topologyService" class="pegasus.topology.service.TopologyService">
+    <bean id="topologyService" class="pegasus.eventbus.topology.service.TopologyService">
         <constructor-arg ref="registrationHandler" />
     </bean>
 

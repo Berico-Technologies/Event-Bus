@@ -10,11 +10,11 @@
     <artifactId>event-bus-rabbit</artifactId>
     <name>Event Bus Client</name>
     <description>The Event Bus Implementation</description>
+
     <properties>
-        <bundle.symbolicName>pegasus.eventbus</bundle.symbolicName>
-        <bundle.namespace>pegasus.eventbus</bundle.namespace>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>pegasus.cip</groupId>
@@ -22,6 +22,7 @@
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -32,7 +33,7 @@
                 <configuration>
                     <instructions>
                         <Export-Package>pegasus.eventbus.*</Export-Package>
-                        <!-- <Bundle-Activator>com.berico.timeprovider.internal.Activator</Bundle-Activator> -->
+                        <Bundle-SymbolicName>pegasus.eventbus.rabbit</Bundle-SymbolicName>
                     </instructions>
                 </configuration>
             </plugin>
