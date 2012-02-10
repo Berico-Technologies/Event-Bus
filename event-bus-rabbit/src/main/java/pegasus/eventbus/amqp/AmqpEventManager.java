@@ -480,7 +480,7 @@ public class AmqpEventManager implements EventManager {
         while (!activeSubscriptions.get(token).listener.isCurrentlyListening()) {
             try {
 
-                LOG.trace("Sleeping for 10ms");
+                //LOG.trace("RPC: Sleeping for 10ms");
 
                 Thread.sleep(10);
 

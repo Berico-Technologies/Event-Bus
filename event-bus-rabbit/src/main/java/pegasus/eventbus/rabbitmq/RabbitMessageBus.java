@@ -16,9 +16,13 @@ import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.Consumer;
+import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.GetResponse;
 
 import pegasus.eventbus.client.Envelope;
+import pegasus.eventbus.client.EnvelopeHandler;
+import pegasus.eventbus.client.EventResult;
 
 /**
  * RabbitMQ implementation of our AmqpMessageBus interface.
@@ -34,6 +38,7 @@ public class RabbitMessageBus implements AmqpMessageBus {
     protected ConnectionParameters config;
     private Connection             connection;
     private Channel                commandChannel;
+    private Map<String,Channel>    consumerChannels = new HashMap<String,Channel>();
 
     /**
      * Initialize Rabbit with the given connection parameters,
@@ -271,35 +276,7 @@ public class RabbitMessageBus implements AmqpMessageBus {
             if (receivedMessage == null)
                 return null;
 
-            LOG.trace("Pulling headers from message.");
-
-            final BasicProperties props = receivedMessage.getProps();
-
-            LOG.trace("Creating the Envelope.");
-
-            Envelope envelope = new Envelope();
-
-            LOG.trace("Placing the headers from the message into the Envelope.");
-
-            Map<String, String> headers = envelope.getHeaders();
-
-            if (props.getHeaders() != null) {
-                for (String key : props.getHeaders().keySet()) {
-                    headers.put(key, props.getHeaders().get(key).toString());
-                }
-            }
-
-            LOG.trace("Mapping AMQP specific properties to Envelope properties.");
-
-            envelope.setBody(receivedMessage.getBody());
-            envelope.setId(props.getMessageId() == null ? null : UUID.fromString(props.getMessageId()));
-            envelope.setCorrelationId(props.getCorrelationId() == null ? null : UUID.fromString(props.getCorrelationId()));
-            envelope.setEventType(props.getType());
-            envelope.setReplyTo(props.getReplyTo());
-            envelope.setTopic(headers.get(TOPIC_HEADER_KEY));
-
-            // We don't want the topic key to be a Header property of the envelope.
-            headers.remove(TOPIC_HEADER_KEY);
+            Envelope envelope = createEnvelope(receivedMessage.getProps(), receivedMessage.getBody());
 
             LOG.debug("Returning message from queue [{}] with Envelope.", queueName);
 
@@ -312,6 +289,35 @@ public class RabbitMessageBus implements AmqpMessageBus {
             throw new RuntimeException("Failed to get message from queue: " + queueName + " Error: " + e.getMessage() + "See inner exception for details", e);
         }
     }
+
+	private static Envelope createEnvelope(final BasicProperties props, byte[] body) {
+		LOG.trace("Creating the Envelope.");
+
+		Envelope envelope = new Envelope();
+
+		LOG.trace("Placing the headers from the message into the Envelope.");
+
+		Map<String, String> headers = envelope.getHeaders();
+
+		if (props.getHeaders() != null) {
+		    for (String key : props.getHeaders().keySet()) {
+		        headers.put(key, props.getHeaders().get(key).toString());
+		    }
+		}
+
+		LOG.trace("Mapping AMQP specific properties to Envelope properties.");
+
+		envelope.setBody(body);
+		envelope.setId(props.getMessageId() == null ? null : UUID.fromString(props.getMessageId()));
+		envelope.setCorrelationId(props.getCorrelationId() == null ? null : UUID.fromString(props.getCorrelationId()));
+		envelope.setEventType(props.getType());
+		envelope.setReplyTo(props.getReplyTo());
+		envelope.setTopic(headers.get(TOPIC_HEADER_KEY));
+
+		// We don't want the topic key to be a Header property of the envelope.
+		headers.remove(TOPIC_HEADER_KEY);
+		return envelope;
+	}
 
     /**
      * Inform the bus that the message has been delivered to the client.
@@ -360,5 +366,138 @@ public class RabbitMessageBus implements AmqpMessageBus {
             throw new RuntimeException("Failed to get acknowledge message: " + e.getMessage() + "See inner exception for details", e);
         }
     }
+
+	@Override
+	public String beginConsumingMessages(final String queueName, final EnvelopeHandler consumer) {
+		
+		LOG.trace("Begin consuming messages for queue [{}] with an EnvelopeHandler of type [{}].", queueName, consumer.getClass().getCanonicalName());
+
+		String consumerTag = queueName + ":" + UUID.randomUUID().toString();
+
+		LOG.trace("ConsumerTag set to [{}].", consumerTag);
+
+		final Channel consumerChannel;
+		try {
+		
+			LOG.trace("Opening dedicated channel for ConsumerTag [{}].", consumerTag);
+			
+			consumerChannel = connection.createChannel();
+			
+			LOG.trace("Successfully opened dedicated channel for ConsumerTag [{}].", consumerTag);
+			
+			consumerChannels.put(consumerTag, consumerChannel);
+
+		} catch (IOException e) {
+            LOG.error("Could not create channel to consume messages on queue: [{}]", queueName, e);
+
+            throw new RuntimeException("Could not create channel to consume messages on queue: " + queueName, e);
+		}
+		
+		try {
+			
+			LOG.trace("Beginning basicConsume for ConsumerTag [{}].", consumerTag);
+			
+			consumerChannel.basicConsume(queueName, false, consumerTag, new DefaultConsumer(consumerChannel){
+			
+				@Override
+				public void handleDelivery(String consumerTag,
+						com.rabbitmq.client.Envelope amqpEnvelope,
+						BasicProperties properties, byte[] body)
+						throws IOException {
+					
+					super.handleDelivery(consumerTag, amqpEnvelope, properties, body);
+					
+					LOG.trace("Handling delivery for ConsumerTag [{}].", consumerTag);
+					
+					long deliveryTag  = amqpEnvelope.getDeliveryTag();
+	                
+					LOG.trace("DeliveryTag is [{}] for message on ConsumerTag [{}]", deliveryTag, consumerTag);
+					
+					Envelope envelope = createEnvelope(properties, body);
+					
+					LOG.trace("Envelope create for DeliveryTag [{}].", deliveryTag);
+
+					EventResult result;
+					try {
+
+						LOG.trace("Handling envelope for DeliveryTag [{}].", deliveryTag);
+
+	                    result = consumer.handleEnvelope(envelope);
+	                    
+	                } catch (Exception e) {
+
+	                	result = EventResult.Failed;
+
+	                    String id;
+
+	                    try {
+
+	                        id = envelope.getId().toString();
+
+	                    } catch (Exception ee) {
+
+	                        id = "<message id not available>";
+	                    }
+
+	                    LOG.error("Envelope handler of type " + consumer.getClass().getCanonicalName() + " on queue " + queueName + " threw exception of type " + e.getClass().getCanonicalName()
+	                            + " handling message " + id + ", DeliveryTag: " + deliveryTag, e);
+	                }
+
+	                LOG.trace("Determining how to handle EventResult [{}]", result);
+
+	                switch (result) {
+	                    case Handled:
+
+	                        LOG.trace("Accepting DeliveryTag [{}]", deliveryTag);
+
+	                        consumerChannel.basicAck(deliveryTag, false);
+
+	                        break;
+	                    case Failed:
+
+	                        LOG.trace("Rejecting DeliveryTag [{}]", deliveryTag);
+
+	                        consumerChannel.basicReject(deliveryTag, false);
+
+	                        break;
+	                    case Retry:
+
+	                        LOG.trace("Retrying DeliveryTag [{}]", deliveryTag);
+
+	                        consumerChannel.basicReject(deliveryTag, true);
+
+	                        break;
+	                }
+				}
+				
+			});
+			
+			LOG.trace("Begun basicConsume for ConsumerTag [{}].", consumerTag);
+
+		} catch (IOException e) {
+            LOG.error("Failed to initiate basicConsume ConsumerTag [{}].", consumerTag, e);
+
+            throw new RuntimeException("Failed to initiate basicConsume ConsumerTag: "+ consumerTag, e);
+		}
+		
+		return consumerTag;
+	}
+
+	@Override
+	public void stopConsumingMessages(String consumerTag) {
+		synchronized (consumerChannels) {
+			Channel channel = consumerChannels.get(consumerTag);
+			if(channel == null) return;
+			consumerChannels.remove(consumerTag);
+			try {
+				channel.basicCancel(consumerTag);
+			} catch (IOException e) {
+	            LOG.error("Failed to cancel basicConsume for ConsumerTag: [{}]", consumerTag, e);
+
+	            throw new RuntimeException("Failed to cancel basicConsume for ConsumerTag: " + consumerTag, e);
+			}
+		}
+		
+	}
 
 }

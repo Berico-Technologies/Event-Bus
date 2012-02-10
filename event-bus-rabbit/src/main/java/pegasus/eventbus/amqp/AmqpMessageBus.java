@@ -1,6 +1,7 @@
 package pegasus.eventbus.amqp;
 
 import pegasus.eventbus.client.Envelope;
+import pegasus.eventbus.client.EnvelopeHandler;
 
 /**
  * A source of indirection between a specific AMQP client (like RabbitMQ) and the AmqpEventManager.
@@ -78,6 +79,25 @@ public interface AmqpMessageBus {
      */
     void rejectMessage(UnacceptedMessage message, boolean redeliverMessageLater);
 
+    /**
+     * Begins consuming messages off of the specified queue
+     * 
+     * @param queueName 
+     * 			  The name of the queue
+     * @param consumer
+     *            The EnvelopeHandler that will consume the messages.
+     * @return
+     * 	          A tag that must be used when calling stopConsumingMessages(tag)
+     */
+    String beginConsumingMessages(String queueName, EnvelopeHandler consumer);
+    
+    /**
+     * Stops consuming messages that are being consumed as a result of a call to beginConsumingMessages.
+     * @param consumerTag
+     *            The tag returned by beginConsumingMessages
+     */
+    void stopConsumingMessages(String consumerTag);
+    
     /**
      * Acknowledge receipt of a message.
      * 
