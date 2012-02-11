@@ -37,8 +37,13 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Export-Package>pegasus.eventbus.topology.service</Export-Package>
                         <Bundle-SymbolicName>pegasus.eventbus.topology.service</Bundle-SymbolicName>
+                        <Bundle-Activator>pegasus.eventbus.topology.service.Activator</Bundle-Activator>
+                        <Export-Package>pegasus.eventbus.topology.service</Export-Package>
+                        <DynamicImport-Package>*</DynamicImport-Package>
+                        <Import-Package>!com.ibm.uvm.tools.*;resolution:=optional,!org.osgi.*,!org.apache.felix.*</Import-Package>
+                        <Embed-Dependency>!org.osgi.*,!org.apache.felix.*,*;scope=compile|runtime</Embed-Dependency>
+                        <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
                 </configuration>
             </plugin>

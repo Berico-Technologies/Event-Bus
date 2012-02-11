@@ -16,11 +16,12 @@ public class Activator implements BundleActivator {
     protected static final Logger      LOG                          = LoggerFactory.getLogger(Activator.class);
 
     private static ServiceRegistration amqpEventManagerRegistration = null;
+    private static EventManager        eventManager;
 
     @SuppressWarnings("rawtypes")
     public void start(BundleContext bundleContext) throws Exception {
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("eventbus-context.xml");
-        EventManager eventManager = context.getBean(EventManager.class);
+        eventManager = context.getBean(EventManager.class);
         eventManager.start();
 
         amqpEventManagerRegistration = bundleContext.registerService(AmqpEventManager.class.getName(), eventManager, new Hashtable());
@@ -30,6 +31,8 @@ public class Activator implements BundleActivator {
 
     public void stop(BundleContext bundleContext) throws Exception {
         if (amqpEventManagerRegistration != null) {
+            eventManager.close();
+
             bundleContext.ungetService(amqpEventManagerRegistration.getReference());
         }
 
