@@ -17,7 +17,7 @@ import pegasus.eventbus.client.EventResult;
  * 
  * @author Ken Baltrinic (Berico Technologies)
  */
-public class EventEnvelopeHandler implements EnvelopeHandler {
+class EventEnvelopeHandler implements EnvelopeHandler {
 
     private final Logger              LOG;
 
