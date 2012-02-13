@@ -1,7 +1,7 @@
 package pegasus.eventbus.amqp;
 
 import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.lessThan;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
@@ -9,40 +9,47 @@ import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang.time.StopWatch;
 import org.junit.*;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import pegasus.eventbus.amqp.AmqpMessageBus.UnacceptedMessage;
 import pegasus.eventbus.client.Envelope;
+import pegasus.eventbus.client.EnvelopeHandler;
 import pegasus.eventbus.testsupport.TestResponseEvent;
 
-@Ignore("Needs update to conform to use of basicConsume.")
 public class AmqpEventManager_BlockingRPCSubscribeReceiveAcceptanceTest extends AmqpEventManager_TestBase{
 	
 	private UnacceptedMessage unacceptedMessage;
 	private byte[] bytesOfResponseMessage = {1};
 	private TestResponseEvent deserializedResponse = new TestResponseEvent();
-
-	@Before
-	@Override
-	public void beforeEachTest() {
+	
+	private void setupResponseMessage() {
 		
-		super.beforeEachTest();
-
-		Envelope responseEnvelope = new Envelope();
+		final Envelope responseEnvelope = new Envelope();
 		responseEnvelope.setEventType(TestResponseEvent.class.getCanonicalName());
 		responseEnvelope.setBody(bytesOfResponseMessage);
 		
 		when(serializer.deserialize(bytesOfResponseMessage, TestResponseEvent.class)).thenReturn(deserializedResponse);
-		
-		unacceptedMessage = new UnacceptedMessage(responseEnvelope,1);
-		
-		when(messageBus.getNextMessageFrom(anyString()))
-			.thenReturn(unacceptedMessage)
-			.thenReturn(null);		
+
+		when(messageBus.beginConsumingMessages(anyString(), any(EnvelopeHandler.class)))
+		.then(new Answer<String>(){
+			
+			@Override
+			public String answer(InvocationOnMock invocation)
+					throws Throwable {
+				EnvelopeHandler handler = (EnvelopeHandler) invocation.getArguments()[1];
+				handler.handleEnvelope(responseEnvelope);
+				return null;
+			}
+		});
 	}
 	
 	@Test 
 	public void getResponseToShouldReturnTheDeserializedResponse() 
 			throws InterruptedException, TimeoutException  {
+
+		setupResponseMessage();
+		
 		@SuppressWarnings({ "unchecked" })
 		TestResponseEvent response = manager.getResponseTo(sendEvent, 100, TestResponseEvent.class);
 		assertEquals(deserializedResponse, response);
@@ -52,18 +59,19 @@ public class AmqpEventManager_BlockingRPCSubscribeReceiveAcceptanceTest extends 
 	public void getResponseToShouldReturnTheDeserializedResponseAsSoonAsReceivedNotAtEndOfTimeout() 
 			throws InterruptedException, TimeoutException  {
 		
+		setupResponseMessage();
+		
 		StopWatch watch = new StopWatch();
 		watch.start();
 		@SuppressWarnings({ "unchecked", "unused" })
 		TestResponseEvent response = manager.getResponseTo(sendEvent, 1000, TestResponseEvent.class);
 		watch.stop();
-		assertThat(watch.getTime(), lessThan(200l));
+		assertThat(watch.getTime(), lessThan(100L));
 	}
-	
-	@Test(expected=TimeoutException.class) 
+
+    @Test(expected=TimeoutException.class) 
 	public void getResponseToShouldThrowIfAResponseIsNotReceivedWithinTheTimeoutPeriod() 
 			throws InterruptedException, TimeoutException  {
-		messageBus.getNextMessageFrom("?"); //Hackish... This discards the waiting message so no message will be received thus ensuring a timeout.
 		
 		@SuppressWarnings({ "unchecked", "unused" })
 		TestResponseEvent response = manager.getResponseTo(sendEvent, 5, TestResponseEvent.class);
@@ -71,6 +79,7 @@ public class AmqpEventManager_BlockingRPCSubscribeReceiveAcceptanceTest extends 
 	}
 	
 	@Test 
+	@Ignore("Needs to be moved to RabbitMq package as this is now an integration test.")
 	public void whenGetResponseToReturnsThenTheResponseMessageShouldBeAccepted() 
 			throws InterruptedException, TimeoutException {
 		@SuppressWarnings({ "unchecked", "unused" })
@@ -80,6 +89,7 @@ public class AmqpEventManager_BlockingRPCSubscribeReceiveAcceptanceTest extends 
 	
 	@SuppressWarnings("unchecked")
 	@Test 
+	@Ignore("Needs to be moved to RabbitMq package as this is now an integration test.")
 	public void whenAnEventThatCannotBeDeserializedIsReceivedTheMessageShouldBeRejectedWithoutRedelivery() 
 			throws InterruptedException {
 		reset(serializer);
@@ -92,5 +102,4 @@ public class AmqpEventManager_BlockingRPCSubscribeReceiveAcceptanceTest extends 
 		}
 		verify(messageBus).rejectMessage(unacceptedMessage, false);
 	}
-
 }

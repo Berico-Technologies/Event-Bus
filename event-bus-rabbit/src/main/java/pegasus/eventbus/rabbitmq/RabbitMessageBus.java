@@ -290,7 +290,7 @@ public class RabbitMessageBus implements AmqpMessageBus {
         }
     }
 
-	private static Envelope createEnvelope(final BasicProperties props, byte[] body) {
+	static Envelope createEnvelope(final BasicProperties props, byte[] body) {
 		LOG.trace("Creating the Envelope.");
 
 		Envelope envelope = new Envelope();
@@ -397,80 +397,8 @@ public class RabbitMessageBus implements AmqpMessageBus {
 			
 			LOG.trace("Beginning basicConsume for ConsumerTag [{}].", consumerTag);
 			
-			consumerChannel.basicConsume(queueName, false, consumerTag, new DefaultConsumer(consumerChannel){
-			
-				@Override
-				public void handleDelivery(String consumerTag,
-						com.rabbitmq.client.Envelope amqpEnvelope,
-						BasicProperties properties, byte[] body)
-						throws IOException {
-					
-					super.handleDelivery(consumerTag, amqpEnvelope, properties, body);
-					
-					LOG.trace("Handling delivery for ConsumerTag [{}].", consumerTag);
-					
-					long deliveryTag  = amqpEnvelope.getDeliveryTag();
-	                
-					LOG.trace("DeliveryTag is [{}] for message on ConsumerTag [{}]", deliveryTag, consumerTag);
-					
-					Envelope envelope = createEnvelope(properties, body);
-					
-					LOG.trace("Envelope create for DeliveryTag [{}].", deliveryTag);
-
-					EventResult result;
-					try {
-
-						LOG.trace("Handling envelope for DeliveryTag [{}].", deliveryTag);
-
-	                    result = consumer.handleEnvelope(envelope);
-	                    
-	                } catch (Exception e) {
-
-	                	result = EventResult.Failed;
-
-	                    String id;
-
-	                    try {
-
-	                        id = envelope.getId().toString();
-
-	                    } catch (Exception ee) {
-
-	                        id = "<message id not available>";
-	                    }
-
-	                    LOG.error("Envelope handler of type " + consumer.getClass().getCanonicalName() + " on queue " + queueName + " threw exception of type " + e.getClass().getCanonicalName()
-	                            + " handling message " + id + ", DeliveryTag: " + deliveryTag, e);
-	                }
-
-	                LOG.trace("Determining how to handle EventResult [{}]", result);
-
-	                switch (result) {
-	                    case Handled:
-
-	                        LOG.trace("Accepting DeliveryTag [{}]", deliveryTag);
-
-	                        consumerChannel.basicAck(deliveryTag, false);
-
-	                        break;
-	                    case Failed:
-
-	                        LOG.trace("Rejecting DeliveryTag [{}]", deliveryTag);
-
-	                        consumerChannel.basicReject(deliveryTag, false);
-
-	                        break;
-	                    case Retry:
-
-	                        LOG.trace("Retrying DeliveryTag [{}]", deliveryTag);
-
-	                        consumerChannel.basicReject(deliveryTag, true);
-
-	                        break;
-	                }
-				}
-				
-			});
+			consumerChannel.basicConsume(queueName, false, consumerTag, 
+					new EnvelopeHandlerBasedConsumer(consumerChannel, consumerTag, consumer));
 			
 			LOG.trace("Begun basicConsume for ConsumerTag [{}].", consumerTag);
 
