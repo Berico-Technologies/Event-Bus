@@ -21,7 +21,7 @@ public interface AmqpMessageBus {
      * Close the underlying connection the bus.
      */
     void close();
-
+    
     /**
      * Create and Exchange on the Bus.
      * 
@@ -67,6 +67,7 @@ public interface AmqpMessageBus {
      *            Name (id) of the Queue
      * @return Message that needs to be acknowledged
      */
+    @Deprecated
     UnacceptedMessage getNextMessageFrom(String queueName);
 
     /**
@@ -77,6 +78,7 @@ public interface AmqpMessageBus {
      * @param redeliverMessageLater
      *            Should the message be redelivered?
      */
+    @Deprecated
     void rejectMessage(UnacceptedMessage message, boolean redeliverMessageLater);
 
     /**
@@ -104,6 +106,7 @@ public interface AmqpMessageBus {
      * @param message
      *            Message to acknowledge
      */
+    @Deprecated
     void acceptMessage(UnacceptedMessage message);
 
     /**
@@ -111,6 +114,7 @@ public interface AmqpMessageBus {
      * 
      * @author Ken Baltrinic (Berico Technologies)
      */
+    @Deprecated
     public static class UnacceptedMessage {
         private final Envelope envelope;
         private final long     acknowledgementToken;
