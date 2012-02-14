@@ -1,36 +1,45 @@
 <?xml version="1.0"?>
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <artifactId>event-bus</artifactId>
-        <groupId>pegasus.cip</groupId>
-        <version>0.0.1-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
-    </parent>
-    <artifactId>event-stream-processor</artifactId>
-    <name>Event Stream Processor</name>
-    <description>The event bus Event Stream Processor</description>
-    
-    <dependencies>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>base</artifactId>
+    <groupId>pegasus.cip</groupId>
+    <version>0.0.1-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+  <artifactId>event-stream-processor</artifactId>
+  <name>Event Stream Processor</name>
+  <description>The event bus Event Stream Processor</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>pegasus.cip</groupId>
+      <artifactId>event-bus-client</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>pegasus.cip</groupId>
+      <artifactId>event-bus-rabbit</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
         <dependency>
-            <groupId>pegasus.cip</groupId>
-            <artifactId>event-bus-client</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
         </dependency>
+    <dependency>
+      <groupId>com.espertech</groupId>
+      <artifactId>esper</artifactId>
+      <version>3.4.0</version>
+    </dependency>
+    <dependency>
+      <groupId>rhino</groupId>
+      <artifactId>js</artifactId>
+      <version>1.7R2</version>
+    </dependency>
         <dependency>
-            <groupId>pegasus.cip</groupId>
-            <artifactId>event-bus-rabbit</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+          <groupId>org.osgi</groupId>
+          <artifactId>org.osgi.core</artifactId>
+          <version>4.3.0</version>
         </dependency>
-        <dependency>
-            <groupId>com.espertech</groupId>
-            <artifactId>esper</artifactId>
-            <version>3.4.0</version>
-        </dependency>
-        <dependency>
-            <groupId>rhino</groupId>
-            <artifactId>js</artifactId>
-            <version>1.7R2</version>
-        </dependency>
-    </dependencies>
+  </dependencies>
 </project>
