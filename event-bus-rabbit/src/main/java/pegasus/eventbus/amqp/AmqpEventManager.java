@@ -146,6 +146,7 @@ public class AmqpEventManager implements EventManager, BusStatusListener {
 
         LOG.trace("Finding the correct routing info for event [{}]", event.getClass().getName());
 
+        //TODO: Should throw if null route is returned.
         RoutingInfo route = topologyManager.getRoutingInfoForEvent(event.getClass());
 
         if (sendToReplyToQueue) {
@@ -318,7 +319,8 @@ public class AmqpEventManager implements EventManager, BusStatusListener {
 
         RoutingInfo[] routes = null;
         if (subscription.getEventHandler() == null) {
-            routes = topologyManager.getRoutingInfoForNamedEventSet(subscription.getEnvelopeHandler().getEventSetName());
+            //TODO: Should throw if routes returns null;
+        	routes = topologyManager.getRoutingInfoForNamedEventSet(subscription.getEnvelopeHandler().getEventSetName());
         } else {
             routes = getRoutesBaseOnEventHandlerHandledTypes(subscription.getEventHandler(), routeSuffix);
         }
@@ -399,12 +401,14 @@ public class AmqpEventManager implements EventManager, BusStatusListener {
 
             LOG.trace("Getting route for [{}]", eventType.getName());
 
+            //TODO: Should throw if null route was returned.
             RoutingInfo route = topologyManager.getRoutingInfoForEvent(eventType);
-
+            
             LOG.info("Route: {}", route);
 
             // Assuming we want to ensure that we not only catch types that match the canonical class name
-            // but also anything past it in the hierarchy. Ken?
+            // but also anything past it in the hierarchy. This is needed to support RPC routing keys which have 
+            // call-specific suffixes.
 
             if (routeSuffix == AMQP_ROUTE_SEGMENT_WILDCARD) {
                 routes.add(route);

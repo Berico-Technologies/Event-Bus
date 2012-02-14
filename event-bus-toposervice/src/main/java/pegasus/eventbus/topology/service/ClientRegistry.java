@@ -23,6 +23,8 @@ public class ClientRegistry implements Iterable<RegisterClient> {
 
         // if the client is already registered then assume that the client went down and
         // has restarted and is re-registering with the topology service.
+        // TODO: is this a safe assumption?  What if by configuration error, two separate 
+        // services registered with the same name?  Should we use client name or a UUID?
         if (registeredClients.containsKey(clientName)) {
             registeredClients.remove(clientName);
         }

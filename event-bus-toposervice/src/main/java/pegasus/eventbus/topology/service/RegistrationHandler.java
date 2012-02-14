@@ -30,6 +30,7 @@ public class RegistrationHandler implements EventHandler<Registration> {
     }
 
     public void start() {
+    	//TODO: Should this be starting the event manager or should it aleady be started?
         eventManager.start();
         subscriptionToken = eventManager.subscribe(this);
     }
