@@ -8,7 +8,7 @@
         <relativePath>..</relativePath>
     </parent>
     <artifactId>event-bus-rabbit</artifactId>
-    <name>Event Bus Client</name>
+    <name>Event Bus Rabbit Client</name>
     <description>The Event Bus Implementation</description>
 
     <properties>
@@ -32,12 +32,12 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>pegasus.eventbus.rabbit</Bundle-SymbolicName>
-                        <Bundle-Activator>pegasus.eventbus.amqp.Activator</Bundle-Activator>
+                        <Bundle-SymbolicName>EventBusRabbitClient</Bundle-SymbolicName>
+                        <!-- Bundle-Activator>pegasus.eventbus.amqp.Activator</Bundle-Activator -->
                         <Export-Package>pegasus.eventbus.client</Export-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>
-                        <Import-Package>!com.ibm.uvm.tools.*;resolution:=optional,!org.osgi.*,!org.apache.felix.*</Import-Package>
-                        <Embed-Dependency>!org.osgi.*,!org.apache.felix.*,*;scope=compile|runtime</Embed-Dependency>
+                        <Import-Package>!com.ibm.uvm.tools.*</Import-Package>
+                        <Embed-Dependency>!org.osgi.*,!org.apache.felix.*,!org.spring*,!spring*,!slf4j-api.*,!org.slf4j.*,*;scope=compile|runtime</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
                 </configuration>

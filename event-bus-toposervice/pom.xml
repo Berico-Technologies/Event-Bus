@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <packaging>jar</packaging>
+    <packaging>bundle</packaging>
     <parent>
         <artifactId>event-bus</artifactId>
         <groupId>pegasus.cip</groupId>
@@ -37,12 +37,12 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>pegasus.eventbus.topology.service</Bundle-SymbolicName>
-                        <Bundle-Activator>pegasus.eventbus.topology.service.Activator</Bundle-Activator>
+                        <Bundle-SymbolicName>EventBusTopologyService</Bundle-SymbolicName>
+                        <!-- Bundle-Activator>pegasus.eventbus.topology.service.Activator</Bundle-Activator -->
                         <Export-Package>pegasus.eventbus.topology.service</Export-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>
-                        <Import-Package>!com.ibm.uvm.tools.*;resolution:=optional,!org.osgi.*,!org.apache.felix.*</Import-Package>
-                        <Embed-Dependency>!org.osgi.*,!org.apache.felix.*,*;scope=compile|runtime</Embed-Dependency>
+                        <Import-Package>!com.ibm.uvm.tools.*</Import-Package>
+                        <Embed-Dependency>!org.osgi.*,!org.apache.felix.*,!org.spring*,!spring*,!slf4j*,!org.slf4j*,*;scope=compile|runtime</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
                 </configuration>
