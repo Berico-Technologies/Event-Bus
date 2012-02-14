@@ -14,6 +14,7 @@ import org.apache.commons.lang.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pegasus.eventbus.amqp.AmqpMessageBus.BusStatusListener;
 import pegasus.eventbus.client.CloseListener;
 import pegasus.eventbus.client.Envelope;
 import pegasus.eventbus.client.EnvelopeHandler;
@@ -30,7 +31,7 @@ import pegasus.eventbus.client.UnsubscribeListener;
  * 
  * @author Ken Baltrinic (Berico Technologies)
  */
-public class AmqpEventManager implements EventManager {
+public class AmqpEventManager implements EventManager, BusStatusListener {
 
     // DO NOT change these values, they are based on the in the AMPQ spec.
     static final String                                AMQP_ROUTE_SEGMENT_DELIMITER = ".";
@@ -369,6 +370,14 @@ public class AmqpEventManager implements EventManager {
         return token;
     }
 
+    private void resubscribeAllActiveSubscriptions(){
+        LOG.info("Attempting to re-subscribe all active subscriptions.");
+        
+        for(ActiveSubscription subscription : activeSubscriptions.values()){
+        	subscription.getListener().beginListening();
+        }
+    }
+    
     /**
      * Determine the correct routing information based on the "handled types" provided by the EventHandler.
      * 
@@ -722,6 +731,17 @@ public class AmqpEventManager implements EventManager {
             }
         }
     }
+    
+	@Override
+	public void notifyUnexpectedConnectionClose(boolean connectionSuccessfullyReopened) {
+		if(connectionSuccessfullyReopened){
+			resubscribeAllActiveSubscriptions();
+		} else {
+			//TODO: we should invoke the close listeners with a flag to let them no that this is an unplanned close
+			//and otherwise do any needed cleanup.
+		}
+	}
+
 
     /**
      * Joins a list of event types into a comma separated string
@@ -822,5 +842,4 @@ public class AmqpEventManager implements EventManager {
         }
         unsubscribeListeners.remove(listener);
     }
-
 }

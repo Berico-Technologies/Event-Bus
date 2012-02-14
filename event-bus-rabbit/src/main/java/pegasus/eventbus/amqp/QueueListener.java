@@ -20,15 +20,11 @@ class QueueListener  {
 	private final Boolean          queueIsDurable;
     private final RoutingInfo[]    routes;
 
-    private final String           threadName;
     private EnvelopeHandler        envelopeHandler;
 
     private String                 consumerTag;
     
     private volatile boolean       currentlyListening;
-    private volatile boolean       continueListening;
-
-    private Thread                 backgroundThread;
 
     /**
      * Start up an new Queue Listener bound on the supplied queue name, with the provided EnvelopeHander dealing with new messages.
@@ -55,8 +51,6 @@ class QueueListener  {
         // Custom Logger for Each Queue Listener.
         //TODO: Need to add tests to assert that this logger name is always valid (i.e. queue names with . and any other illegal chars are correctly mangled.)
         LOG = LoggerFactory.getLogger(String.format("%s$>%s", this.getClass().getName(), queueName.replace('.', '_')));
-
-        this.threadName = "Listener for queue: " + queueName;
     }
 
     /**

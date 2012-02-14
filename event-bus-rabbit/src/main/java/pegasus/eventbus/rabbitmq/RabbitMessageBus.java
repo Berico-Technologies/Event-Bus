@@ -2,9 +2,11 @@ package pegasus.eventbus.rabbitmq;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.commons.lang.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,30 +18,32 @@ import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.Consumer;
-import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.GetResponse;
+import com.rabbitmq.client.ShutdownListener;
+import com.rabbitmq.client.ShutdownSignalException;
 
 import pegasus.eventbus.client.Envelope;
 import pegasus.eventbus.client.EnvelopeHandler;
-import pegasus.eventbus.client.EventResult;
 
 /**
  * RabbitMQ implementation of our AmqpMessageBus interface.
  * 
  * @author Ken Baltrinic (Berico Technologies)
  */
-public class RabbitMessageBus implements AmqpMessageBus {
+public class RabbitMessageBus implements AmqpMessageBus, ShutdownListener {
 
     private static final Logger    LOG              = LoggerFactory.getLogger(RabbitMessageBus.class);
 
     final static String            TOPIC_HEADER_KEY = "pegasus.eventbus.event.topic";
 
-    protected ConnectionParameters config;
+    protected final ConnectionParameters config;
+    private final ConnectionFactory connectionFactory;
     private Connection             connection;
     private Channel                commandChannel;
     private Map<String,Channel>    consumerChannels = new HashMap<String,Channel>();
 
+    private volatile boolean isClosing;
+    private volatile boolean isInConnectionErrorState;
     /**
      * Initialize Rabbit with the given connection parameters,
      * 
@@ -48,33 +52,28 @@ public class RabbitMessageBus implements AmqpMessageBus {
      */
     public RabbitMessageBus(ConnectionParameters connectionParameters) {
         this.config = connectionParameters;
-    }
 
-    @Override
+        LOG.trace("Building the RabbitMQ Connection Factory.");
+
+        connectionFactory = new ConnectionFactory();
+        connectionFactory.setUsername(config.getUsername());
+        connectionFactory.setPassword(config.getPassword());
+        connectionFactory.setVirtualHost(config.getVirtualHost());
+        connectionFactory.setHost(config.getHost());
+        connectionFactory.setPort(config.getPort());
+    }
+	
+	@Override
     public void start() {
 
+    	isClosing = false;
+    	
         LOG.trace("Starting the RabbitMessageBus");
 
-        try {
+        openConnectionToBroker();
 
-            LOG.trace("Building the RabbitMQ Connection Factory.");
-
-            ConnectionFactory connectionFactory = new ConnectionFactory();
-            connectionFactory.setUsername(config.getUsername());
-            connectionFactory.setPassword(config.getPassword());
-            connectionFactory.setVirtualHost(config.getVirtualHost());
-            connectionFactory.setHost(config.getHost());
-            connectionFactory.setPort(config.getPort());
-
-            LOG.trace("Grabbing the connection instance from the factory.");
-
-            this.connection = connectionFactory.newConnection();
-        } catch (IOException e) {
-
-            LOG.error("Could not connect to RabbitMQ", e);
-
-            throw new RuntimeException("Failed to open connection to RabbitMq: " + e.getMessage() + "See inner exception for details", e);
-        }
+        isInConnectionErrorState = false;
+       
         try {
 
             LOG.debug("Creating channel to AMQP broker.");
@@ -90,11 +89,32 @@ public class RabbitMessageBus implements AmqpMessageBus {
         }
     }
 
+	private void openConnectionToBroker() {
+		try {
+
+            LOG.trace("Grabbing the connection instance from the factory.");
+
+            this.connection = connectionFactory.newConnection();
+            
+            LOG.trace("Adding ShutdownListener to connection.");
+
+            this.connection.addShutdownListener(this);
+                        
+        } catch (IOException e) {
+
+            LOG.error("Could not connect to RabbitMQ", e);
+
+            throw new RuntimeException("Failed to open connection to RabbitMq: " + e.getMessage() + "See inner exception for details", e);
+        }
+	}
+
     /**
      * Close the active AMQP connection.
      */
     public void close() {
 
+    	isClosing = true;
+    	
         LOG.info("Closing connection to the AMQP broker.");
 
         try {
@@ -119,7 +139,77 @@ public class RabbitMessageBus implements AmqpMessageBus {
         }
     }
 
+    private final HashSet<BusStatusListener> busStatusListeners = new HashSet<BusStatusListener>();
+    
+	@Override
+	public void attachBusStatusListener(BusStatusListener listener) {
+		busStatusListeners.add(listener);
+		
+	}
+	
+	@Override
+	public void dettachBusStatusListener(BusStatusListener listener) {
+		busStatusListeners.remove(listener);
+	}
     /**
+     * Implementation for ShutdownListener interface.
+     */
+	@Override
+	public void shutdownCompleted(ShutdownSignalException e) {
+		if(e == null)
+			LOG.info("AMQP Connection shutdown notice received.");
+		else
+			LOG.error("AMQP Connection shutdown exception received.", e);
+			
+		if(isClosing || isInConnectionErrorState) return;
+		
+        LOG.trace("Setting isInConnectionErrorState to true.");
+		isInConnectionErrorState = true;
+		
+		StopWatch watch = new StopWatch();
+		watch.start();
+		try{
+			
+			while(watch.getTime() < 30000){
+				LOG.info("Attempting to reopen connection.");
+				openConnectionToBroker();
+				if(connection.isOpen()){
+					LOG.info("Connection successfully reopened.");
+					isInConnectionErrorState = false;
+					notifyListenersOfConnectionClose(true);
+					return;
+				} else {
+					LOG.info("Attempt to reopen connection failed. Will re-attempt.");
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e1) {
+						LOG.warn("Attempt to reopen connection canceled because thread has been interrupted.");
+						//should we notify listeners in this case?
+						return;
+					}
+				}
+			}
+			
+			LOG.warn("Attempt to reopen connection permanently failed.");
+			notifyListenersOfConnectionClose(false);
+
+		} finally {
+			watch.stop();
+		}
+	}
+
+	private void notifyListenersOfConnectionClose(boolean connectionSuccessfullyReopened) {
+		for (BusStatusListener listener : busStatusListeners){
+	        LOG.trace("Invoking notifyUnexpectedConnectionClose(" + connectionSuccessfullyReopened + ") on listener [" + listener.toString() + "]");
+			try{
+				listener.notifyUnexpectedConnectionClose(connectionSuccessfullyReopened);
+			} catch(Exception e) {
+		        LOG.error("Invoking notifyUnexpectedConnectionClose(" + connectionSuccessfullyReopened + ") on listener [" + listener.toString() + "] threw an exception: " + e.getMessage(), e);
+			}
+		}
+	}
+
+	/**
      * Create a new AMQP exchange
      * 
      * @param exchange
@@ -427,5 +517,4 @@ public class RabbitMessageBus implements AmqpMessageBus {
 		}
 		
 	}
-
 }

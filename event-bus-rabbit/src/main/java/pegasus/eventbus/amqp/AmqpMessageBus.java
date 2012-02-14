@@ -23,6 +23,20 @@ public interface AmqpMessageBus {
     void close();
     
     /**
+     * Attaches a listener that can react to changes in the bus status.
+     * 
+     * @param listener  The listener to attach.  If listener is already attached, the call is ignored. 
+     */
+    void attachBusStatusListener(BusStatusListener listener);
+
+    /**
+     * Attaches a listener that can react to changes in the bus status.
+     * 
+     * @param listener  The listener to detach. If the listener is not attached, the call is ignored.
+     */
+    void dettachBusStatusListener(BusStatusListener listener);
+
+    /**
      * Create and Exchange on the Bus.
      * 
      * @param exchange
@@ -148,5 +162,14 @@ public interface AmqpMessageBus {
         public long getAcceptanceToken() {
             return acknowledgementToken;
         }
+    }
+
+    public interface BusStatusListener{
+    	/**
+    	 * Called when the bus's connection to the AMQP broker is unexpectedly lost.
+    	 * 
+    	 * @param connectionSuccessfullyReopened	Indicates if the bus was able to successfully reopen the connection.
+    	 */
+    	void notifyUnexpectedConnectionClose(boolean connectionSuccessfullyReopened);
     }
 }
