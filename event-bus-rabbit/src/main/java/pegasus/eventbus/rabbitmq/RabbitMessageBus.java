@@ -74,19 +74,6 @@ public class RabbitMessageBus implements AmqpMessageBus, ShutdownListener {
 
         isInConnectionErrorState = false;
        
-        try {
-
-            LOG.debug("Creating channel to AMQP broker.");
-
-            // TODO: Need to replace this with a channel per thread model.
-            this.commandChannel = connection.createChannel();
-
-        } catch (IOException e) {
-
-            LOG.error("Could not open an AMQP channel.", e);
-
-            throw new RuntimeException("Failed to open AMQP channel: " + e.getMessage() + "See inner exception for details", e);
-        }
     }
 
 	private void openConnectionToBroker() {
@@ -106,7 +93,21 @@ public class RabbitMessageBus implements AmqpMessageBus, ShutdownListener {
 
             throw new RuntimeException("Failed to open connection to RabbitMq: " + e.getMessage() + "See inner exception for details", e);
         }
-	}
+
+		try {
+
+            LOG.debug("Creating channel to AMQP broker.");
+
+            // TODO: Need to replace this with a channel per thread model.
+            this.commandChannel = connection.createChannel();
+
+        } catch (IOException e) {
+
+            LOG.error("Could not open an AMQP channel.", e);
+
+            throw new RuntimeException("Failed to open AMQP channel: " + e.getMessage() + "See inner exception for details", e);
+        }
+	 }
 
     /**
      * Close the active AMQP connection.
@@ -155,11 +156,11 @@ public class RabbitMessageBus implements AmqpMessageBus, ShutdownListener {
      * Implementation for ShutdownListener interface.
      */
 	@Override
-	public void shutdownCompleted(ShutdownSignalException e) {
-		if(e == null)
+	public void shutdownCompleted(ShutdownSignalException signal) {
+		if(signal == null)
 			LOG.info("AMQP Connection shutdown notice received.");
 		else
-			LOG.error("AMQP Connection shutdown exception received.", e);
+			LOG.error("AMQP Connection shutdown exception received.", signal);
 			
 		if(isClosing || isInConnectionErrorState) return;
 		
@@ -172,14 +173,18 @@ public class RabbitMessageBus implements AmqpMessageBus, ShutdownListener {
 			
 			while(watch.getTime() < 30000){
 				LOG.info("Attempting to reopen connection.");
-				openConnectionToBroker();
-				if(connection.isOpen()){
+				try{
+					openConnectionToBroker();
 					LOG.info("Connection successfully reopened.");
 					isInConnectionErrorState = false;
-					notifyListenersOfConnectionClose(true);
+					try{
+						notifyListenersOfConnectionClose(true);
+					} catch (Exception e){
+						LOG.warn("notifyListenersOfConnectionClose threw an error: " + e.getMessage(), e);	
+					}
 					return;
-				} else {
-					LOG.info("Attempt to reopen connection failed. Will re-attempt.");
+				} catch (Exception e) {
+					LOG.error("Attempt to reopen connection failed with error: " + e.getMessage(), e);
 					try {
 						Thread.sleep(100);
 					} catch (InterruptedException e1) {
