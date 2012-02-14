@@ -6,11 +6,11 @@ import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeoutException;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.InOrder;
 
 import pegasus.eventbus.client.Envelope;
+import pegasus.eventbus.client.EnvelopeHandler;
 import pegasus.eventbus.client.SubscriptionToken;
 import pegasus.eventbus.testsupport.TestResponseEvent;
 import pegasus.eventbus.testsupport.TestSendEvent;
@@ -65,14 +65,13 @@ public class AmqpEventManager_BlockingRPCBasicSubscribeTest extends
 	
 
 	@Test
-	@Ignore("Needs update to conform to use of basicConsume.")
 	public void theEnvelopeShouldNotBePublishedBeforeTheResponseHandlerIsPolling(){
 
 		InOrder inOrder = inOrder(messageBus);
 		
 		subscribe();
 		
-		inOrder.verify(messageBus).getNextMessageFrom(anyString());
+		inOrder.verify(messageBus).beginConsumingMessages(anyString(), any(EnvelopeHandler.class));
 		inOrder.verify(messageBus).publish(any(RoutingInfo.class), any(Envelope.class));		
 	}
 }

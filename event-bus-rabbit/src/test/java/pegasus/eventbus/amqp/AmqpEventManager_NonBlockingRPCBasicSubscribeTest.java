@@ -1,15 +1,13 @@
 package pegasus.eventbus.amqp;
 
-import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
-import org.junit.Ignore;
-import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
+import org.junit.*;
+import org.mockito.InOrder;
 
 import pegasus.eventbus.client.Envelope;
+import pegasus.eventbus.client.EnvelopeHandler;
 import pegasus.eventbus.client.SubscriptionToken;
 
 public class AmqpEventManager_NonBlockingRPCBasicSubscribeTest extends
@@ -26,28 +24,13 @@ public class AmqpEventManager_NonBlockingRPCBasicSubscribeTest extends
 		return getCreatedQueueName();
 	}
 	
-	private boolean hasStartedListening;
-	private boolean hadStartedListeningPriorToEnvelopePublication;
 	@Test
-	@Ignore("Needs update to conform to use of basicConsume.")
 	public void theEnvelopeShouldNotBePublishedBeforeTheResponseHandlerIsPolling(){
-		doAnswer(new Answer<Object>() {
-		     public Object answer(InvocationOnMock invocation) {
-		    	 log.debug("getNextMessage called for queue;" + invocation.getArguments()[0].toString());
-		         hasStartedListening = true;
-		         return null;
-		     }
-		 }).when(messageBus).getNextMessageFrom(anyString());
-		doAnswer(new Answer<Object>() {
-		     public Object answer(InvocationOnMock invocation) {
-		    	 log.debug("publish called.");
-		         hadStartedListeningPriorToEnvelopePublication = hasStartedListening;
-		         return null;
-		     }
-		 }).when(messageBus).publish(any(RoutingInfo.class), any(Envelope.class));
+		
+		InOrder inOrder = inOrder(messageBus);
 		
 		subscribe();
 		
-		assertTrue(hadStartedListeningPriorToEnvelopePublication);
-	}
+		inOrder.verify(messageBus).beginConsumingMessages(anyString(), any(EnvelopeHandler.class));
+		inOrder.verify(messageBus).publish(any(RoutingInfo.class), any(Envelope.class));		}
 }

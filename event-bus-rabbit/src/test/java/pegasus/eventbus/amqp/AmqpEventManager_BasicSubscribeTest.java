@@ -15,6 +15,7 @@ import org.mockito.ArgumentCaptor;
 
 import pegasus.eventbus.amqp.AmqpMessageBus.UnacceptedMessage;
 import pegasus.eventbus.client.Envelope;
+import pegasus.eventbus.client.EnvelopeHandler;
 import pegasus.eventbus.client.EventHandler;
 import pegasus.eventbus.client.EventResult;
 import pegasus.eventbus.client.SubscriptionToken;
@@ -41,19 +42,16 @@ public class AmqpEventManager_BasicSubscribeTest extends
 	}
 
 	@Test
-	@Ignore("Needs update to conform to use of basicConsume.")
 	public void subscribingWithAQueueNameShouldCauseTheRelatedQueueToBePolled()
 			throws InterruptedException {
 				
 		subscribe("PollThisQueue");
 		
-		Thread.sleep(100);
-		
-		verify(messageBus, atLeastOnce()).getNextMessageFrom("PollThisQueue");
+		verify(messageBus, times(1)).beginConsumingMessages(eq("PollThisQueue"), any(EnvelopeHandler.class));
 	}
 
 	@Test
-	@Ignore("Needs update to conform to use of basicConsume.")
+	@Ignore("Needs to be moved to RabbitMq package as this is now an integration test.")
 	public void unsubscribingShouldSendtInteruptRequestsToAllHandlerThreadsOfThatSubscription() 
 			throws Exception {
 
@@ -63,7 +61,7 @@ public class AmqpEventManager_BasicSubscribeTest extends
 	}
 
 	@Test
-	@Ignore("Needs update to conform to use of basicConsume.")
+	@Ignore("Needs to be moved to RabbitMq package as this is now an integration test.")
 	public void unsubscribingShouldWaitForAnyHandlerThreadsForThatSubscriptionWhichAreCurrentyProcessingAnEventToCompleteProcesing() 
 			throws Exception {
 
@@ -73,7 +71,7 @@ public class AmqpEventManager_BasicSubscribeTest extends
 	}
 
 	@Test
-	@Ignore("Needs update to conform to use of basicConsume.")
+	@Ignore("Needs to be moved to RabbitMq package as this is now an integration test.")
 	public void closingTheManagerShouldSendtInteruptRequestsToAllHandlerThreadsOfThatSubscription() 
 			throws Exception {
 
@@ -83,7 +81,7 @@ public class AmqpEventManager_BasicSubscribeTest extends
 	}
 
 	@Test
-	@Ignore("Needs update to conform to use of basicConsume.")
+	@Ignore("Needs to be moved to RabbitMq package as this is now an integration test.")
 	public void closingTheManagerShouldWaitForAnyHandlerThreadsWhichAreCurrentyProcessingAnEventToCompleteProcesing() 
 			throws Exception {
 

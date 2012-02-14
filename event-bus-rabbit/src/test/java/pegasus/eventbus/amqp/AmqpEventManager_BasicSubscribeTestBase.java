@@ -10,7 +10,10 @@ import java.util.List;
 
 import org.junit.*;
 import org.mockito.*;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
+import pegasus.eventbus.client.EnvelopeHandler;
 import pegasus.eventbus.client.SubscriptionToken;
 import pegasus.eventbus.testsupport.TestResponseEvent;
 import pegasus.eventbus.testsupport.TestSendEvent;
@@ -26,6 +29,18 @@ public abstract class AmqpEventManager_BasicSubscribeTestBase extends AmqpEventM
 		
 		super.beforeEachTest();
 
+		when(messageBus.beginConsumingMessages(anyString(), any(EnvelopeHandler.class)))
+			.then(new Answer<String>(){
+
+				@Override
+				public String answer(InvocationOnMock invocation)
+						throws Throwable {
+					//Return the name of the queue as the token.
+					return (String)invocation.getArguments()[0];
+				}
+				
+			});
+		
 		handler = new TestEventHandler(TestSendEvent.class, TestSendEvent2.class, TestResponseEvent.class);
 	}
 	
@@ -118,15 +133,12 @@ public abstract class AmqpEventManager_BasicSubscribeTestBase extends AmqpEventM
 	}
 	
 	@Test
-	@Ignore("Needs update to conform to use of basicConsume.")
-	public void subscribingWithoutAQueueNameShouldCauseTheRelatedQueueToBePolled() throws InterruptedException{
+	public void subscribingWithoutAQueueNameShouldBeginConsumingOnTheCreatedQueue() throws InterruptedException{
 		subscribe();
 
 		String queueName = getCreatedQueueName();
 		
-		Thread.sleep(100);
-		
-		verify(messageBus, atLeastOnce()).getNextMessageFrom(queueName);
+		verify(messageBus, times(1)).beginConsumingMessages(eq(queueName), any(EnvelopeHandler.class));
 	}
 	
 	@Test
@@ -134,34 +146,25 @@ public abstract class AmqpEventManager_BasicSubscribeTestBase extends AmqpEventM
 
 		SubscriptionToken token = subscribe();
 
-		String queueName = getCreatedQueueName();
+		String consumerTag = getCreatedQueueName();
 		
 		unsubscribe(token);
 		
-		reset(messageBus);
-		
-		Thread.sleep(100);
-		
-		verify(messageBus, never()).getNextMessageFrom(queueName);
+		verify(messageBus, times(1)).stopConsumingMessages(consumerTag);
 	}
 	
 	@Test
-	@Ignore("Needs update to conform to use of basicConsume.")
 	public void unsubscribingShouldNotStopPollingOnOtherQueues() throws InterruptedException{
 
 		subscribe();
 
-		String queueName1 = getCreatedQueueName();
-		
+		String consumerTag = getCreatedQueueName();
+
 		SubscriptionToken token2 = subscribe();
 
 		unsubscribe(token2);
 		
-		reset(messageBus);
-		
-		Thread.sleep(100);
-		
-		verify(messageBus, atLeastOnce()).getNextMessageFrom(queueName1);
+		verify(messageBus, never()).stopConsumingMessages(consumerTag);
 	}
 	
 	
@@ -183,10 +186,6 @@ public abstract class AmqpEventManager_BasicSubscribeTestBase extends AmqpEventM
 
 		manager.close();
 		
-		reset(messageBus);
-		
-		Thread.sleep(100);
-		
-		verify(messageBus, never()).getNextMessageFrom(anyString());
+		verify(messageBus, atLeastOnce()).stopConsumingMessages(anyString());
 	}
 }
