@@ -70,6 +70,8 @@ class QueueListener  {
 
         consumerTag = messageBus.beginConsumingMessages(queueName, envelopeHandler);
         
+        LOG.debug("Now consuming queue [" + queueName + "] with consumerTag [" + consumerTag + "].");
+
         currentlyListening = true;
     }
 
@@ -78,10 +80,12 @@ class QueueListener  {
      */
     public void StopListening() {
 
-        LOG.debug("Interrupting thread [" + threadName + "].");
+        LOG.debug("Stopping consume of queue [" + queueName + "], consumerTag [" + consumerTag + "].");
 
         messageBus.stopConsumingMessages(consumerTag);
         
+        LOG.trace("Successfully stopped consume of queue [" + queueName + "], consumerTag [" + consumerTag + "].");
+
         currentlyListening = false;
     }
 
