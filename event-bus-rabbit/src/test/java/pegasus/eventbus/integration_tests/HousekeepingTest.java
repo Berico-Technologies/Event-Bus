@@ -12,7 +12,29 @@ import pegasus.eventbus.client.EventResult;
 import pegasus.eventbus.testsupport.TestSendEvent;
 
 public class HousekeepingTest extends IntegrationTestBase {
+
 	final Logger LOG                          = LoggerFactory.getLogger(HousekeepingTest.class);
+
+	public final class TestHandler implements EventHandler<TestSendEvent> {
+		private final Logger lOG;
+
+		private TestHandler(Logger lOG) {
+			this.lOG = lOG;
+		}
+
+		@SuppressWarnings("unchecked")
+        @Override
+		public Class<? extends TestSendEvent>[] getHandledEventTypes() {
+			Class<?>[] types = { TestSendEvent.class };
+			return (Class<? extends TestSendEvent>[]) types;
+		}
+
+		@Override
+		public EventResult handleEvent(TestSendEvent event) {
+			lOG.info("Received event number: " + event.getCount());
+			return EventResult.Handled;
+		}
+	}
 
 	@Test 
 	public void publishingAnEventShouldCreateExchangeIfMissing() throws HttpException, IOException{
@@ -51,24 +73,4 @@ public class HousekeepingTest extends IntegrationTestBase {
 		}
 	}
 	
-	public final class TestHandler implements EventHandler<TestSendEvent> {
-		private final Logger lOG;
-
-		private TestHandler(Logger lOG) {
-			this.lOG = lOG;
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public Class<? extends TestSendEvent>[] getHandledEventTypes() {
-			Class<?>[] types = { TestSendEvent.class };
-			return (Class<? extends TestSendEvent>[]) types;
-		}
-
-		@Override
-		public EventResult handleEvent(TestSendEvent event) {
-			lOG.info("Received event number: " + event.getCount());
-			return EventResult.Handled;
-		}
-	}
 }

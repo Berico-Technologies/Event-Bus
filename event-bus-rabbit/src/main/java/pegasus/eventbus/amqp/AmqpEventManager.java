@@ -15,16 +15,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pegasus.eventbus.amqp.AmqpMessageBus.BusStatusListener;
-import pegasus.eventbus.client.CloseListener;
 import pegasus.eventbus.client.Envelope;
 import pegasus.eventbus.client.EnvelopeHandler;
 import pegasus.eventbus.client.EventHandler;
 import pegasus.eventbus.client.EventManager;
-import pegasus.eventbus.client.StartListener;
-import pegasus.eventbus.client.SubscribeListener;
 import pegasus.eventbus.client.Subscription;
 import pegasus.eventbus.client.SubscriptionToken;
-import pegasus.eventbus.client.UnsubscribeListener;
 
 /**
  * An implementation of the Event Manager based on the AMQP specification.

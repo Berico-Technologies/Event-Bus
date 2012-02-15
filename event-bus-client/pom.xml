@@ -9,8 +9,4 @@
     <artifactId>event-bus-client</artifactId>
     <name>Event Bus API</name>
     <description>The event bus API</description>
-    
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
 </project>

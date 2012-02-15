@@ -41,101 +41,101 @@ public class RabbitAdmin {
      *   --bash-completion     Print bash completion script
      */
     
-    private static final String PYTHON_EXECUTABLE = "ipy64.exe";
-    private static final String RABBITMQADMIN_SCRIPT = "rabbitmqadmin";
-    private static final String HOST = "localhost";
-    private static final String PORT = "55672";
-    private static final String USERNAME = "guest";
-    private static final String PASSWORD = "guest";
-    private static final String VHOST = "/";
-
-    private String pythonExecutable;
-    private String rabbitMqAdminScript;
-    private String host;
-    private String port;
-    private String username;
-    private String password;
-    
-    public String getPythonExecutable() {
-        return pythonExecutable;
-    }
-
-    public void setPythonExecutable(String pythonExecutable) {
-        this.pythonExecutable = pythonExecutable;
-    }
-
-    public String getRabbitMqAdminScript() {
-        return rabbitMqAdminScript;
-    }
-
-    public void setRabbitMqAdminScript(String rabbitMqAdminScript) {
-        this.rabbitMqAdminScript = rabbitMqAdminScript;
-    }
-
-    public String getHost() {
-        return host == null ? HOST : host;
-    }
-
-    public void setHost(String host) {
-        this.host = host;
-    }
-
-    public String getPort() {
-        return port == null ? PORT : port;
-    }
-
-    public void setPort(String port) {
-        this.port = port;
-    }
-
-    public String getUsername() {
-        return username == null ? USERNAME : username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password == null ? PASSWORD : password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public ListTable getConnections() {
-        return null;
-    }
-    
-    public ListTable getChannels() {
-        return null;
-    }
-    
-    public ListTable getExchanges(String vhost) {
-        // rabbitmqadmin --host host --port port --vhost vhost list exchanges
-        return null;
-    }
-    
-    public ListTable getQueues() {
-        // rabbitmqadmin -
-        return null;
-    }
-    
-    public ListTable getBindings() {
-        return null;
-    }
-    
-    public ListTable getUsers() {
-        return null;
-    }
-    
-    public ListTable getVhosts() {
-        return null;
-    }
-    
-    public ListTable getPermissions() {
-        return null;
-    }
+//    private static final String PYTHON_EXECUTABLE = "ipy64.exe";
+//    private static final String RABBITMQADMIN_SCRIPT = "rabbitmqadmin";
+//    private static final String HOST = "localhost";
+//    private static final String PORT = "55672";
+//    private static final String USERNAME = "guest";
+//    private static final String PASSWORD = "guest";
+//    private static final String VHOST = "/";
+//
+//    private String pythonExecutable;
+//    private String rabbitMqAdminScript;
+//    private String host;
+//    private String port;
+//    private String username;
+//    private String password;
+//    
+//    public String getPythonExecutable() {
+//        return pythonExecutable;
+//    }
+//
+//    public void setPythonExecutable(String pythonExecutable) {
+//        this.pythonExecutable = pythonExecutable;
+//    }
+//
+//    public String getRabbitMqAdminScript() {
+//        return rabbitMqAdminScript;
+//    }
+//
+//    public void setRabbitMqAdminScript(String rabbitMqAdminScript) {
+//        this.rabbitMqAdminScript = rabbitMqAdminScript;
+//    }
+//
+//    public String getHost() {
+//        return host == null ? HOST : host;
+//    }
+//
+//    public void setHost(String host) {
+//        this.host = host;
+//    }
+//
+//    public String getPort() {
+//        return port == null ? PORT : port;
+//    }
+//
+//    public void setPort(String port) {
+//        this.port = port;
+//    }
+//
+//    public String getUsername() {
+//        return username == null ? USERNAME : username;
+//    }
+//
+//    public void setUsername(String username) {
+//        this.username = username;
+//    }
+//
+//    public String getPassword() {
+//        return password == null ? PASSWORD : password;
+//    }
+//
+//    public void setPassword(String password) {
+//        this.password = password;
+//    }
+//
+//    public ListTable getConnections() {
+//        return null;
+//    }
+//    
+//    public ListTable getChannels() {
+//        return null;
+//    }
+//    
+//    public ListTable getExchanges(String vhost) {
+//        // rabbitmqadmin --host host --port port --vhost vhost list exchanges
+//        return null;
+//    }
+//    
+//    public ListTable getQueues() {
+//        // rabbitmqadmin -
+//        return null;
+//    }
+//    
+//    public ListTable getBindings() {
+//        return null;
+//    }
+//    
+//    public ListTable getUsers() {
+//        return null;
+//    }
+//    
+//    public ListTable getVhosts() {
+//        return null;
+//    }
+//    
+//    public ListTable getPermissions() {
+//        return null;
+//    }
     
 }

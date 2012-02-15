@@ -11,10 +11,6 @@
     <name>Event Bus Rabbit Client</name>
     <description>The Event Bus Implementation</description>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>pegasus.cip</groupId>

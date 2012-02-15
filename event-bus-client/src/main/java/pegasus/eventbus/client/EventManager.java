@@ -205,4 +205,58 @@ public interface EventManager {
      */
     void removeUnsubscribeListener(UnsubscribeListener listener);
 
+    /**
+     * Interface to be implemented by classes that listen for the {@link EventManager} start event.
+     */
+    public interface StartListener {
+
+        /**
+         * This method will be invoked when the {@link EventManager} starts.
+         */
+        void onStart();
+
+    }
+
+    /**
+     * Interface to be implemented by classes that listen for the {@link EventManager} close event.
+     */
+    public interface CloseListener {
+
+        /**
+         * This method will be invoked when the {@link EventManager} closes.
+         */
+        void onClose();
+
+    }
+
+    /**
+     * Interface to be implemented by classes that listen for the {@link EventManager} subscribe event.
+     */
+    public interface SubscribeListener {
+
+        /**
+         * This method will be invoked when the {@link EventManager} subscribes to an event.
+         * 
+         * @param subscription
+         *            The subscription object EventManager generates to track the subscripton
+         */
+        void onSubscribe(Subscription subscription);
+
+    }
+
+    /**
+     * Interface to be implemented by classes that listen for the {@link EventManager} unsubscribe event.
+     */
+    public interface UnsubscribeListener {
+
+        /**
+         * This method will be invoked when the {@link EventManager} unsubscribes an event.
+         * 
+         * @param subscription
+         *            The subscription object EventManager generates to track the subscripton
+         */
+        void onUnsubscribe();
+
+    }
+
 }
