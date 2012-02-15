@@ -147,7 +147,7 @@ public interface EventManager {
      * @param listener
      *            The start listener.
      */
-    void addStartListener(StartListener listener);
+    void attachStartListener(StartListener listener);
 
     /**
      * Add a listener for the {@link EventManager} close event.
@@ -155,7 +155,7 @@ public interface EventManager {
      * @param listener
      *            The close listener.
      */
-    void addCloseListener(CloseListener listener);
+    void attachCloseListener(CloseListener listener);
 
     /**
      * Add a listener for the {@link EventManager} subscribe event.
@@ -163,7 +163,7 @@ public interface EventManager {
      * @param listener
      *            The subscribe listener.
      */
-    void addSubscribeListener(SubscribeListener listener);
+    void attachSubscribeListener(SubscribeListener listener);
 
     /**
      * Add a listener for the {@link EventManager} unsubscribe event.
@@ -171,7 +171,7 @@ public interface EventManager {
      * @param listener
      *            The unsubscribe listener.
      */
-    void addUnsubscribeListener(UnsubscribeListener listener);
+    void attachUnsubscribeListener(UnsubscribeListener listener);
 
     /**
      * Remove a listener for the {@link EventManager} start event.
@@ -179,7 +179,7 @@ public interface EventManager {
      * @param listener
      *            The start listener.
      */
-    void removeStartListener(StartListener listener);
+    void detachStartListener(StartListener listener);
 
     /**
      * Remove a listener for the {@link EventManager} close event.
@@ -187,7 +187,7 @@ public interface EventManager {
      * @param listener
      *            The close listener.
      */
-    void removeCloseListener(CloseListener listener);
+    void detachCloseListener(CloseListener listener);
 
     /**
      * Remove a listener for the {@link EventManager} subscribe event.
@@ -195,7 +195,7 @@ public interface EventManager {
      * @param listener
      *            The subscribe listener.
      */
-    void removeSubscribeListener(SubscribeListener listener);
+    void detachSubscribeListener(SubscribeListener listener);
 
     /**
      * Remove a listener for the {@link EventManager} unsubscribe event.
@@ -203,7 +203,7 @@ public interface EventManager {
      * @param listener
      *            The unsubscribe listener.
      */
-    void removeUnsubscribeListener(UnsubscribeListener listener);
+    void detachUnsubscribeListener(UnsubscribeListener listener);
 
     /**
      * Interface to be implemented by classes that listen for the {@link EventManager} start event.
@@ -224,8 +224,11 @@ public interface EventManager {
 
         /**
          * This method will be invoked when the {@link EventManager} closes.
+         * 
+         * @param unexpected
+         *            true if closure is unexpected or in error
          */
-        void onClose();
+        void onClose(boolean unexpected);
 
     }
 
@@ -237,10 +240,10 @@ public interface EventManager {
         /**
          * This method will be invoked when the {@link EventManager} subscribes to an event.
          * 
-         * @param subscription
-         *            The subscription object EventManager generates to track the subscripton
+         * @param subscriptionToken
+         *            The subscription token object EventManager generates to track the subscripton
          */
-        void onSubscribe(Subscription subscription);
+        void onSubscribe(SubscriptionToken subscriptionToken);
 
     }
 
@@ -252,10 +255,10 @@ public interface EventManager {
         /**
          * This method will be invoked when the {@link EventManager} unsubscribes an event.
          * 
-         * @param subscription
-         *            The subscription object EventManager generates to track the subscripton
+         * @param subscriptionToken
+         *            The subscription token object EventManager generates to track the subscripton
          */
-        void onUnsubscribe();
+        void onUnsubscribe(SubscriptionToken subscriptionToken);
 
     }
 

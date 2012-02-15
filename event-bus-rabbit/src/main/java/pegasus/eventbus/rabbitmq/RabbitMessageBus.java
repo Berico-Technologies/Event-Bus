@@ -31,18 +31,19 @@ import pegasus.eventbus.client.EnvelopeHandler;
  */
 public class RabbitMessageBus implements AmqpMessageBus, ShutdownListener {
 
-    private static final Logger    LOG              = LoggerFactory.getLogger(RabbitMessageBus.class);
+    private static final Logger          LOG              = LoggerFactory.getLogger(RabbitMessageBus.class);
 
-    final static String            TOPIC_HEADER_KEY = "pegasus.eventbus.event.topic";
+    final static String                  TOPIC_HEADER_KEY = "pegasus.eventbus.event.topic";
 
     protected final ConnectionParameters config;
-    private final ConnectionFactory connectionFactory;
-    private Connection             connection;
-    private Channel                commandChannel;
-    private Map<String,Channel>    consumerChannels = new HashMap<String,Channel>();
+    private final ConnectionFactory      connectionFactory;
+    private Connection                   connection;
+    private Channel                      commandChannel;
+    private Map<String, Channel>         consumerChannels = new HashMap<String, Channel>();
 
-    private volatile boolean isClosing;
-    private volatile boolean isInConnectionErrorState;
+    private volatile boolean             isClosing;
+    private volatile boolean             isInConnectionErrorState;
+
     /**
      * Initialize Rabbit with the given connection parameters,
      * 
@@ -61,31 +62,31 @@ public class RabbitMessageBus implements AmqpMessageBus, ShutdownListener {
         connectionFactory.setHost(config.getHost());
         connectionFactory.setPort(config.getPort());
     }
-	
-	@Override
+
+    @Override
     public void start() {
 
-    	isClosing = false;
-    	
+        isClosing = false;
+
         LOG.trace("Starting the RabbitMessageBus");
 
         openConnectionToBroker();
 
         isInConnectionErrorState = false;
-       
+
     }
 
-	private void openConnectionToBroker() {
-		try {
+    private void openConnectionToBroker() {
+        try {
 
             LOG.trace("Grabbing the connection instance from the factory.");
 
             this.connection = connectionFactory.newConnection();
-            
+
             LOG.trace("Adding ShutdownListener to connection.");
 
             this.connection.addShutdownListener(this);
-                        
+
         } catch (IOException e) {
 
             LOG.error("Could not connect to RabbitMQ", e);
@@ -93,7 +94,7 @@ public class RabbitMessageBus implements AmqpMessageBus, ShutdownListener {
             throw new RuntimeException("Failed to open connection to RabbitMq: " + e.getMessage() + "See inner exception for details", e);
         }
 
-		try {
+        try {
 
             LOG.debug("Creating channel to AMQP broker.");
 
@@ -106,15 +107,15 @@ public class RabbitMessageBus implements AmqpMessageBus, ShutdownListener {
 
             throw new RuntimeException("Failed to open AMQP channel: " + e.getMessage() + "See inner exception for details", e);
         }
-	 }
+    }
 
     /**
      * Close the active AMQP connection.
      */
     public void close() {
 
-    	isClosing = true;
-    	
+        isClosing = true;
+
         LOG.info("Closing connection to the AMQP broker.");
 
         try {
@@ -139,81 +140,83 @@ public class RabbitMessageBus implements AmqpMessageBus, ShutdownListener {
         }
     }
 
-    private final HashSet<BusStatusListener> busStatusListeners = new HashSet<BusStatusListener>();
-    
-	@Override
-	public void attachBusStatusListener(BusStatusListener listener) {
-		busStatusListeners.add(listener);
-		
-	}
-	
-	@Override
-	public void dettachBusStatusListener(BusStatusListener listener) {
-		busStatusListeners.remove(listener);
-	}
+    private final HashSet<UnexpectedConnectionCloseListener> busStatusListeners = new HashSet<UnexpectedConnectionCloseListener>();
+
+    @Override
+    public void attachUnexpectedConnectionCloseListener(UnexpectedConnectionCloseListener listener) {
+        busStatusListeners.add(listener);
+
+    }
+
+    @Override
+    public void detachUnexpectedConnectionCloseListener(UnexpectedConnectionCloseListener listener) {
+        busStatusListeners.remove(listener);
+    }
+
     /**
      * Implementation for ShutdownListener interface.
      */
-	@Override
-	public void shutdownCompleted(ShutdownSignalException signal) {
-		if(signal == null)
-			LOG.info("AMQP Connection shutdown notice received.");
-		else
-			LOG.error("AMQP Connection shutdown exception received.", signal);
-			
-		if(isClosing || isInConnectionErrorState) return;
-		
+    @Override
+    public void shutdownCompleted(ShutdownSignalException signal) {
+        if (signal == null)
+            LOG.info("AMQP Connection shutdown notice received.");
+        else
+            LOG.error("AMQP Connection shutdown exception received.", signal);
+
+        if (isClosing || isInConnectionErrorState)
+            return;
+
         LOG.trace("Setting isInConnectionErrorState to true.");
-		isInConnectionErrorState = true;
-		
-		StopWatch watch = new StopWatch();
-		watch.start();
-		try{
-			
-			while(watch.getTime() < 30000){
-				LOG.info("Attempting to reopen connection.");
-				try{
-					openConnectionToBroker();
-					LOG.info("Connection successfully reopened.");
-					isInConnectionErrorState = false;
-					try{
-						notifyListenersOfConnectionClose(true);
-					} catch (Exception e){
-						LOG.warn("notifyListenersOfConnectionClose threw an error: " + e.getMessage(), e);	
-					}
-					return;
-				} catch (Exception e) {
-					LOG.error("Attempt to reopen connection failed with error: " + e.getMessage(), e);
-					try {
-						Thread.sleep(100);
-					} catch (InterruptedException e1) {
-						LOG.warn("Attempt to reopen connection canceled because thread has been interrupted.");
-						//should we notify listeners in this case?
-						return;
-					}
-				}
-			}
-			
-			LOG.warn("Attempt to reopen connection permanently failed.");
-			notifyListenersOfConnectionClose(false);
+        isInConnectionErrorState = true;
 
-		} finally {
-			watch.stop();
-		}
-	}
+        StopWatch watch = new StopWatch();
+        watch.start();
+        try {
 
-	private void notifyListenersOfConnectionClose(boolean connectionSuccessfullyReopened) {
-		for (BusStatusListener listener : busStatusListeners){
-	        LOG.trace("Invoking notifyUnexpectedConnectionClose(" + connectionSuccessfullyReopened + ") on listener [" + listener.toString() + "]");
-			try{
-				listener.notifyUnexpectedConnectionClose(connectionSuccessfullyReopened);
-			} catch(Exception e) {
-		        LOG.error("Invoking notifyUnexpectedConnectionClose(" + connectionSuccessfullyReopened + ") on listener [" + listener.toString() + "] threw an exception: " + e.getMessage(), e);
-			}
-		}
-	}
+            while (watch.getTime() < 30000) {
+                LOG.info("Attempting to reopen connection.");
+                try {
+                    openConnectionToBroker();
+                    LOG.info("Connection successfully reopened.");
+                    isInConnectionErrorState = false;
+                    try {
+                        notifyListenersOfConnectionClose(true);
+                    } catch (Exception e) {
+                        LOG.warn("notifyListenersOfConnectionClose threw an error: " + e.getMessage(), e);
+                    }
+                    return;
+                } catch (Exception e) {
+                    LOG.error("Attempt to reopen connection failed with error: " + e.getMessage(), e);
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e1) {
+                        LOG.warn("Attempt to reopen connection canceled because thread has been interrupted.");
+                        // should we notify listeners in this case?
+                        return;
+                    }
+                }
+            }
 
-	/**
+            LOG.warn("Attempt to reopen connection permanently failed.");
+            notifyListenersOfConnectionClose(false);
+
+        } finally {
+            watch.stop();
+        }
+    }
+
+    private void notifyListenersOfConnectionClose(boolean connectionSuccessfullyReopened) {
+        for (UnexpectedConnectionCloseListener listener : busStatusListeners) {
+            LOG.trace("Invoking notifyUnexpectedConnectionClose(" + connectionSuccessfullyReopened + ") on listener [" + listener.toString() + "]");
+            try {
+                listener.onUnexpectedConnectionClose(connectionSuccessfullyReopened);
+            } catch (Exception e) {
+                LOG.error("Invoking notifyUnexpectedConnectionClose(" + connectionSuccessfullyReopened + ") on listener [" + listener.toString() + "] threw an exception: " + e.getMessage(), e);
+            }
+        }
+    }
+
+    /**
      * Create a new AMQP exchange
      * 
      * @param exchange
@@ -347,181 +350,181 @@ public class RabbitMessageBus implements AmqpMessageBus, ShutdownListener {
 
     }
 
-    //@fixme
-//    /**
-//     * Get the next message off the specified queue.
-//     * 
-//     * @param queueName
-//     *            Name of the Queue.
-//     * @return Message, if one exists on the queue (or null).
-//     */
-//    @Override
-//    public UnacceptedMessage getNextMessageFrom(String queueName) {
-//
-//        LOG.debug("Retrieving message from queue [{}]", queueName);
-//
-//        try {
-//
-//            LOG.trace("Getting responses off the channel for queue [{}]", queueName);
-//
-//            GetResponse receivedMessage = commandChannel.basicGet(queueName, false);
-//
-//            LOG.trace("Message received for queue [{}]?: {}", queueName, receivedMessage != null);
-//
-//            if (receivedMessage == null)
-//                return null;
-//
-//            Envelope envelope = createEnvelope(receivedMessage.getProps(), receivedMessage.getBody());
-//
-//            LOG.debug("Returning message from queue [{}] with Envelope.", queueName);
-//
-//            return new UnacceptedMessage(envelope, receivedMessage.getEnvelope().getDeliveryTag());
-//
-//        } catch (IOException e) {
-//
-//            LOG.error("Could not get message from queue [{}]", queueName);
-//
-//            throw new RuntimeException("Failed to get message from queue: " + queueName + " Error: " + e.getMessage() + "See inner exception for details", e);
-//        }
-//    }
+    // @fixme
+    // /**
+    // * Get the next message off the specified queue.
+    // *
+    // * @param queueName
+    // * Name of the Queue.
+    // * @return Message, if one exists on the queue (or null).
+    // */
+    // @Override
+    // public UnacceptedMessage getNextMessageFrom(String queueName) {
+    //
+    // LOG.debug("Retrieving message from queue [{}]", queueName);
+    //
+    // try {
+    //
+    // LOG.trace("Getting responses off the channel for queue [{}]", queueName);
+    //
+    // GetResponse receivedMessage = commandChannel.basicGet(queueName, false);
+    //
+    // LOG.trace("Message received for queue [{}]?: {}", queueName, receivedMessage != null);
+    //
+    // if (receivedMessage == null)
+    // return null;
+    //
+    // Envelope envelope = createEnvelope(receivedMessage.getProps(), receivedMessage.getBody());
+    //
+    // LOG.debug("Returning message from queue [{}] with Envelope.", queueName);
+    //
+    // return new UnacceptedMessage(envelope, receivedMessage.getEnvelope().getDeliveryTag());
+    //
+    // } catch (IOException e) {
+    //
+    // LOG.error("Could not get message from queue [{}]", queueName);
+    //
+    // throw new RuntimeException("Failed to get message from queue: " + queueName + " Error: " + e.getMessage() + "See inner exception for details", e);
+    // }
+    // }
 
-	static Envelope createEnvelope(final BasicProperties props, byte[] body) {
-		LOG.trace("Creating the Envelope.");
+    static Envelope createEnvelope(final BasicProperties props, byte[] body) {
+        LOG.trace("Creating the Envelope.");
 
-		Envelope envelope = new Envelope();
+        Envelope envelope = new Envelope();
 
-		LOG.trace("Placing the headers from the message into the Envelope.");
+        LOG.trace("Placing the headers from the message into the Envelope.");
 
-		Map<String, String> headers = envelope.getHeaders();
+        Map<String, String> headers = envelope.getHeaders();
 
-		if (props.getHeaders() != null) {
-		    for (String key : props.getHeaders().keySet()) {
-		        headers.put(key, props.getHeaders().get(key).toString());
-		    }
-		}
+        if (props.getHeaders() != null) {
+            for (String key : props.getHeaders().keySet()) {
+                headers.put(key, props.getHeaders().get(key).toString());
+            }
+        }
 
-		LOG.trace("Mapping AMQP specific properties to Envelope properties.");
+        LOG.trace("Mapping AMQP specific properties to Envelope properties.");
 
-		envelope.setBody(body);
-		envelope.setId(props.getMessageId() == null ? null : UUID.fromString(props.getMessageId()));
-		envelope.setCorrelationId(props.getCorrelationId() == null ? null : UUID.fromString(props.getCorrelationId()));
-		envelope.setEventType(props.getType());
-		envelope.setReplyTo(props.getReplyTo());
-		envelope.setTopic(headers.get(TOPIC_HEADER_KEY));
+        envelope.setBody(body);
+        envelope.setId(props.getMessageId() == null ? null : UUID.fromString(props.getMessageId()));
+        envelope.setCorrelationId(props.getCorrelationId() == null ? null : UUID.fromString(props.getCorrelationId()));
+        envelope.setEventType(props.getType());
+        envelope.setReplyTo(props.getReplyTo());
+        envelope.setTopic(headers.get(TOPIC_HEADER_KEY));
 
-		// We don't want the topic key to be a Header property of the envelope.
-		headers.remove(TOPIC_HEADER_KEY);
-		return envelope;
-	}
+        // We don't want the topic key to be a Header property of the envelope.
+        headers.remove(TOPIC_HEADER_KEY);
+        return envelope;
+    }
 
-    //@fixme
-//    /**
-//     * Inform the bus that the message has been delivered to the client.
-//     * 
-//     * @param message
-//     *            Message being acknowledged
-//     */
-//    @Override
-//    public void acceptMessage(UnacceptedMessage message) {
-//
-//        LOG.debug("Accepting Message for Event Type [{}] with ID [{}]", message.getEnvelope().getEventType(), message.getAcceptanceToken());
-//
-//        try {
-//
-//            commandChannel.basicAck(message.getAcceptanceToken(), false);
-//
-//        } catch (IOException e) {
-//
-//            LOG.error("Could not acknowledge receipt of the message with ID [{}]", message.getAcceptanceToken(), e);
-//
-//            throw new RuntimeException("Failed to get acknowledge message: " + e.getMessage() + "See inner exception for details", e);
-//        }
-//    }
+    // @fixme
+    // /**
+    // * Inform the bus that the message has been delivered to the client.
+    // *
+    // * @param message
+    // * Message being acknowledged
+    // */
+    // @Override
+    // public void acceptMessage(UnacceptedMessage message) {
+    //
+    // LOG.debug("Accepting Message for Event Type [{}] with ID [{}]", message.getEnvelope().getEventType(), message.getAcceptanceToken());
+    //
+    // try {
+    //
+    // commandChannel.basicAck(message.getAcceptanceToken(), false);
+    //
+    // } catch (IOException e) {
+    //
+    // LOG.error("Could not acknowledge receipt of the message with ID [{}]", message.getAcceptanceToken(), e);
+    //
+    // throw new RuntimeException("Failed to get acknowledge message: " + e.getMessage() + "See inner exception for details", e);
+    // }
+    // }
 
-    //@fixme
-//    /**
-//     * Inform the bus that the message is being rejected by the client, and optionally, whether the bus should retry to deliver the message at a later time.
-//     * 
-//     * @param message
-//     *            Message to reject
-//     * @param redeliverMessageLater
-//     *            Attempt to redeliver the message later?
-//     */
-//    @Override
-//    public void rejectMessage(UnacceptedMessage message, boolean redeliverMessageLater) {
-//
-//        LOG.debug("Rejecting Message for Event Type [{}] with ID [{}], redeliver? = {}", new Object[] { message.getEnvelope().getEventType(), message.getAcceptanceToken(), redeliverMessageLater });
-//
-//        try {
-//
-//            commandChannel.basicReject(message.getAcceptanceToken(), redeliverMessageLater);
-//
-//        } catch (IOException e) {
-//
-//            LOG.error("Could not reject the message with ID [{}]", message.getAcceptanceToken(), e);
-//
-//            throw new RuntimeException("Failed to get acknowledge message: " + e.getMessage() + "See inner exception for details", e);
-//        }
-//    }
+    // @fixme
+    // /**
+    // * Inform the bus that the message is being rejected by the client, and optionally, whether the bus should retry to deliver the message at a later time.
+    // *
+    // * @param message
+    // * Message to reject
+    // * @param redeliverMessageLater
+    // * Attempt to redeliver the message later?
+    // */
+    // @Override
+    // public void rejectMessage(UnacceptedMessage message, boolean redeliverMessageLater) {
+    //
+    // LOG.debug("Rejecting Message for Event Type [{}] with ID [{}], redeliver? = {}", new Object[] { message.getEnvelope().getEventType(), message.getAcceptanceToken(), redeliverMessageLater });
+    //
+    // try {
+    //
+    // commandChannel.basicReject(message.getAcceptanceToken(), redeliverMessageLater);
+    //
+    // } catch (IOException e) {
+    //
+    // LOG.error("Could not reject the message with ID [{}]", message.getAcceptanceToken(), e);
+    //
+    // throw new RuntimeException("Failed to get acknowledge message: " + e.getMessage() + "See inner exception for details", e);
+    // }
+    // }
 
-	@Override
-	public String beginConsumingMessages(final String queueName, final EnvelopeHandler consumer) {
-		
-		LOG.trace("Begin consuming messages for queue [{}] with an EnvelopeHandler of type [{}].", queueName, consumer.getClass().getCanonicalName());
+    @Override
+    public String beginConsumingMessages(final String queueName, final EnvelopeHandler consumer) {
 
-		String consumerTag = queueName + ":" + UUID.randomUUID().toString();
+        LOG.trace("Begin consuming messages for queue [{}] with an EnvelopeHandler of type [{}].", queueName, consumer.getClass().getCanonicalName());
 
-		LOG.trace("ConsumerTag set to [{}].", consumerTag);
+        String consumerTag = queueName + ":" + UUID.randomUUID().toString();
 
-		final Channel consumerChannel;
-		try {
-		
-			LOG.trace("Opening dedicated channel for ConsumerTag [{}].", consumerTag);
-			
-			consumerChannel = connection.createChannel();
-			
-			LOG.trace("Successfully opened dedicated channel for ConsumerTag [{}].", consumerTag);
-			
-			consumerChannels.put(consumerTag, consumerChannel);
+        LOG.trace("ConsumerTag set to [{}].", consumerTag);
 
-		} catch (IOException e) {
+        final Channel consumerChannel;
+        try {
+
+            LOG.trace("Opening dedicated channel for ConsumerTag [{}].", consumerTag);
+
+            consumerChannel = connection.createChannel();
+
+            LOG.trace("Successfully opened dedicated channel for ConsumerTag [{}].", consumerTag);
+
+            consumerChannels.put(consumerTag, consumerChannel);
+
+        } catch (IOException e) {
             LOG.error("Could not create channel to consume messages on queue: [{}]", queueName, e);
 
             throw new RuntimeException("Could not create channel to consume messages on queue: " + queueName, e);
-		}
-		
-		try {
-			
-			LOG.trace("Beginning basicConsume for ConsumerTag [{}].", consumerTag);
-			
-			consumerChannel.basicConsume(queueName, false, consumerTag, 
-					new EnvelopeHandlerBasedConsumer(consumerChannel, consumerTag, consumer));
-			
-			LOG.trace("Begun basicConsume for ConsumerTag [{}].", consumerTag);
+        }
 
-		} catch (IOException e) {
+        try {
+
+            LOG.trace("Beginning basicConsume for ConsumerTag [{}].", consumerTag);
+
+            consumerChannel.basicConsume(queueName, false, consumerTag, new EnvelopeHandlerBasedConsumer(consumerChannel, consumerTag, consumer));
+
+            LOG.trace("Begun basicConsume for ConsumerTag [{}].", consumerTag);
+
+        } catch (IOException e) {
             LOG.error("Failed to initiate basicConsume ConsumerTag [{}].", consumerTag, e);
 
-            throw new RuntimeException("Failed to initiate basicConsume ConsumerTag: "+ consumerTag, e);
-		}
-		
-		return consumerTag;
-	}
+            throw new RuntimeException("Failed to initiate basicConsume ConsumerTag: " + consumerTag, e);
+        }
 
-	@Override
-	public void stopConsumingMessages(String consumerTag) {
-		synchronized (consumerChannels) {
-			Channel channel = consumerChannels.get(consumerTag);
-			if(channel == null) return;
-			consumerChannels.remove(consumerTag);
-			try {
-				channel.basicCancel(consumerTag);
-			} catch (IOException e) {
-	            LOG.error("Failed to cancel basicConsume for ConsumerTag: [{}]", consumerTag, e);
+        return consumerTag;
+    }
 
-	            throw new RuntimeException("Failed to cancel basicConsume for ConsumerTag: " + consumerTag, e);
-			}
-		}
-		
-	}
+    @Override
+    public void stopConsumingMessages(String consumerTag) {
+        synchronized (consumerChannels) {
+            Channel channel = consumerChannels.get(consumerTag);
+            if (channel == null)
+                return;
+            consumerChannels.remove(consumerTag);
+            try {
+                channel.basicCancel(consumerTag);
+            } catch (IOException e) {
+                LOG.error("Failed to cancel basicConsume for ConsumerTag: [{}]", consumerTag, e);
+
+                throw new RuntimeException("Failed to cancel basicConsume for ConsumerTag: " + consumerTag, e);
+            }
+        }
+
+    }
 }

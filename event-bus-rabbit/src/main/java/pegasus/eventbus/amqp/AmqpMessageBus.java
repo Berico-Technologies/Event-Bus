@@ -28,7 +28,7 @@ public interface AmqpMessageBus {
      * @param listener
      *            The listener to attach. If listener is already attached, the call is ignored.
      */
-    void attachBusStatusListener(BusStatusListener listener);
+    void attachUnexpectedConnectionCloseListener(UnexpectedConnectionCloseListener listener);
 
     /**
      * Attaches a listener that can react to changes in the bus status.
@@ -36,7 +36,7 @@ public interface AmqpMessageBus {
      * @param listener
      *            The listener to detach. If the listener is not attached, the call is ignored.
      */
-    void dettachBusStatusListener(BusStatusListener listener);
+    void detachUnexpectedConnectionCloseListener(UnexpectedConnectionCloseListener listener);
 
     /**
      * Create and Exchange on the Bus.
@@ -95,14 +95,14 @@ public interface AmqpMessageBus {
      */
     void stopConsumingMessages(String consumerTag);
 
-    public interface BusStatusListener {
+    public interface UnexpectedConnectionCloseListener {
         /**
          * Called when the bus's connection to the AMQP broker is unexpectedly lost.
          * 
          * @param connectionSuccessfullyReopened
          *            Indicates if the bus was able to successfully reopen the connection.
          */
-        void notifyUnexpectedConnectionClose(boolean connectionSuccessfullyReopened);
+        void onUnexpectedConnectionClose(boolean connectionSuccessfullyReopened);
     }
     
 }

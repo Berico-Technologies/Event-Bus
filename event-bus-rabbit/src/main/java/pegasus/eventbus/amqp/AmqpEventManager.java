@@ -14,7 +14,7 @@ import org.apache.commons.lang.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pegasus.eventbus.amqp.AmqpMessageBus.BusStatusListener;
+import pegasus.eventbus.amqp.AmqpMessageBus.UnexpectedConnectionCloseListener;
 import pegasus.eventbus.client.Envelope;
 import pegasus.eventbus.client.EnvelopeHandler;
 import pegasus.eventbus.client.EventHandler;
@@ -27,7 +27,7 @@ import pegasus.eventbus.client.SubscriptionToken;
  * 
  * @author Ken Baltrinic (Berico Technologies)
  */
-public class AmqpEventManager implements EventManager, BusStatusListener {
+public class AmqpEventManager implements EventManager, UnexpectedConnectionCloseListener {
 
     // DO NOT change these values, they are based on the in the AMPQ spec.
     static final String                                AMQP_ROUTE_SEGMENT_DELIMITER = ".";
@@ -76,11 +76,7 @@ public class AmqpEventManager implements EventManager, BusStatusListener {
         messageBus.start();
         topologyManager.start(this);
 
-        LOG.trace("Notifying all start listeners.");
-
-        for (StartListener listener : startListeners) {
-            listener.onStart();
-        }
+        notifyStartListeners();
     }
 
     /**
@@ -91,13 +87,7 @@ public class AmqpEventManager implements EventManager, BusStatusListener {
 
         LOG.info("Shutting down the Event Manager.");
 
-        LOG.trace("Notifying all named members.");
-        
-        LOG.trace("Notifying all close listeners.");
-
-        for (CloseListener listener : closeListeners) {
-            listener.onClose();
-        }
+        notifyCloseListeners(false);
 
         LOG.trace("Deactivating all subscriptions.");
 
@@ -106,7 +96,6 @@ public class AmqpEventManager implements EventManager, BusStatusListener {
         activeSubscriptions.clear();
 
         LOG.trace("Closing the connection to the broker.");
-
 
         topologyManager.close();
         messageBus.close();
@@ -142,8 +131,13 @@ public class AmqpEventManager implements EventManager, BusStatusListener {
 
         LOG.trace("Finding the correct routing info for event [{}]", event.getClass().getName());
 
-        //TODO: Should throw if null route is returned.
         RoutingInfo route = topologyManager.getRoutingInfoForEvent(event.getClass());
+        if (route == null) {
+
+            LOG.error(String.format("No route found for event {}", event));
+
+            throw new RuntimeException(String.format("Unknown route for event {}", event));
+        }
 
         if (sendToReplyToQueue) {
 
@@ -315,10 +309,15 @@ public class AmqpEventManager implements EventManager, BusStatusListener {
 
         RoutingInfo[] routes = null;
         if (subscription.getEventHandler() == null) {
-            //TODO: Should throw if routes returns null;
-        	routes = topologyManager.getRoutingInfoForNamedEventSet(subscription.getEnvelopeHandler().getEventSetName());
+            routes = topologyManager.getRoutingInfoForNamedEventSet(subscription.getEnvelopeHandler().getEventSetName());
         } else {
             routes = getRoutesBaseOnEventHandlerHandledTypes(subscription.getEventHandler(), routeSuffix);
+        }
+        if (routes == null || routes.length == 0) {
+
+            LOG.error(String.format("No routes found for subscription {}", subscription));
+
+            throw new RuntimeException(String.format("Unknown routes for subscription {}", subscription));
         }
 
         LOG.trace("{} routes found for subscription.", (routes != null) ? routes.length : 0);
@@ -342,13 +341,12 @@ public class AmqpEventManager implements EventManager, BusStatusListener {
             handler = new EventEnvelopeHandler(this, subscription.getEventHandler());
         }
 
-
         LOG.trace("Creating new queue listener for subscription.");
-        
+
         QueueListener queueListener = new QueueListener(messageBus, queueName, subscription.getIsDurable(), routes, handler);
 
         LOG.trace("Starting the queue listener.");
-        
+
         queueListener.beginListening();
 
         SubscriptionToken token = new SubscriptionToken();
@@ -357,25 +355,21 @@ public class AmqpEventManager implements EventManager, BusStatusListener {
 
         activeSubscriptions.put(token, new ActiveSubscription(queueName, subscription.getIsDurable(), queueListener));
 
-        LOG.trace("Notifying all subscribe listeners.");
-
-        for (SubscribeListener listener : subscribeListeners) {
-            listener.onSubscribe(subscription);
-        }
+        notifySubscribeListeners(token);
 
         LOG.trace("Returning subscription token.");
 
         return token;
     }
 
-    private void resubscribeAllActiveSubscriptions(){
+    private void resubscribeAllActiveSubscriptions() {
         LOG.info("Attempting to re-subscribe all active subscriptions.");
-        
-        for(ActiveSubscription subscription : activeSubscriptions.values()){
-        	subscription.getListener().beginListening();
+
+        for (ActiveSubscription subscription : activeSubscriptions.values()) {
+            subscription.getListener().beginListening();
         }
     }
-    
+
     /**
      * Determine the correct routing information based on the "handled types" provided by the EventHandler.
      * 
@@ -397,13 +391,18 @@ public class AmqpEventManager implements EventManager, BusStatusListener {
 
             LOG.trace("Getting route for [{}]", eventType.getName());
 
-            //TODO: Should throw if null route was returned.
             RoutingInfo route = topologyManager.getRoutingInfoForEvent(eventType);
-            
+            if (route == null) {
+
+                LOG.error(String.format("No route found for eventType {}", eventType));
+
+                throw new RuntimeException(String.format("Unknown route for eventType {}", eventType));
+            }
+
             LOG.info("Route: {}", route);
 
             // Assuming we want to ensure that we not only catch types that match the canonical class name
-            // but also anything past it in the hierarchy. This is needed to support RPC routing keys which have 
+            // but also anything past it in the hierarchy. This is needed to support RPC routing keys which have
             // call-specific suffixes.
 
             if (routeSuffix == AMQP_ROUTE_SEGMENT_WILDCARD) {
@@ -489,7 +488,7 @@ public class AmqpEventManager implements EventManager, BusStatusListener {
         while (!activeSubscriptions.get(token).listener.isCurrentlyListening()) {
             try {
 
-                //LOG.trace("RPC: Sleeping for 10ms");
+                // LOG.trace("RPC: Sleeping for 10ms");
 
                 Thread.sleep(10);
 
@@ -674,11 +673,7 @@ public class AmqpEventManager implements EventManager, BusStatusListener {
 
         activeSubscriptions.remove(token);
 
-        LOG.trace("Notifying all unsubscribe listeners.");
-
-        for (UnsubscribeListener listener : unsubscribeListeners) {
-            listener.onUnsubscribe();
-        }
+        notifyUnsubscribeListeners(token);
     }
 
     /**
@@ -731,17 +726,16 @@ public class AmqpEventManager implements EventManager, BusStatusListener {
             }
         }
     }
-    
-	@Override
-	public void notifyUnexpectedConnectionClose(boolean connectionSuccessfullyReopened) {
-		if(connectionSuccessfullyReopened){
-			resubscribeAllActiveSubscriptions();
-		} else {
-			//TODO: we should invoke the close listeners with a flag to let them no that this is an unplanned close
-			//and otherwise do any needed cleanup.
-		}
-	}
 
+    @Override
+    public void onUnexpectedConnectionClose(boolean connectionSuccessfullyReopened) {
+        if (connectionSuccessfullyReopened) {
+            resubscribeAllActiveSubscriptions();
+        } else {
+            // TODO: we should invoke the close listeners with a flag to let them no that this is an unplanned close
+            // and otherwise do any needed cleanup.
+        }
+    }
 
     /**
      * Joins a list of event types into a comma separated string
@@ -751,11 +745,12 @@ public class AmqpEventManager implements EventManager, BusStatusListener {
      * @return list of event types as a comma separated string
      */
     private static String getTypeNameSafely(Object obj) {
-    	return obj == null ?  "NULL" : obj.getClass().getName();
+        return obj == null ? "NULL" : obj.getClass().getName();
     }
 
     private static String joinEventTypesAsString(EventHandler<?> handler) {
-    	if(handler == null) return "NULL";
+        if (handler == null)
+            return "NULL";
         return joinEventTypesAsString(handler.getHandledEventTypes());
     }
 
@@ -780,7 +775,7 @@ public class AmqpEventManager implements EventManager, BusStatusListener {
     }
 
     @Override
-    public void addStartListener(StartListener listener) {
+    public void attachStartListener(StartListener listener) {
         if (listener == null) {
             throw new IllegalArgumentException("Listener cannot be null.");
         }
@@ -788,7 +783,7 @@ public class AmqpEventManager implements EventManager, BusStatusListener {
     }
 
     @Override
-    public void addCloseListener(CloseListener listener) {
+    public void attachCloseListener(CloseListener listener) {
         if (listener == null) {
             throw new IllegalArgumentException("Listener cannot be null.");
         }
@@ -796,7 +791,7 @@ public class AmqpEventManager implements EventManager, BusStatusListener {
     }
 
     @Override
-    public void addSubscribeListener(SubscribeListener listener) {
+    public void attachSubscribeListener(SubscribeListener listener) {
         if (listener == null) {
             throw new IllegalArgumentException("Listener cannot be null.");
         }
@@ -804,7 +799,7 @@ public class AmqpEventManager implements EventManager, BusStatusListener {
     }
 
     @Override
-    public void addUnsubscribeListener(UnsubscribeListener listener) {
+    public void attachUnsubscribeListener(UnsubscribeListener listener) {
         if (listener == null) {
             throw new IllegalArgumentException("Listener cannot be null.");
         }
@@ -812,7 +807,7 @@ public class AmqpEventManager implements EventManager, BusStatusListener {
     }
 
     @Override
-    public void removeStartListener(StartListener listener) {
+    public void detachStartListener(StartListener listener) {
         if (listener == null) {
             throw new IllegalArgumentException("Listener cannot be null.");
         }
@@ -820,15 +815,15 @@ public class AmqpEventManager implements EventManager, BusStatusListener {
     }
 
     @Override
-    public void removeCloseListener(CloseListener listener) {
+    public void detachCloseListener(CloseListener listener) {
         if (listener == null) {
             throw new IllegalArgumentException("Listener cannot be null.");
         }
         closeListeners.remove(listener);
     }
-
+    
     @Override
-    public void removeSubscribeListener(SubscribeListener listener) {
+    public void detachSubscribeListener(SubscribeListener listener) {
         if (listener == null) {
             throw new IllegalArgumentException("Listener cannot be null.");
         }
@@ -836,10 +831,47 @@ public class AmqpEventManager implements EventManager, BusStatusListener {
     }
 
     @Override
-    public void removeUnsubscribeListener(UnsubscribeListener listener) {
+    public void detachUnsubscribeListener(UnsubscribeListener listener) {
         if (listener == null) {
             throw new IllegalArgumentException("Listener cannot be null.");
         }
         unsubscribeListeners.remove(listener);
     }
+    
+    public void notifyStartListeners() {
+        
+        LOG.trace("Notifying all start listeners.");
+        
+        for (StartListener listener : startListeners) {
+            listener.onStart();
+        }
+    }
+    
+    public void notifyCloseListeners(boolean unexpected) {
+        
+        LOG.trace("Notifying all close listeners.");
+        
+        for (CloseListener listener : closeListeners) {
+            listener.onClose(unexpected);
+        }
+    }
+    
+    public void notifySubscribeListeners(SubscriptionToken subscriptionToken) {
+        
+        LOG.trace("Notifying all subscribe listeners.");
+        
+        for (SubscribeListener listener : subscribeListeners) {
+            listener.onSubscribe(subscriptionToken);
+        }
+    }
+    
+    public void notifyUnsubscribeListeners(SubscriptionToken subscriptionToken) {
+        
+        LOG.trace("Notifying all unsubscribe listeners.");
+        
+        for (UnsubscribeListener listener : unsubscribeListeners) {
+            listener.onUnsubscribe(subscriptionToken);
+        }
+    }
+    
 }
