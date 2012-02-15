@@ -12,25 +12,7 @@ import pegasus.eventbus.client.EventResult;
 import pegasus.eventbus.testsupport.TestSendEvent;
 
 public class HousekeepingTest extends IntegrationTestBase {
-	public final class TestHandler implements EventHandler<TestSendEvent> {
-		private final Logger lOG;
-
-		private TestHandler(Logger lOG) {
-			this.lOG = lOG;
-		}
-
-		@Override
-		public Class<? extends TestSendEvent>[] getHandledEventTypes() {
-			Class<?>[] types = { TestSendEvent.class };
-			return (Class<? extends TestSendEvent>[]) types;
-		}
-
-		@Override
-		public EventResult handleEvent(TestSendEvent event) {
-			lOG.info("Received event number: " + event.getCount());
-			return EventResult.Handled;
-		}
-	}
+	final Logger LOG                          = LoggerFactory.getLogger(HousekeepingTest.class);
 
 	@Test 
 	public void publishingAnEventShouldCreateExchangeIfMissing() throws HttpException, IOException{
@@ -52,7 +34,6 @@ public class HousekeepingTest extends IntegrationTestBase {
 	//To correctly run this test, start test, then stop the RabbitMq server and restart it.  Ensure that log shows all events were received in numeric order.
 	//Unplugging and plugging network cable will not correctly test this as explained here: http://lists.rabbitmq.com/pipermail/rabbitmq-discuss/2011-September/015329.html 
 	public void connectivityTest() throws InterruptedException{
-		final Logger LOG                          = LoggerFactory.getLogger(HousekeepingTest.class);
 
 		manager.subscribe(new TestHandler(LOG));
 		
@@ -67,6 +48,27 @@ public class HousekeepingTest extends IntegrationTestBase {
 				//LOG.error("Error sending event " + count + ": " + e.getMessage(), e);
 			}
 			Thread.sleep(1000);
+		}
+	}
+	
+	public final class TestHandler implements EventHandler<TestSendEvent> {
+		private final Logger lOG;
+
+		private TestHandler(Logger lOG) {
+			this.lOG = lOG;
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public Class<? extends TestSendEvent>[] getHandledEventTypes() {
+			Class<?>[] types = { TestSendEvent.class };
+			return (Class<? extends TestSendEvent>[]) types;
+		}
+
+		@Override
+		public EventResult handleEvent(TestSendEvent event) {
+			lOG.info("Received event number: " + event.getCount());
+			return EventResult.Handled;
 		}
 	}
 }
