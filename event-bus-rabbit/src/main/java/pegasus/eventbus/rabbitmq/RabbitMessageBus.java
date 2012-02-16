@@ -280,44 +280,6 @@ public class RabbitMessageBus implements AmqpMessageBus, UnexpectedCloseListener
 
     }
 
-    // @fixme
-    // /**
-    // * Get the next message off the specified queue.
-    // *
-    // * @param queueName
-    // * Name of the Queue.
-    // * @return Message, if one exists on the queue (or null).
-    // */
-    // @Override
-    // public UnacceptedMessage getNextMessageFrom(String queueName) {
-    //
-    // LOG.debug("Retrieving message from queue [{}]", queueName);
-    //
-    // try {
-    //
-    // LOG.trace("Getting responses off the channel for queue [{}]", queueName);
-    //
-    // GetResponse receivedMessage = commandChannel.basicGet(queueName, false);
-    //
-    // LOG.trace("Message received for queue [{}]?: {}", queueName, receivedMessage != null);
-    //
-    // if (receivedMessage == null)
-    // return null;
-    //
-    // Envelope envelope = createEnvelope(receivedMessage.getProps(), receivedMessage.getBody());
-    //
-    // LOG.debug("Returning message from queue [{}] with Envelope.", queueName);
-    //
-    // return new UnacceptedMessage(envelope, receivedMessage.getEnvelope().getDeliveryTag());
-    //
-    // } catch (IOException e) {
-    //
-    // LOG.error("Could not get message from queue [{}]", queueName);
-    //
-    // throw new RuntimeException("Failed to get message from queue: " + queueName + " Error: " + e.getMessage() + "See inner exception for details", e);
-    // }
-    // }
-
     static Envelope createEnvelope(final BasicProperties props, byte[] body) {
         LOG.trace("Creating the Envelope.");
 
@@ -347,56 +309,6 @@ public class RabbitMessageBus implements AmqpMessageBus, UnexpectedCloseListener
         return envelope;
     }
 
-    // @fixme
-    // /**
-    // * Inform the bus that the message has been delivered to the client.
-    // *
-    // * @param message
-    // * Message being acknowledged
-    // */
-    // @Override
-    // public void acceptMessage(UnacceptedMessage message) {
-    //
-    // LOG.debug("Accepting Message for Event Type [{}] with ID [{}]", message.getEnvelope().getEventType(), message.getAcceptanceToken());
-    //
-    // try {
-    //
-    // commandChannel.basicAck(message.getAcceptanceToken(), false);
-    //
-    // } catch (IOException e) {
-    //
-    // LOG.error("Could not acknowledge receipt of the message with ID [{}]", message.getAcceptanceToken(), e);
-    //
-    // throw new RuntimeException("Failed to get acknowledge message: " + e.getMessage() + "See inner exception for details", e);
-    // }
-    // }
-
-    // @fixme
-    // /**
-    // * Inform the bus that the message is being rejected by the client, and optionally, whether the bus should retry to deliver the message at a later time.
-    // *
-    // * @param message
-    // * Message to reject
-    // * @param redeliverMessageLater
-    // * Attempt to redeliver the message later?
-    // */
-    // @Override
-    // public void rejectMessage(UnacceptedMessage message, boolean redeliverMessageLater) {
-    //
-    // LOG.debug("Rejecting Message for Event Type [{}] with ID [{}], redeliver? = {}", new Object[] { message.getEnvelope().getEventType(), message.getAcceptanceToken(), redeliverMessageLater });
-    //
-    // try {
-    //
-    // commandChannel.basicReject(message.getAcceptanceToken(), redeliverMessageLater);
-    //
-    // } catch (IOException e) {
-    //
-    // LOG.error("Could not reject the message with ID [{}]", message.getAcceptanceToken(), e);
-    //
-    // throw new RuntimeException("Failed to get acknowledge message: " + e.getMessage() + "See inner exception for details", e);
-    // }
-    // }
-
     @Override
     public String beginConsumingMessages(final String queueName, final EnvelopeHandler consumer) {
 
@@ -418,6 +330,7 @@ public class RabbitMessageBus implements AmqpMessageBus, UnexpectedCloseListener
             consumerChannels.put(consumerTag, consumerChannel);
 
         } catch (IOException e) {
+
             LOG.error("Could not create channel to consume messages on queue: [{}]", queueName, e);
 
             throw new RuntimeException("Could not create channel to consume messages on queue: " + queueName, e);
@@ -432,6 +345,7 @@ public class RabbitMessageBus implements AmqpMessageBus, UnexpectedCloseListener
             LOG.trace("Begun basicConsume for ConsumerTag [{}].", consumerTag);
 
         } catch (IOException e) {
+
             LOG.error("Failed to initiate basicConsume ConsumerTag [{}].", consumerTag, e);
 
             throw new RuntimeException("Failed to initiate basicConsume ConsumerTag: " + consumerTag, e);

@@ -21,7 +21,7 @@ public class RabbitConnection implements ShutdownListener {
     private static final Logger          LOG                      = LoggerFactory.getLogger(RabbitConnection.class);
     private static final long            DEFAULT_RETRY_TIMEOUT    = 30000;
 
-    private ConnectionFactory            connectionFactory;
+    private ConnectionFactory            connectionFactory        = new ConnectionFactory();
     private Connection                   connection;
     private long                         retryTimeout             = DEFAULT_RETRY_TIMEOUT;
     private Set<UnexpectedCloseListener> unexpectedCloseListeners = new HashSet<UnexpectedCloseListener>();
@@ -30,7 +30,6 @@ public class RabbitConnection implements ShutdownListener {
     private volatile boolean             isInConnectionErrorState;
 
     public RabbitConnection(ConnectionParameters connectionParameters) {
-        connectionFactory = new ConnectionFactory();
         connectionFactory.setUsername(connectionParameters.getUsername());
         connectionFactory.setPassword(connectionParameters.getPassword());
         connectionFactory.setVirtualHost(connectionParameters.getVirtualHost());
@@ -52,6 +51,10 @@ public class RabbitConnection implements ShutdownListener {
         }
     }
 
+    public void setConnection(Connection connection) {
+        this.connection = connection;
+    }
+
     public boolean isOpen() {
         return connection != null ? connection.isOpen() : false;
     }
@@ -64,6 +67,7 @@ public class RabbitConnection implements ShutdownListener {
     }
 
     public Channel createChannel() throws IOException {
+        open();
         Channel channel = connection.createChannel();
 
         return channel;

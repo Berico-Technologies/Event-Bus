@@ -73,6 +73,7 @@ class EnvelopeHandlerBasedConsumer extends DefaultConsumer {
 
             LOG.error("Envelope handler of type " + consumer.getClass().getCanonicalName() + " on queue " + queueName + " threw exception of type " + e.getClass().getCanonicalName()
                     + " handling message " + id + ", DeliveryTag: " + deliveryTag, e);
+            
         }
 
         LOG.trace("Determining how to handle EventResult [{}]", result);

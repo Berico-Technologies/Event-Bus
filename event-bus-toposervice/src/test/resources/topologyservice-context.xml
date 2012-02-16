@@ -5,7 +5,7 @@
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <context:property-placeholder ignore-unresolvable="false" ignore-resource-not-found="true" location="classpath:eventbus.properties" />
+    <context:property-placeholder location="classpath:eventbus.properties" />
 
     <bean id="connectionParameters" class="pegasus.eventbus.amqp.ConnectionParameters">
         <property name="username" value="${event.bus.username:guest}" />
