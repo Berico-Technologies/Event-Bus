@@ -59,7 +59,6 @@ public class AmqpEventManager implements EventManager, UnexpectedConnectionClose
 
         this.clientName = configuration.getClientName();
         this.messageBus = configuration.getAmqpMessageBus();
-        messageBus.attachUnexpectedConnectionCloseListener(this);
         this.topologyManager = configuration.getTopologyManager();
         this.serializer = configuration.getSerializer();
     }
@@ -74,6 +73,7 @@ public class AmqpEventManager implements EventManager, UnexpectedConnectionClose
 
         LOG.trace("Notifying all named members.");
 
+        messageBus.attachUnexpectedConnectionCloseListener(this);
         messageBus.start();
         topologyManager.start(this);
 
