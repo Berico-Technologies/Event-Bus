@@ -9,11 +9,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pegasus.eventbus.gson.GsonSerializer;
+import pegasus.eventbus.rabbitmq.RabbitConnection;
 import pegasus.eventbus.rabbitmq.RabbitMessageBus;
 import pegasus.eventbus.topology.CompositeTopologyManager;
 import pegasus.eventbus.topology.GlobalTopologyServiceManager;
 import pegasus.eventbus.topology.StaticTopologyManager;
-
 
 /**
  * Container for all the nasty settings and providers necessary to make the AmqpEventManager work. We recommend using the default configuration, accessed by the static functions "getDefault", which
@@ -260,7 +260,8 @@ public class AmqpConfiguration {
      * @return Default Configuration
      */
     public static AmqpConfiguration getDefault(String clientName, ConnectionParameters connectionParameters) {
-        AmqpMessageBus amqpMessageBus = new RabbitMessageBus(connectionParameters);
+        RabbitConnection rabbitConnection = new RabbitConnection(connectionParameters);
+        AmqpMessageBus amqpMessageBus = new RabbitMessageBus(rabbitConnection);
         CompositeTopologyManager compositeTopologyManager = new CompositeTopologyManager();
         TopologyManager fixedTopologyManager = new StaticTopologyManager();
         compositeTopologyManager.addManager(fixedTopologyManager);

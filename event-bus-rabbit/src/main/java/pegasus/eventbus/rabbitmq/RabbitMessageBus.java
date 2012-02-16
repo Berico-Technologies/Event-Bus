@@ -4,45 +4,37 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
-import org.apache.commons.lang.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pegasus.eventbus.amqp.AmqpMessageBus;
-import pegasus.eventbus.amqp.ConnectionParameters;
 import pegasus.eventbus.amqp.RoutingInfo;
 
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.ShutdownListener;
-import com.rabbitmq.client.ShutdownSignalException;
 
 import pegasus.eventbus.client.Envelope;
 import pegasus.eventbus.client.EnvelopeHandler;
+import pegasus.eventbus.rabbitmq.RabbitConnection.UnexpectedCloseListener;
 
 /**
  * RabbitMQ implementation of our AmqpMessageBus interface.
  * 
  * @author Ken Baltrinic (Berico Technologies)
  */
-public class RabbitMessageBus implements AmqpMessageBus, ShutdownListener {
+public class RabbitMessageBus implements AmqpMessageBus, UnexpectedCloseListener {
 
-    private static final Logger          LOG              = LoggerFactory.getLogger(RabbitMessageBus.class);
+    private static final Logger                    LOG                                = LoggerFactory.getLogger(RabbitMessageBus.class);
 
-    final static String                  TOPIC_HEADER_KEY = "pegasus.eventbus.event.topic";
+    final static String                            TOPIC_HEADER_KEY                   = "pegasus.eventbus.event.topic";
 
-    protected final ConnectionParameters config;
-    private final ConnectionFactory      connectionFactory;
-    private Connection                   connection;
-    private Channel                      commandChannel;
-    private Map<String, Channel>         consumerChannels = new HashMap<String, Channel>();
-
-    private volatile boolean             isClosing;
-    private volatile boolean             isInConnectionErrorState;
+    private RabbitConnection                       connection;
+    private Channel                                commandChannel;
+    private Map<String, Channel>                   consumerChannels                   = new HashMap<String, Channel>();
+    private Set<UnexpectedConnectionCloseListener> unexpectedConnectionCloseListeners = new HashSet<UnexpectedConnectionCloseListener>();
 
     /**
      * Initialize Rabbit with the given connection parameters,
@@ -50,43 +42,31 @@ public class RabbitMessageBus implements AmqpMessageBus, ShutdownListener {
      * @param connectionParameters
      *            Connection Parameters
      */
-    public RabbitMessageBus(ConnectionParameters connectionParameters) {
-        this.config = connectionParameters;
+    public RabbitMessageBus(RabbitConnection connection) {
 
         LOG.trace("Building the RabbitMQ Connection Factory.");
 
-        connectionFactory = new ConnectionFactory();
-        connectionFactory.setUsername(config.getUsername());
-        connectionFactory.setPassword(config.getPassword());
-        connectionFactory.setVirtualHost(config.getVirtualHost());
-        connectionFactory.setHost(config.getHost());
-        connectionFactory.setPort(config.getPort());
+        this.connection = connection;
+        connection.attachUnexpectedCloseListener(this);
     }
 
     @Override
     public void start() {
 
-        isClosing = false;
-
         LOG.trace("Starting the RabbitMessageBus");
 
         openConnectionToBroker();
-
-        isInConnectionErrorState = false;
 
     }
 
     private void openConnectionToBroker() {
         try {
 
-            LOG.trace("Grabbing the connection instance from the factory.");
+            LOG.trace("Opening the connection.");
 
-            this.connection = connectionFactory.newConnection();
-
-            LOG.trace("Adding ShutdownListener to connection.");
-
-            this.connection.addShutdownListener(this);
-
+            if (!connection.isOpen()) {
+                connection.open();
+            }
         } catch (IOException e) {
 
             LOG.error("Could not connect to RabbitMQ", e);
@@ -114,8 +94,6 @@ public class RabbitMessageBus implements AmqpMessageBus, ShutdownListener {
      */
     public void close() {
 
-        isClosing = true;
-
         LOG.info("Closing connection to the AMQP broker.");
 
         try {
@@ -140,80 +118,32 @@ public class RabbitMessageBus implements AmqpMessageBus, ShutdownListener {
         }
     }
 
-    private final HashSet<UnexpectedConnectionCloseListener> busStatusListeners = new HashSet<UnexpectedConnectionCloseListener>();
-
     @Override
     public void attachUnexpectedConnectionCloseListener(UnexpectedConnectionCloseListener listener) {
-        busStatusListeners.add(listener);
+        unexpectedConnectionCloseListeners.add(listener);
 
     }
 
     @Override
     public void detachUnexpectedConnectionCloseListener(UnexpectedConnectionCloseListener listener) {
-        busStatusListeners.remove(listener);
+        unexpectedConnectionCloseListeners.remove(listener);
+    }
+
+    private void notifyUnexpectedConnectionCloseListeners(boolean successfullyReopened) {
+        for (UnexpectedConnectionCloseListener listener : unexpectedConnectionCloseListeners) {
+            listener.onUnexpectedConnectionClose(successfullyReopened);
+        }
     }
 
     /**
-     * Implementation for ShutdownListener interface.
+     * Implementation for connection CloseListener interface.
      */
     @Override
-    public void shutdownCompleted(ShutdownSignalException signal) {
-        if (signal == null)
-            LOG.info("AMQP Connection shutdown notice received.");
-        else
-            LOG.error("AMQP Connection shutdown exception received.", signal);
+    public void onUnexpectedClose(boolean successfullyReopened) {
 
-        if (isClosing || isInConnectionErrorState)
-            return;
+        LOG.error("Connection shutdown unexpectedly.");
 
-        LOG.trace("Setting isInConnectionErrorState to true.");
-        isInConnectionErrorState = true;
-
-        StopWatch watch = new StopWatch();
-        watch.start();
-        try {
-
-            while (watch.getTime() < 30000) {
-                LOG.info("Attempting to reopen connection.");
-                try {
-                    openConnectionToBroker();
-                    LOG.info("Connection successfully reopened.");
-                    isInConnectionErrorState = false;
-                    try {
-                        notifyListenersOfConnectionClose(true);
-                    } catch (Exception e) {
-                        LOG.warn("notifyListenersOfConnectionClose threw an error: " + e.getMessage(), e);
-                    }
-                    return;
-                } catch (Exception e) {
-                    LOG.error("Attempt to reopen connection failed with error: " + e.getMessage(), e);
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e1) {
-                        LOG.warn("Attempt to reopen connection canceled because thread has been interrupted.");
-                        // should we notify listeners in this case?
-                        return;
-                    }
-                }
-            }
-
-            LOG.warn("Attempt to reopen connection permanently failed.");
-            notifyListenersOfConnectionClose(false);
-
-        } finally {
-            watch.stop();
-        }
-    }
-
-    private void notifyListenersOfConnectionClose(boolean connectionSuccessfullyReopened) {
-        for (UnexpectedConnectionCloseListener listener : busStatusListeners) {
-            LOG.trace("Invoking notifyUnexpectedConnectionClose(" + connectionSuccessfullyReopened + ") on listener [" + listener.toString() + "]");
-            try {
-                listener.onUnexpectedConnectionClose(connectionSuccessfullyReopened);
-            } catch (Exception e) {
-                LOG.error("Invoking notifyUnexpectedConnectionClose(" + connectionSuccessfullyReopened + ") on listener [" + listener.toString() + "] threw an exception: " + e.getMessage(), e);
-            }
-        }
+        notifyUnexpectedConnectionCloseListeners(successfullyReopened);
     }
 
     /**

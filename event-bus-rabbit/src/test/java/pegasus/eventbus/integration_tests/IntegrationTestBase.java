@@ -11,8 +11,8 @@ import org.junit.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
-import pegasus.eventbus.amqp.AmqpEventManager;
 import pegasus.eventbus.amqp.AmqpConfiguration;
+import pegasus.eventbus.amqp.AmqpEventManager;
 import pegasus.eventbus.amqp.ConnectionParameters;
 import pegasus.eventbus.client.EventManager;
 import pegasus.eventbus.testsupport.RabbitManagementApiHelper;

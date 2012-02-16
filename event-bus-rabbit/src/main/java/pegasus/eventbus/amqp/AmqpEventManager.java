@@ -59,6 +59,7 @@ public class AmqpEventManager implements EventManager, UnexpectedConnectionClose
 
         this.clientName = configuration.getClientName();
         this.messageBus = configuration.getAmqpMessageBus();
+        messageBus.attachUnexpectedConnectionCloseListener(this);
         this.topologyManager = configuration.getTopologyManager();
         this.serializer = configuration.getSerializer();
     }
@@ -821,7 +822,7 @@ public class AmqpEventManager implements EventManager, UnexpectedConnectionClose
         }
         closeListeners.remove(listener);
     }
-    
+
     @Override
     public void detachSubscribeListener(SubscribeListener listener) {
         if (listener == null) {
@@ -837,41 +838,41 @@ public class AmqpEventManager implements EventManager, UnexpectedConnectionClose
         }
         unsubscribeListeners.remove(listener);
     }
-    
+
     public void notifyStartListeners() {
-        
+
         LOG.trace("Notifying all start listeners.");
-        
+
         for (StartListener listener : startListeners) {
             listener.onStart();
         }
     }
-    
+
     public void notifyCloseListeners(boolean unexpected) {
-        
+
         LOG.trace("Notifying all close listeners.");
-        
+
         for (CloseListener listener : closeListeners) {
             listener.onClose(unexpected);
         }
     }
-    
+
     public void notifySubscribeListeners(SubscriptionToken subscriptionToken) {
-        
+
         LOG.trace("Notifying all subscribe listeners.");
-        
+
         for (SubscribeListener listener : subscribeListeners) {
             listener.onSubscribe(subscriptionToken);
         }
     }
-    
+
     public void notifyUnsubscribeListeners(SubscriptionToken subscriptionToken) {
-        
+
         LOG.trace("Notifying all unsubscribe listeners.");
-        
+
         for (UnsubscribeListener listener : unsubscribeListeners) {
             listener.onUnsubscribe(subscriptionToken);
         }
     }
-    
+
 }

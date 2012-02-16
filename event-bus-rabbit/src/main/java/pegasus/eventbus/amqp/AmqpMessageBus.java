@@ -12,8 +12,6 @@ public interface AmqpMessageBus {
 
     /**
      * Start the bus and open the connections.
-     * 
-     * @param eventManager
      */
     void start();
 
@@ -99,10 +97,10 @@ public interface AmqpMessageBus {
         /**
          * Called when the bus's connection to the AMQP broker is unexpectedly lost.
          * 
-         * @param connectionSuccessfullyReopened
-         *            Indicates if the bus was able to successfully reopen the connection.
+         * @param successfullyReopened
+         *            true if the connection was reestablished
          */
-        void onUnexpectedConnectionClose(boolean connectionSuccessfullyReopened);
+        void onUnexpectedConnectionClose(boolean successfullyReopened);
     }
-    
+
 }

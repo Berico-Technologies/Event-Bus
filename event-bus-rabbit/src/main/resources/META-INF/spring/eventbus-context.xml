@@ -31,6 +31,7 @@
         <property name="host" value="${event.bus.host:rabbit}" />
         <property name="virtualHost" value="${event.bus.virtualhost:/}" />
         <property name="port" value="${event.bus.port:5672}" />
+        <property name="connectionRetryTimeout" value="${event.bus.connectionRetryTimeout:30000}" />
     </bean>
     
     <context:property-placeholder location="classpath:eventbus.properties" />
