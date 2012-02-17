@@ -72,6 +72,12 @@ class ConsensusSearchDetector extends EventMonitor {
         public String getInferredType() {
             return inferredType;
         }
+
+        private String[] getSearchTerms(Envelope env) {
+            String topic = env.getTopic();
+            String[] terms = topic.toLowerCase().split(" ");
+            return terms;
+        }
     }
 
     private int minFreq;
@@ -81,12 +87,6 @@ class ConsensusSearchDetector extends EventMonitor {
         super();
         this.minFreq = minFreq;
         this.timeLimit = timeLimit;
-    }
-
-    private String[] getSearchTerms(Envelope env) {
-        String topic = env.getTopic();
-        String[] terms = topic.toLowerCase().split(" ");
-        return terms;
     }
 
     public InferredEvent receive(EventBean eventBean) {
@@ -140,6 +140,10 @@ class ConsensusSearchDetector extends EventMonitor {
         // filter out search terms with at least the desired minimum frequency
         esp.monitor(true, getSTF, this);
 
+        // TODO: enable for multiple instantiations
+        // this will run into problems if multiple CSDs are created; e.g.
+        // CSD(20, 30min), CSD(30, 60min) since there will be multiple intermediate
+        // events created (Search Terms, UserTerms, SearchTermFreq)
     }
 
     private final static Set<String> STOPWORDS = makeStopWordSet();
