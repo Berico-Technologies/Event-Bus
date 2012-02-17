@@ -46,21 +46,21 @@ public class StaticTopologyManager implements TopologyManager {
     }
 
     private void initializeTopologyRegistries() {
-        String registerClientTopic = RegisterClient.class.getCanonicalName();
-        RoutingInfo registerClientRoute = new RoutingInfo(topologyExchange, RoutingInfo.ExchangeType.Topic, true, registerClientTopic);
-        topologyEventRegistry.put(registerClientTopic, registerClientRoute);
-        String unregisterClientTopic = UnregisterClient.class.getCanonicalName();
-        RoutingInfo unregisterClientRoute = new RoutingInfo(topologyExchange, RoutingInfo.ExchangeType.Topic, true, unregisterClientTopic);
-        topologyEventRegistry.put(unregisterClientTopic, unregisterClientRoute);
-        String topologyUpdateTopic = TopologyUpdate.class.getCanonicalName();
-        RoutingInfo topologyUpdateRoute = new RoutingInfo(topologyExchange, RoutingInfo.ExchangeType.Topic, true, topologyUpdateTopic);
-        topologyEventRegistry.put(topologyUpdateTopic, topologyUpdateRoute);
-
+    	registerType(RegisterClient.class);
+    	registerType(UnregisterClient.class);
+    	registerType(TopologyUpdate.class);
+        
         //TODO: This should not be here.  All named routes need to be configured.  At the very least this one would need to be "all-topology."
         RoutingInfo[] allRoutes = { new RoutingInfo(topologyExchange, RoutingInfo.ExchangeType.Topic, true, "#") };
         topologyEventSetRegistry.put("ALL", allRoutes);
     }
 
+    private void registerType(Class<?> eventType){
+        String topic = RegisterClient.class.getCanonicalName();
+        RoutingInfo route = new RoutingInfo(topologyExchange, RoutingInfo.ExchangeType.Topic, true, topic);
+        topologyEventRegistry.put(topic, route);
+    }
+    
     @Override
     public RoutingInfo getRoutingInfoForEvent(Class<?> eventType) {
 
