@@ -55,9 +55,13 @@ public class GlobalTopologyServiceManager implements TopologyManager {
 
     @Override
     public void close() {
+        LOG.trace("Global Topology Service Manager closing.");
         eventManager.unsubscribe(subscriptionToken);
+        LOG.trace("Unsubscribed TopologyUpdateHandler.");
         UnregisterClient unregisterClientEvent = new UnregisterClient(clientName);
+        LOG.trace("Unregistered client.");
         eventManager.publish(unregisterClientEvent);
+        LOG.trace("Global Topology Service Manager closed.");
     }
 
     @Override
