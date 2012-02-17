@@ -48,15 +48,15 @@ public class StaticTopologyManager implements TopologyManager {
     private void initializeTopologyRegistries() {
     	registerType(RegisterClient.class);
     	registerType(UnregisterClient.class);
-    	registerType(TopologyUpdate.class);
-        
+      	registerType(TopologyUpdate.class);
+              
         //TODO: This should not be here.  All named routes need to be configured.  At the very least this one would need to be "all-topology."
         RoutingInfo[] allRoutes = { new RoutingInfo(topologyExchange, RoutingInfo.ExchangeType.Topic, true, "#") };
         topologyEventSetRegistry.put("ALL", allRoutes);
     }
 
     private void registerType(Class<?> eventType){
-        String topic = RegisterClient.class.getCanonicalName();
+        String topic = eventType.getCanonicalName();
         RoutingInfo route = new RoutingInfo(topologyExchange, RoutingInfo.ExchangeType.Topic, true, topic);
         topologyEventRegistry.put(topic, route);
     }
