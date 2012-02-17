@@ -102,4 +102,15 @@ class EnvelopeHandlerBasedConsumer extends DefaultConsumer {
                 break;
         }
 	}
+	
+	@Override
+	public void handleCancelOk(String consumerTag) {
+        LOG.info("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        LOG.info("handleCancelOk");
+        LOG.info("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("handleCancelOk");
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    }
+	
 }
