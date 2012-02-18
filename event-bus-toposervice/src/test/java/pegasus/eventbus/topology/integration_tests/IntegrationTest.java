@@ -27,7 +27,7 @@ public class IntegrationTest {
     
     @Before
     public void beforeEachTest() throws HttpException, IOException {
-
+    	//TODO: These tests need to be on the same vhost as the topology service, consider seting one up on a dedicated vhost for topology integration tests.
         FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext("src/test/resources/eventbus-context.xml");
 
         manager = context.getBean(EventManager.class);
@@ -41,7 +41,7 @@ public class IntegrationTest {
         manager.close();
     }
 
-    @Test
+    @Test @Ignore("Un-ignore after a topology service is actually deployed to the test environment.")
     public void canSendAndReceiveEvents() throws Exception{
     	
     	TestHandler handler = new TestHandler();
