@@ -90,6 +90,8 @@ public class AmqpEventManager implements EventManager, UnexpectedConnectionClose
 
         notifyCloseListeners(false);
 
+        topologyManager.close();
+
         LOG.trace("Deactivating all subscriptions.");
 
         deactivateSubscriptions(activeSubscriptions.values(), false);
@@ -98,7 +100,6 @@ public class AmqpEventManager implements EventManager, UnexpectedConnectionClose
 
         LOG.trace("Closing the connection to the broker.");
 
-        topologyManager.close();
         messageBus.close();
     }
 
@@ -395,9 +396,9 @@ public class AmqpEventManager implements EventManager, UnexpectedConnectionClose
             RoutingInfo route = topologyManager.getRoutingInfoForEvent(eventType);
             if (route == null) {
 
-                LOG.error(String.format("No route found for eventType {}", eventType));
+                LOG.error(String.format("No route found for eventType {}", eventType.getName()));
 
-                throw new RuntimeException(String.format("Unknown route for eventType {}", eventType));
+                throw new RuntimeException(String.format("Unknown route for eventType {}", eventType.getName()));
             }
 
             LOG.info("Route: {}", route);
