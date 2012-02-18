@@ -74,14 +74,17 @@ public class RabbitConnection implements ShutdownListener {
     }
 
     public void shutdownCompleted(ShutdownSignalException signal) {
-        if (signal == null) {
-
-            LOG.info("Connection shutdown notice received.");
-
+        if(isClosing){
+        	LOG.info("Connection shutdown notice received as part of routine bus shutdown.  Taking no action.");
         } else {
-
-            LOG.error("Connection shutdown exception received.", signal);
-
+	    	if (signal == null) {
+	
+	            LOG.info("Connection shutdown notice received unexpectedly.");
+	
+	        } else {
+	
+	            LOG.error("Connection shutdown exception received unexpectedly.", signal);
+	        }
         }
 
         if (isInConnectionErrorState) {
