@@ -63,7 +63,7 @@ public class RabbitManagementApiHelper {
 
 	public void deleteVirtualHost(String vhostName){
 		
-		if(vhostName == "/") return;
+		if(vhostName.equals("/")) return;
 		
 		HttpClient client = getClientForRabbitManagementRestApi();
 
