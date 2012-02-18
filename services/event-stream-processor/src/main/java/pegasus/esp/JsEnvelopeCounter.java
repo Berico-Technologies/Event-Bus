@@ -37,37 +37,4 @@ public class JsEnvelopeCounter extends JavascriptDetector {
 	public JsEnvelopeCounter() throws ScriptException {
 		super(BODY);
 	}
-
-	public static void main(String[] args) {
-		try {
-			JsEnvelopeCounter sc = new JsEnvelopeCounter();
-			sc.receive(MockEventBean("Search"));
-			sc.receive(MockEventBean("Search"));
-			sc.receive(MockEventBean("Resolve"));
-			sc.receive(MockEventBean("Search"));
-		} catch (ScriptException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private static EventBean MockEventBean(final String type) {
-		EventBean bean = new EventBean() {
-			
-			@Override
-			public Object getUnderlying() { return null; }
-			
-			@Override
-			public Object getFragment(String arg0) throws PropertyAccessException { return null; }
-			
-			@Override
-			public EventType getEventType() { return null; }
-			
-			@Override
-			public Object get(String arg0) throws PropertyAccessException {
-				return TestUtils.makeEnvelope(type, null, null, "topic", "replyTo");
-			}
-		};
-		return bean;
-	}
-
 }
