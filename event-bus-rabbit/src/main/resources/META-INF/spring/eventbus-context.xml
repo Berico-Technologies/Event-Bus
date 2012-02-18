@@ -16,7 +16,9 @@
     
     <osgi:service ref="eventManager" interface="pegasus.eventbus.client.EventManager" />
 
-    <bean id="eventManager" class="pegasus.eventbus.amqp.AmqpEventManager" destroy-method="close">
+	<!-- If you don't want the EventManager to start when it is pulled from the ApplicationContext,
+	     remove the 'init-method="start"' property. -->
+    <bean id="eventManager" class="pegasus.eventbus.amqp.AmqpEventManager" init-method="start" destroy-method="close">
         <constructor-arg ref="configuration" />
     </bean>
 
