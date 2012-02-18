@@ -14,15 +14,19 @@ import pegasus.eventbus.topology.service.TopologyService;
 public class TopologyServiceTest {
 
     private TopologyService     topologyService;
+    
     @Mock
     private RegistrationHandler registrationHandler;
+
+    @Mock
+    private UnknownEventTypeHandler unknownEventTypeHandler;
 
     @Before
     public void beforeEachTest() {
 
         MockitoAnnotations.initMocks(this);
 
-        topologyService = new TopologyService(registrationHandler);
+        topologyService = new TopologyService(registrationHandler, unknownEventTypeHandler);
     }
 
     @Test

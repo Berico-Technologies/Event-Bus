@@ -16,11 +16,17 @@
 
     <bean id="topologyService" class="pegasus.eventbus.topology.service.TopologyService" init-method="start" destroy-method="stop" >
         <constructor-arg ref="registrationHandler" />
+        <constructor-arg ref="unknownTypeHandler" />
     </bean>
 
     <bean id="registrationHandler" class="pegasus.eventbus.topology.service.RegistrationHandler">
         <constructor-arg ref="eventManagerService" />
         <constructor-arg ref="clientRegistry" />
+        <constructor-arg ref="topologyRegistry" />
+    </bean>
+
+    <bean id="unknownTypeHandler" class="pegasus.eventbus.topology.service.UnknownEventTypeHandler">
+        <constructor-arg ref="eventManagerService" />
         <constructor-arg ref="topologyRegistry" />
     </bean>
 

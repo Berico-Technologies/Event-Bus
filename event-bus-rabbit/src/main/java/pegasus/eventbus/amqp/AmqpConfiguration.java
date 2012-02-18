@@ -12,6 +12,7 @@ import pegasus.eventbus.gson.GsonSerializer;
 import pegasus.eventbus.rabbitmq.RabbitConnection;
 import pegasus.eventbus.rabbitmq.RabbitMessageBus;
 import pegasus.eventbus.topology.CompositeTopologyManager;
+import pegasus.eventbus.topology.FallbackTopologyManager;
 import pegasus.eventbus.topology.GlobalTopologyServiceManager;
 import pegasus.eventbus.topology.StaticTopologyManager;
 
@@ -267,6 +268,8 @@ public class AmqpConfiguration {
         compositeTopologyManager.addManager(fixedTopologyManager);
         TopologyManager globalTopologyService = new GlobalTopologyServiceManager(clientName);
         compositeTopologyManager.addManager(globalTopologyService);
+        TopologyManager fallbackToplogyService = new FallbackTopologyManager();
+        compositeTopologyManager.addManager(fallbackToplogyService);
         Serializer serializer = new GsonSerializer();
 
         AmqpConfiguration defaultConfiguration = new AmqpConfiguration();

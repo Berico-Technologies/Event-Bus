@@ -8,9 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import pegasus.eventbus.amqp.RoutingInfo;
 import pegasus.eventbus.amqp.TopologyManager;
-import pegasus.eventbus.topology.event.RegisterClient;
-import pegasus.eventbus.topology.event.TopologyUpdate;
-import pegasus.eventbus.topology.event.UnregisterClient;
+import pegasus.eventbus.topology.event.*;
 
 import pegasus.eventbus.client.EventManager;
 
@@ -49,7 +47,9 @@ public class StaticTopologyManager implements TopologyManager {
     	registerType(RegisterClient.class);
     	registerType(UnregisterClient.class);
       	registerType(TopologyUpdate.class);
-              
+     	registerType(GetEventTypeRoute.class);
+      	registerType(EventTypeRoutingInfo.class);
+ 
         //TODO: This should not be here.  All named routes need to be configured.  At the very least this one would need to be "all-topology."
         RoutingInfo[] allRoutes = { new RoutingInfo(topologyExchange, RoutingInfo.ExchangeType.Topic, true, "#") };
         topologyEventSetRegistry.put("ALL", allRoutes);

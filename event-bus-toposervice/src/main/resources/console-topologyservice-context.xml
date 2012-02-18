@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.springframework.org/schema/beans" xmlns:context="http://www.springframework.org/schema/context" xmlns:util="http://www.springframework.org/schema/util"
-    xsi:schemaLocation="http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit-1.0.xsd
-		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+            http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/osgi
+            http://www.springframework.org/schema/osgi/spring-osgi.xsd
+            http://www.springframework.org/schema/util
+            http://www.springframework.org/schema/util/spring-util.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context.xsd">
 
     <context:property-placeholder location="classpath:eventbus.properties" />
 
@@ -39,6 +47,22 @@
         <constructor-arg ref="configuration" />
     </bean>
 
+    <bean id="topologyService" class="pegasus.eventbus.topology.service.TopologyService" init-method="start" destroy-method="stop" >
+        <constructor-arg ref="registrationHandler" />
+        <constructor-arg ref="unknownTypeHandler" />
+    </bean>
+
+    <bean id="registrationHandler" class="pegasus.eventbus.topology.service.RegistrationHandler">
+        <constructor-arg ref="eventManager" />
+        <constructor-arg ref="clientRegistry" />
+        <constructor-arg ref="topologyRegistry" />
+    </bean>
+
+    <bean id="unknownTypeHandler" class="pegasus.eventbus.topology.service.UnknownEventTypeHandler">
+        <constructor-arg ref="eventManager" />
+        <constructor-arg ref="topologyRegistry" />
+    </bean>
+
     <bean id="clientRegistry" class="pegasus.eventbus.topology.service.ClientRegistry" />
 
     <bean id="topologyRegistry" class="pegasus.eventbus.topology.TopologyRegistry">
@@ -55,22 +79,6 @@
                 </entry>
             </map>
         </property>
-    </bean>
-
-    <bean id="registrationHandler" class="pegasus.eventbus.topology.service.RegistrationHandler">
-        <constructor-arg ref="eventManager" />
-        <constructor-arg ref="clientRegistry" />
-        <constructor-arg ref="topologyRegistry" />
-    </bean>
-    
-    <bean id="unknownTypeHandler" class="pegasus.eventbus.topology.service.UnknownEventTypeHandler">
-        <constructor-arg ref="eventManager" />
-        <constructor-arg ref="topologyRegistry" />
-    </bean>
-
-    <bean id="topologyService" class="pegasus.eventbus.topology.service.TopologyService">
-        <constructor-arg ref="registrationHandler" />
-         <constructor-arg ref="unknownTypeHandler" />
     </bean>
 
 </beans>
