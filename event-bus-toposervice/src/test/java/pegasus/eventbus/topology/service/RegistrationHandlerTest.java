@@ -41,15 +41,14 @@ public class RegistrationHandlerTest {
     }
 
     @Test
-    public void startTest() {
+    public void startingTheHandlerShouldSubscribeTheHandler() {
         when(eventManager.subscribe(registrationHandler)).thenReturn(subscriptionToken);
         registrationHandler.start();
-        verify(eventManager).start();
         verify(eventManager).subscribe(registrationHandler);
     }
 
     @Test
-    public void stopTest() {
+    public void stoppingTheHandlerShouldUnsubscribeTheHandler() {
         when(eventManager.subscribe(registrationHandler)).thenReturn(subscriptionToken);
         registrationHandler.start();
         registrationHandler.stop();
