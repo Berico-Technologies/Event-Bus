@@ -7,6 +7,7 @@ import pegasus.eventbus.amqp.TopologyManager;
 
 import pegasus.eventbus.client.EventManager;
 
+//TODO: This class need test coverage.
 public class CompositeTopologyManager implements TopologyManager {
 
     private PriorityQueue<TopoWrapper> topologyWrappers = new PriorityQueue<TopoWrapper>();

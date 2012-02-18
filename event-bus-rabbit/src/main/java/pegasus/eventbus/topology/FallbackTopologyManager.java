@@ -11,6 +11,7 @@ import pegasus.eventbus.client.EventManager;
 import pegasus.eventbus.topology.event.EventTypeRoutingInfo;
 import pegasus.eventbus.topology.event.GetEventTypeRoute;
 
+//TODO: This class need test coverage.
 public class FallbackTopologyManager implements TopologyManager {
 
 	   protected static final Logger LOG              = LoggerFactory.getLogger(FallbackTopologyManager.class);

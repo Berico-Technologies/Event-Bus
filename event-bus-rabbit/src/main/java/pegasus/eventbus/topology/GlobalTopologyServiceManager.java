@@ -14,6 +14,7 @@ import pegasus.eventbus.client.EventManager;
 import pegasus.eventbus.client.EventResult;
 import pegasus.eventbus.client.SubscriptionToken;
 
+//TODO: This class need test coverage.
 public class GlobalTopologyServiceManager implements TopologyManager {
 
     protected static final Logger LOG              = LoggerFactory.getLogger(GlobalTopologyServiceManager.class);
