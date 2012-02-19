@@ -28,8 +28,8 @@ fi
 
 echo "deploying"
 
-cp "$EVENT_BUS_CLIENT/target/*.jar" "$FELIX_BUNDLE_DIR"
-cp "$EVENT_BUS_RABBIT/target/*.jar" "$FELIX_BUNDLE_DIR"
+cp "$EVENT_BUS_RABBIT_DIR/target/"*.jar "$FELIX_BUNDLE_DIR/."
+cp "$EVENT_BUS_TOPO_DIR/target/"*.jar "$FELIX_BUNDLE_DIR/."
 
 rm -Rf "$FELIX_CACHE_DIR"
 

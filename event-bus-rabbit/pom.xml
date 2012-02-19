@@ -28,12 +28,12 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>EventBusRabbitClient</Bundle-SymbolicName>
-                        <!-- Bundle-Activator>pegasus.eventbus.amqp.Activator</Bundle-Activator -->
+                        <Bundle-SymbolicName>pegasus.eventbus.client</Bundle-SymbolicName>
+                        <Bundle-Activator>pegasus.eventbus.amqp.Activator</Bundle-Activator>
                         <Export-Package>pegasus.eventbus.client</Export-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>
                         <Import-Package>!com.ibm.uvm.tools.*</Import-Package>
-                        <Embed-Dependency>!org.osgi.*,!org.apache.felix.*,!org.spring*,!spring*,!slf4j-api.*,!org.slf4j.*,*;scope=compile|runtime</Embed-Dependency>
+                        <Embed-Dependency>!org.osgi.*,!org.apache.felix.*,!org.spring*,!spring*,!slf4j-api.*,!org.slf4j.*</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
                 </configuration>

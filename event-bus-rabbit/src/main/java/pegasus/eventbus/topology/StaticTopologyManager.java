@@ -23,6 +23,9 @@ public class StaticTopologyManager implements TopologyManager {
     private Map<String, RoutingInfo[]> topologyEventSetRegistry  = new HashMap<String, RoutingInfo[]>();
 
     public StaticTopologyManager() {
+
+        LOG.info("Instantiating the Static Topology Manager.");
+
         this.topologyExchange = DEFAULT_TOPOLOGY_EXCHANGE;
         initializeTopologyRegistries();
     }
@@ -34,7 +37,7 @@ public class StaticTopologyManager implements TopologyManager {
 
     @Override
     public void start(EventManager eventManager) {
-     // do nothing - static topology manager doesn't care
+        // do nothing - static topology manager doesn't care
     }
 
     @Override
@@ -63,14 +66,14 @@ public class StaticTopologyManager implements TopologyManager {
     @Override
     public RoutingInfo getRoutingInfoForEvent(Class<?> eventType) {
 
-        LOG.info("Looking for route for event type [{}] in static topology mapper.", eventType.getCanonicalName());
+        LOG.trace("Looking for route for event type [{}] in static topology mapper.", eventType.getCanonicalName());
 
         RoutingInfo route = null;
         String topic = eventType.getCanonicalName();
         if (topologyEventRegistry.containsKey(topic)) {
             route = topologyEventRegistry.get(topic);
 
-            LOG.info("Found route [{}] in static topology mapper.", route);
+            LOG.trace("Found route [{}] in static topology mapper.", route);
         }
         return route;
     }
@@ -78,13 +81,13 @@ public class StaticTopologyManager implements TopologyManager {
     @Override
     public RoutingInfo[] getRoutingInfoForNamedEventSet(String eventSetName) {
 
-        LOG.info("Looking for routes for event set name [{}] in static topology mapper.", eventSetName);
+        LOG.trace("Looking for routes for event set name [{}] in static topology mapper.", eventSetName);
 
         RoutingInfo[] routes = null;
         if (topologyEventSetRegistry.containsKey(eventSetName)) {
             routes = topologyEventSetRegistry.get(eventSetName);
 
-            LOG.info("Found routes [{}] in static topology mapper.", routes);
+            LOG.trace("Found routes [{}] in static topology mapper.", routes);
         }
         return routes;
     }

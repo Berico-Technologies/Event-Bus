@@ -75,7 +75,9 @@ public class RabbitConnection implements ShutdownListener {
 
     public void shutdownCompleted(ShutdownSignalException signal) {
         if(isClosing){
+            
         	LOG.info("Connection shutdown notice received as part of routine bus shutdown.  Taking no action.");
+        	
         	return;
         } else {
 	    	if (signal == null) {
@@ -88,7 +90,7 @@ public class RabbitConnection implements ShutdownListener {
 	        }
         }
 
-        if (isInConnectionErrorState) {
+        if (isInConnectionErrorState || isClosing) {
             return;
         }
 
@@ -99,7 +101,9 @@ public class RabbitConnection implements ShutdownListener {
         try {
 
             while (watch.getTime() < retryTimeout) {
+                
                 LOG.info("Attempting to reopen connection.");
+                
                 try {
                     open();
 

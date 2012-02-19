@@ -33,13 +33,13 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>EventBusTopologyService</Bundle-SymbolicName>
-                        <!-- Bundle-Activator>pegasus.eventbus.topology.service.Activator</Bundle-Activator -->
-                        <Export-Package>pegasus.eventbus.topology.service</Export-Package>
+                        <Bundle-SymbolicName>pegasus.eventbus.topology.service</Bundle-SymbolicName>
+                        <Bundle-Activator>pegasus.eventbus.topology.service.Activator</Bundle-Activator>
                         <DynamicImport-Package>*</DynamicImport-Package>
                         <Import-Package>!com.ibm.uvm.tools.*</Import-Package>
-                        <Embed-Dependency>!org.osgi.*,!org.apache.felix.*,!org.spring*,!spring*,!slf4j*,!org.slf4j*,*;scope=compile|runtime</Embed-Dependency>
+                        <Embed-Dependency>!org.osgi.*,!org.apache.felix.*,!org.spring*,!spring*,!slf4j*,!org.slf4j*,!pegasus.eventbus.client.*,!pegasus.eventbus.amqp.*</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
+                        <Require-Bundle>pegasus.eventbus.client</Require-Bundle>
                     </instructions>
                 </configuration>
             </plugin>

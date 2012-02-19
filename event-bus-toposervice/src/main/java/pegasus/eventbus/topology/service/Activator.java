@@ -1,37 +1,53 @@
 package pegasus.eventbus.topology.service;
 
-import java.util.Hashtable;
-
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import pegasus.eventbus.client.EventManager;
+import pegasus.eventbus.topology.TopologyRegistry;
 
 public class Activator implements BundleActivator {
 
-    protected static final Logger      LOG                         = LoggerFactory.getLogger(Activator.class);
+    protected static final Logger  LOG = LoggerFactory.getLogger(Activator.class);
 
-    private static ServiceRegistration topologyServiceRegistration = null;
+    private static TopologyService topologyService;
 
-    @SuppressWarnings("rawtypes")
     public void start(BundleContext bundleContext) throws Exception {
-        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("topologyservice-context.xml");
-        TopologyService topologyService = context.getBean(TopologyService.class);
-        topologyService.start();
 
-        topologyServiceRegistration = bundleContext.registerService(TopologyService.class.getName(), topologyService, new Hashtable());
+        LOG.info("OSGi Starting: {}", TopologyService.class.getName());
 
-        LOG.info("TopologyService Started.");
+        ServiceReference eventManagerServiceReference = bundleContext.getServiceReference(EventManager.class.getName());
+        if (eventManagerServiceReference != null) {
+            EventManager eventManager = (EventManager) bundleContext.getService(eventManagerServiceReference);
+            TopologyRegistry topologyRegistry = new TopologyRegistry();
+            ClientRegistry clientRegistry = new ClientRegistry();
+            RegistrationHandler registrationHandler = new RegistrationHandler(eventManager, clientRegistry, topologyRegistry);
+            topologyService = new TopologyService(registrationHandler);
+            topologyService.start();
+
+            LOG.info("OSGi Started: {}", TopologyService.class.getName());
+
+        } else {
+
+            LOG.error("Unable to find EventManager service.");
+
+        }
+
     }
 
     public void stop(BundleContext bundleContext) throws Exception {
-        if (topologyServiceRegistration != null) {
-            bundleContext.ungetService(topologyServiceRegistration.getReference());
+
+        LOG.info("OSGi Stopping: {}", TopologyService.class.getName());
+
+        if (topologyService != null) {
+            topologyService.stop();
         }
 
-        LOG.info("TopologyService Stopped.");
+        LOG.info("OSGi Stopped: {}", TopologyService.class.getName());
+
     }
 
 }

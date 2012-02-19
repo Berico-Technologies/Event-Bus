@@ -2,6 +2,9 @@ package pegasus.eventbus.topology;
 
 import java.util.PriorityQueue;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import pegasus.eventbus.amqp.RoutingInfo;
 import pegasus.eventbus.amqp.TopologyManager;
 
@@ -10,7 +13,15 @@ import pegasus.eventbus.client.EventManager;
 //TODO: This class need test coverage.
 public class CompositeTopologyManager implements TopologyManager {
 
+    protected static final Logger      LOG              = LoggerFactory.getLogger(CompositeTopologyManager.class);
+
     private PriorityQueue<TopoWrapper> topologyWrappers = new PriorityQueue<TopoWrapper>();
+
+    public CompositeTopologyManager() {
+
+        LOG.info("Instantiating the Composite Topology Manager.");
+
+    }
 
     @Override
     public void start(EventManager eventManager) {

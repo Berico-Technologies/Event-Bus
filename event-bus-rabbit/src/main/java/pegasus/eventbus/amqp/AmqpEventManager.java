@@ -55,7 +55,7 @@ public class AmqpEventManager implements EventManager, UnexpectedConnectionClose
      */
     public AmqpEventManager(AmqpConfiguration configuration) {
 
-        LOG.info("Starting the AMQP Event Manager.");
+        LOG.info("Instantiating the AMQP Event Manager.");
 
         this.clientName = configuration.getClientName();
         this.messageBus = configuration.getAmqpMessageBus();
@@ -69,7 +69,7 @@ public class AmqpEventManager implements EventManager, UnexpectedConnectionClose
     @Override
     public void start() {
 
-        LOG.info("Starting the Event Manager.");
+        LOG.info("Starting the AMQP Event Manager.");
 
         LOG.trace("Notifying all named members.");
 
@@ -401,7 +401,7 @@ public class AmqpEventManager implements EventManager, UnexpectedConnectionClose
                 throw new RuntimeException(String.format("Unknown route for eventType {}", eventType.getName()));
             }
 
-            LOG.info("Route: {}", route);
+            LOG.trace("Route: {}", route);
 
             // Assuming we want to ensure that we not only catch types that match the canonical class name
             // but also anything past it in the hierarchy. This is needed to support RPC routing keys which have

@@ -108,9 +108,6 @@ class EnvelopeHandlerBasedConsumer extends DefaultConsumer {
         LOG.info("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         LOG.info("handleCancelOk");
         LOG.info("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("handleCancelOk");
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     }
 	
 }

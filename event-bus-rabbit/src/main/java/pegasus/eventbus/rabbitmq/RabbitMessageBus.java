@@ -44,7 +44,7 @@ public class RabbitMessageBus implements AmqpMessageBus, UnexpectedCloseListener
      */
     public RabbitMessageBus(RabbitConnection connection) {
 
-        LOG.trace("Building the RabbitMQ Connection Factory.");
+        LOG.info("Instantiating the RabbitMQ Message Bus.");
 
         this.connection = connection;
         connection.attachUnexpectedCloseListener(this);
@@ -53,7 +53,7 @@ public class RabbitMessageBus implements AmqpMessageBus, UnexpectedCloseListener
     @Override
     public void start() {
 
-        LOG.trace("Starting the RabbitMessageBus");
+        LOG.info("Starting the RabbitMQ Message Bus.");
 
         openConnectionToBroker();
 

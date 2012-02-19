@@ -25,6 +25,9 @@ public class GlobalTopologyServiceManager implements TopologyManager {
     private SubscriptionToken     subscriptionToken;
 
     public GlobalTopologyServiceManager(String clientName) {
+
+        LOG.info("Instantiating the Global Topology Service Manager.");
+
         this.clientName = clientName;
     }
 
@@ -45,11 +48,14 @@ public class GlobalTopologyServiceManager implements TopologyManager {
             LOG.trace("Registering client {} with Global Topology Service.", clientName);
 
             @SuppressWarnings("unchecked")
-            TopologyUpdate topologyUpdateResponseEvent = eventManager.getResponseTo(registerClientEvent, 30000, TopologyUpdate.class);
+            TopologyUpdate topologyUpdateResponseEvent = eventManager.getResponseTo(registerClientEvent, 5000, TopologyUpdate.class);
             topologyRegistry = topologyUpdateResponseEvent.getTopologyRegistry();
         } catch (Exception e) {
 
-            LOG.error("Error starting Global Topology Service.", e);
+            // unable to connect with the topo service
+            // to be if this is the topo service
+            // @todo - review
+            LOG.error("Error starting Global Topology Service.");
 
         }
     }

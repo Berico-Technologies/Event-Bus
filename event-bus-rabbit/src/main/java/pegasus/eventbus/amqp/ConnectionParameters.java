@@ -265,7 +265,7 @@ public class ConnectionParameters {
 
         defaults.put("username", "guest");
         defaults.put("password", "guest");
-        defaults.put("host", "rabbit");
+        defaults.put("host", "rabbit.pegasus.gov");
         defaults.put("port", "5672");
         defaults.put("vhost", "/");
         defaults.put("connectionRetryTimeout", "30000");
