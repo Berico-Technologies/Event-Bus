@@ -25,7 +25,8 @@ public class Activator implements BundleActivator {
             TopologyRegistry topologyRegistry = new TopologyRegistry();
             ClientRegistry clientRegistry = new ClientRegistry();
             RegistrationHandler registrationHandler = new RegistrationHandler(eventManager, clientRegistry, topologyRegistry);
-            topologyService = new TopologyService(registrationHandler);
+            UnknownEventTypeHandler unknownEventTypeHandler = new UnknownEventTypeHandler(eventManager, topologyRegistry);
+            topologyService = new TopologyService(registrationHandler, unknownEventTypeHandler);
             topologyService.start();
 
             LOG.info("OSGi Started: {}", TopologyService.class.getName());
