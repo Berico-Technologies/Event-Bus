@@ -32,6 +32,9 @@ The EventManager interface defines the primary API to the event bus. AmqpEventMa
     connectionParameters.setPort(5672);
     Configuration configuration = Configuration.getDefault(clientName, connectionParameters);
     eventManager = new AmqpEventManager(configuration);
+    //NEW - please 'start' the Event Manager (or you will get NullReferenceErrors out
+    //of the topology managers).
+    eventManager.start();
 ```
 
 All of the configuration parameters (clientName, userName, password, virtualHost, hostName and portNumber) are provided by the event bus administrator. Once eventManager is instantiated, a connection is open to the bus and the client is ready to begin publishing or subscribing to messages. 
@@ -173,6 +176,7 @@ public class SimpleClient {
         connectionParameters.setPort(5672);
         Configuration configuration = Configuration.getDefault(clientName, connectionParameters);
         eventManager = new AmqpEventManager(configuration);
+        eventManager.start();
     }
         
     protected void startChatSession() {
