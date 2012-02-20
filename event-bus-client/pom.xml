@@ -9,4 +9,50 @@
     <artifactId>event-bus-client</artifactId>
     <name>Event Bus API</name>
     <description>The event bus API</description>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.3.6</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>pegasus.eventbus.client</Bundle-SymbolicName>
+                        <Export-Package>pegasus.eventbus.client</Export-Package>
+                        <DynamicImport-Package>*</DynamicImport-Package>
+                        <Import-Package>!com.ibm.uvm.tools.*</Import-Package>
+                        <Embed-Dependency>
+                            !mockito-core*,
+                            !slf4j-api*,
+                            !logback-core*,
+                            !logback-classic,
+                            !log4j*,
+                            !org.osgi*,
+                            !org.apache.felix*,
+                            !awaitility*,
+                            !junit*,
+                            !spring-context*,
+                            !aopalliance*,
+                            !spring-aop*,
+                            !spring-bean*,
+                            !spring-asm*,
+                            !spring-core*,
+                            !spring-expression*,
+                            !objenesis*,
+                            !hamcrest-core*,
+                            !hamcrest-library*,
+                            !cglib-nodep*,
+                            !commons-logging*,
+                            !commons-codec*,
+                            !commons-httpclient*,
+                            !commons-cli*
+                        </Embed-Dependency>
+                        <Embed-Transitive>true</Embed-Transitive>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

@@ -34,12 +34,37 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>pegasus.eventbus.topology.service</Bundle-SymbolicName>
-                        <Bundle-Activator>pegasus.eventbus.topology.service.Activator</Bundle-Activator>
+                        <Bundle-Activator>pegasus.eventbus.topology.osgi.Activator</Bundle-Activator>
+                        <Require-Bundle>pegasus.eventbus.client</Require-Bundle>
                         <DynamicImport-Package>*</DynamicImport-Package>
                         <Import-Package>!com.ibm.uvm.tools.*</Import-Package>
-                        <Embed-Dependency>!org.osgi.*,!org.apache.felix.*,!org.spring*,!spring*,!slf4j*,!org.slf4j*,!pegasus.eventbus.client.*,!pegasus.eventbus.amqp.*</Embed-Dependency>
+                        <Embed-Dependency>
+                            !mockito-core*,
+                            !slf4j-api*,
+                            !logback-core*,
+                            !logback-classic,
+                            !log4j*,
+                            !org.osgi*,
+                            !org.apache.felix*,
+                            !awaitility*,
+                            !junit*,
+                            !spring-context*,
+                            !aopalliance*,
+                            !spring-aop*,
+                            !spring-bean*,
+                            !spring-asm*,
+                            !spring-core*,
+                            !spring-expression*,
+                            !objenesis*,
+                            !hamcrest-core*,
+                            !hamcrest-library*,
+                            !cglib-nodep*,
+                            !commons-logging*,
+                            !commons-codec*,
+                            !commons-httpclient*,
+                            !commons-cli*
+                        </Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
-                        <Require-Bundle>pegasus.eventbus.client</Require-Bundle>
                     </instructions>
                 </configuration>
             </plugin>

@@ -12,6 +12,7 @@
         <module>event-bus-rabbit</module>
         <module>event-bus-toposervice</module>
         <module>services/event-stream-processor</module>
+        <module>event-bus-rabbit-config</module>
     </modules>
 
     <properties>

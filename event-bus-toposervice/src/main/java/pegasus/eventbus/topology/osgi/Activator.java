@@ -1,4 +1,7 @@
-package pegasus.eventbus.topology.service;
+package pegasus.eventbus.topology.osgi;
+
+import java.util.Dictionary;
+import java.util.Hashtable;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -8,6 +11,10 @@ import org.slf4j.LoggerFactory;
 
 import pegasus.eventbus.client.EventManager;
 import pegasus.eventbus.topology.TopologyRegistry;
+import pegasus.eventbus.topology.service.ClientRegistry;
+import pegasus.eventbus.topology.service.RegistrationHandler;
+import pegasus.eventbus.topology.service.TopologyService;
+import pegasus.eventbus.topology.service.UnknownEventTypeHandler;
 
 public class Activator implements BundleActivator {
 
@@ -16,8 +23,16 @@ public class Activator implements BundleActivator {
     private static TopologyService topologyService;
 
     public void start(BundleContext bundleContext) throws Exception {
+        register(bundleContext, defaults());
+    }
 
-        LOG.info("OSGi Starting: {}", TopologyService.class.getName());
+    public void stop(BundleContext bundleContext) throws Exception {
+        unregister(bundleContext);
+    }
+
+    private void register(BundleContext bundleContext, Dictionary<String, String> config) {
+
+        LOG.info("Registering Topology Service: {}", TopologyService.class.getName());
 
         ServiceReference eventManagerServiceReference = bundleContext.getServiceReference(EventManager.class.getName());
         if (eventManagerServiceReference != null) {
@@ -29,26 +44,29 @@ public class Activator implements BundleActivator {
             topologyService = new TopologyService(registrationHandler, unknownEventTypeHandler);
             topologyService.start();
 
-            LOG.info("OSGi Started: {}", TopologyService.class.getName());
+            LOG.info("Topology Service Registered: {}", TopologyService.class.getName());
 
         } else {
 
             LOG.error("Unable to find EventManager service.");
 
         }
-
     }
 
-    public void stop(BundleContext bundleContext) throws Exception {
+    private void unregister(BundleContext bundleContext) {
 
-        LOG.info("OSGi Stopping: {}", TopologyService.class.getName());
+        LOG.info("Unregistering Topology Service: {}", TopologyService.class.getName());
 
         if (topologyService != null) {
             topologyService.stop();
         }
 
-        LOG.info("OSGi Stopped: {}", TopologyService.class.getName());
+        LOG.info("Topology Service Unregistered: {}", TopologyService.class.getName());
+    }
 
+    private Dictionary<String, String> defaults() {
+        Dictionary<String, String> defaults = new Hashtable<String, String>();
+        return defaults;
     }
 
 }

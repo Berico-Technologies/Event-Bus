@@ -9,7 +9,7 @@
     </parent>
     <artifactId>event-bus-rabbit</artifactId>
     <name>Event Bus Rabbit Client</name>
-    <description>The Event Bus Implementation</description>
+    <description>The Event Bus RabbitMQ implementation</description>
 
     <dependencies>
         <dependency>
@@ -28,12 +28,39 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>pegasus.eventbus.client</Bundle-SymbolicName>
-                        <Bundle-Activator>pegasus.eventbus.amqp.Activator</Bundle-Activator>
-                        <Export-Package>pegasus.eventbus.client</Export-Package>
+                        <Bundle-SymbolicName>pegasus.eventbus.client.rabbitmq</Bundle-SymbolicName>
+                        <Bundle-Activator>pegasus.eventbus.osgi.Activator</Bundle-Activator>
+                        <Export-Service>pegasus.eventbus.client.EventManager</Export-Service>
+                        <Require-Bundle>pegasus.eventbus.client</Require-Bundle>
+                        <Include-Resource>src/main/resources/eventbus.properties</Include-Resource>
                         <DynamicImport-Package>*</DynamicImport-Package>
                         <Import-Package>!com.ibm.uvm.tools.*</Import-Package>
-                        <Embed-Dependency>!org.osgi.*,!org.apache.felix.*,!org.spring*,!spring*,!slf4j-api.*,!org.slf4j.*</Embed-Dependency>
+                        <Embed-Dependency>
+                            !mockito-core*,
+                            !slf4j-api*,
+                            !logback-core*,
+                            !logback-classic,
+                            !log4j*,
+                            !org.osgi*,
+                            !org.apache.felix*,
+                            !awaitility*,
+                            !junit*,
+                            !spring-context*,
+                            !aopalliance*,
+                            !spring-aop*,
+                            !spring-bean*,
+                            !spring-asm*,
+                            !spring-core*,
+                            !spring-expression*,
+                            !objenesis*,
+                            !hamcrest-core*,
+                            !hamcrest-library*,
+                            !cglib-nodep*,
+                            !commons-logging*,
+                            !commons-codec*,
+                            !commons-httpclient*,
+                            !commons-cli*
+                        </Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
                 </configuration>

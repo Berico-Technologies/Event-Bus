@@ -1,6 +1,6 @@
 package pegasus.eventbus.testsupport;
 
-import java.util.HashMap;
+import java.util.Dictionary;
 import java.util.UUID;
 
 import pegasus.eventbus.amqp.ConnectionParameters;
@@ -14,7 +14,7 @@ public class ConnectionParametersWithRandomVirtualHost extends
 	}
 
 	public ConnectionParametersWithRandomVirtualHost(
-			HashMap<String, String> parametersMap) {
+			Dictionary<String, String> parametersMap) {
 		super(parametersMap);
 	}
 

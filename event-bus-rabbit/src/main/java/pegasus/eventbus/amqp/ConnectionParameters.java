@@ -1,6 +1,8 @@
 package pegasus.eventbus.amqp;
 
-import java.util.HashMap;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.Hashtable;
 
 /**
  * Configuration for AMQP specific connection parameters.
@@ -9,14 +11,15 @@ import java.util.HashMap;
  */
 public class ConnectionParameters {
 
-    private static final HashMap<String, String> DEFAULT_VALUES = initializeDefaults();
+    private static final Dictionary<String, String> DEFAULT_VALUES = initializeDefaults();
 
-    private final HashMap<String, String>        parametersMap  = new HashMap<String, String>();
+    private final Dictionary<String, String>        parametersMap  = new Hashtable<String, String>();
 
     /**
      * Default Constructor
      */
     public ConnectionParameters() {
+
     }
 
     /**
@@ -25,8 +28,11 @@ public class ConnectionParameters {
      * @param parametersMap
      *            Parameter Map
      */
-    public ConnectionParameters(HashMap<String, String> parametersMap) {
-        this.parametersMap.putAll(parametersMap);
+    public ConnectionParameters(Dictionary<String, String> parametersMap) {
+        Enumeration<String> keys = parametersMap.keys();
+        for (String key = keys.nextElement(); keys.hasMoreElements(); keys.nextElement()) {
+            this.parametersMap.put(key, parametersMap.get(key));
+        }
     }
 
     /**
@@ -174,7 +180,7 @@ public class ConnectionParameters {
      * @return Value (either in the map or default)
      */
     public String getValue(String key, String defaultValue) {
-        return parametersMap.containsKey(key) ? parametersMap.get(key) : defaultValue;
+        return parametersMap.get(key) != null ? parametersMap.get(key) : defaultValue;
     }
 
     /**
@@ -259,9 +265,9 @@ public class ConnectionParameters {
      * 
      * @return Default Parameter Map
      */
-    private static HashMap<String, String> initializeDefaults() {
+    private static Dictionary<String, String> initializeDefaults() {
 
-        HashMap<String, String> defaults = new HashMap<String, String>();
+        Dictionary<String, String> defaults = new Hashtable<String, String>();
 
         defaults.put("username", "guest");
         defaults.put("password", "guest");
