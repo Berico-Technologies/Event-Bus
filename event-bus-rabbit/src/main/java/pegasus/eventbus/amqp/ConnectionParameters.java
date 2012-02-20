@@ -11,6 +11,13 @@ import java.util.Hashtable;
  */
 public class ConnectionParameters {
 
+    public static final String USERNAME_PROPERTY = "username";
+    public static final String PASSWORD_PROPERTY = "password";
+    public static final String HOST_PROPERTY = "host";
+    public static final String PORT_PROPERTY = "port";
+    public static final String VHOST_PROPERTY = "vhost";
+    public static final String CONNECTION_RETRY_TIMEOUT_PROPERTY = "connectionRetryTimeout";
+
     private static final Dictionary<String, String> DEFAULT_VALUES = initializeDefaults();
 
     private final Dictionary<String, String>        parametersMap  = new Hashtable<String, String>();
@@ -63,7 +70,7 @@ public class ConnectionParameters {
      * @return Username
      */
     public String getUsername() {
-        return getValue("username", DEFAULT_VALUES.get("username"));
+        return getValue(USERNAME_PROPERTY, DEFAULT_VALUES.get(USERNAME_PROPERTY));
     }
 
     /**
@@ -73,7 +80,7 @@ public class ConnectionParameters {
      *            user account
      */
     public void setUsername(String username) {
-        setValue("username", username);
+        setValue(USERNAME_PROPERTY, username);
     }
 
     /**
@@ -82,7 +89,7 @@ public class ConnectionParameters {
      * @return Password
      */
     public String getPassword() {
-        return getValue("password", DEFAULT_VALUES.get("password"));
+        return getValue(PASSWORD_PROPERTY, DEFAULT_VALUES.get(PASSWORD_PROPERTY));
     }
 
     /**
@@ -92,7 +99,7 @@ public class ConnectionParameters {
      *            Password
      */
     public void setPassword(String password) {
-        setValue("password", password);
+        setValue(PASSWORD_PROPERTY, password);
     }
 
     /**
@@ -101,7 +108,7 @@ public class ConnectionParameters {
      * @return Hostname
      */
     public String getHost() {
-        return getValue("host", DEFAULT_VALUES.get("host"));
+        return getValue(HOST_PROPERTY, DEFAULT_VALUES.get(HOST_PROPERTY));
     }
 
     /**
@@ -111,7 +118,7 @@ public class ConnectionParameters {
      *            Hostname
      */
     public void setHost(String host) {
-        setValue("host", host);
+        setValue(HOST_PROPERTY, host);
     }
 
     /**
@@ -120,7 +127,7 @@ public class ConnectionParameters {
      * @return Virtual Host
      */
     public String getVirtualHost() {
-        return getValue("vhost", DEFAULT_VALUES.get("vhost"));
+        return getValue(VHOST_PROPERTY, DEFAULT_VALUES.get(VHOST_PROPERTY));
     }
 
     /**
@@ -130,7 +137,7 @@ public class ConnectionParameters {
      *            Virtual Host
      */
     public void setVirtualHost(String vhost) {
-        setValue("vhost", vhost);
+        setValue(VHOST_PROPERTY, vhost);
     }
 
     /**
@@ -139,7 +146,7 @@ public class ConnectionParameters {
      * @return Port number
      */
     public int getPort() {
-        return Integer.parseInt(getValue("port", DEFAULT_VALUES.get("port")));
+        return Integer.parseInt(getValue(PORT_PROPERTY, DEFAULT_VALUES.get(PORT_PROPERTY)));
     }
 
     /**
@@ -149,7 +156,7 @@ public class ConnectionParameters {
      *            Port Number
      */
     public void setPort(int port) {
-        setValue("port", Integer.toString(port));
+        setValue(PORT_PROPERTY, Integer.toString(port));
     }
 
     /**
@@ -158,7 +165,7 @@ public class ConnectionParameters {
      * @return connectionRetryTimeout
      */
     public long getConnectionRetryTimeout() {
-        return Long.parseLong(getValue("connectionRetryTimeout", DEFAULT_VALUES.get("connectionRetryTimeout")));
+        return Long.parseLong(getValue(CONNECTION_RETRY_TIMEOUT_PROPERTY, DEFAULT_VALUES.get(CONNECTION_RETRY_TIMEOUT_PROPERTY)));
     }
 
     /**
@@ -167,7 +174,7 @@ public class ConnectionParameters {
      * @param connectionRetryTimeout
      */
     public void setConnectionRetryTimeout(long connectionRetryTimeout) {
-        setValue("connectionRetryTimeout", Long.toString(connectionRetryTimeout));
+        setValue(CONNECTION_RETRY_TIMEOUT_PROPERTY, Long.toString(connectionRetryTimeout));
     }
 
     /**
@@ -207,35 +214,35 @@ public class ConnectionParameters {
 
         int usernameSep = uri.indexOf(":", position);
 
-        setValue("username", uri.substring(position, usernameSep));
+        setValue(USERNAME_PROPERTY, uri.substring(position, usernameSep));
 
         position = usernameSep + 1;
 
         int hostSep = uri.indexOf("@", position);
 
-        setValue("password", uri.substring(position, hostSep));
+        setValue(PASSWORD_PROPERTY, uri.substring(position, hostSep));
 
         position = hostSep + 1;
 
         int portSep = uri.indexOf(":", position);
 
-        setValue("host", uri.substring(position, portSep));
+        setValue(HOST_PROPERTY, uri.substring(position, portSep));
 
         position = portSep + 1;
 
         int vhostSep = uri.indexOf("/", position);
 
-        setValue("port", uri.substring(position, vhostSep));
+        setValue(PORT_PROPERTY, uri.substring(position, vhostSep));
 
         position = vhostSep;
 
         if (vhostSep == -1) {
 
-            setValue("vhost", "/");
+            setValue(VHOST_PROPERTY, "/");
 
         } else {
 
-            setValue("vhost", uri.substring(position));
+            setValue(VHOST_PROPERTY, uri.substring(position));
         }
     }
 
@@ -269,12 +276,12 @@ public class ConnectionParameters {
 
         Dictionary<String, String> defaults = new Hashtable<String, String>();
 
-        defaults.put("username", "guest");
-        defaults.put("password", "guest");
-        defaults.put("host", "rabbit.pegasus.gov");
-        defaults.put("port", "5672");
-        defaults.put("vhost", "/");
-        defaults.put("connectionRetryTimeout", "30000");
+        defaults.put(USERNAME_PROPERTY, "guest");
+        defaults.put(PASSWORD_PROPERTY, "guest");
+        defaults.put(HOST_PROPERTY, "rabbit.pegasus.gov");
+        defaults.put(PORT_PROPERTY, "5672");
+        defaults.put(VHOST_PROPERTY, "/");
+        defaults.put(CONNECTION_RETRY_TIMEOUT_PROPERTY, "30000");
 
         return defaults;
     }

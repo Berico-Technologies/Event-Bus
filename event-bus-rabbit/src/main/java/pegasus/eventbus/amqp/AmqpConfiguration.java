@@ -24,7 +24,9 @@ import pegasus.eventbus.topology.StaticTopologyManager;
  */
 public class AmqpConfiguration {
 
-    protected static final Logger LOG                          = LoggerFactory.getLogger(AmqpConfiguration.class);
+    public static final String CLIENT_NAME_PROPERTY = "clientName";
+    
+    private static final Logger LOG                          = LoggerFactory.getLogger(AmqpConfiguration.class);
 
     // Must start with Alpha, Digit or _ and be no more than 255 chars. Special
     // chars, spaces, etc. are allowed.
