@@ -11,12 +11,12 @@ import java.util.Hashtable;
  */
 public class ConnectionParameters {
 
-    public static final String USERNAME_PROPERTY = "username";
-    public static final String PASSWORD_PROPERTY = "password";
-    public static final String HOST_PROPERTY = "host";
-    public static final String PORT_PROPERTY = "port";
-    public static final String VHOST_PROPERTY = "vhost";
-    public static final String CONNECTION_RETRY_TIMEOUT_PROPERTY = "connectionRetryTimeout";
+    public static final String USERNAME_PROPERTY = "event.bus.username";
+    public static final String PASSWORD_PROPERTY = "event.bus.password";
+    public static final String HOST_PROPERTY = "event.bus.host";
+    public static final String PORT_PROPERTY = "event.bus.port";
+    public static final String VHOST_PROPERTY = "event.bus.vhost";
+    public static final String CONNECTION_RETRY_TIMEOUT_PROPERTY = "event.bus.connectionRetryTimeout";
 
     private static final Dictionary<String, String> DEFAULT_VALUES = initializeDefaults();
 

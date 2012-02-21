@@ -59,12 +59,12 @@ public class Activator implements BundleActivator {
     }
 
     private Dictionary<String, String> getConfig() {
-        Dictionary<String, String> config = getDefaults();
-
+        Dictionary<String, String> config = new Hashtable<String, String>();
         try {
             ResourceBundle properties = ResourceBundle.getBundle("eventbus");
             for (String key : properties.keySet()) {
                 config.put(key, properties.getString(key));
+                LOG.info("Key: {}, Value: {}", key, properties.getString(key));
             }
         } catch (MissingResourceException e) {
 
@@ -73,18 +73,6 @@ public class Activator implements BundleActivator {
         }
 
         return config;
-    }
-
-    private Dictionary<String, String> getDefaults() {
-        Dictionary<String, String> defaults = new Hashtable<String, String>();
-        defaults.put(AmqpConfiguration.CLIENT_NAME_PROPERTY, "unique-application-name");
-        defaults.put(ConnectionParameters.USERNAME_PROPERTY, "guest");
-        defaults.put(ConnectionParameters.PASSWORD_PROPERTY, "guest");
-        defaults.put(ConnectionParameters.HOST_PROPERTY, "rabbit.pegasus.gov");
-        defaults.put(ConnectionParameters.PORT_PROPERTY, "5672");
-        defaults.put(ConnectionParameters.VHOST_PROPERTY, "/");
-        defaults.put(ConnectionParameters.CONNECTION_RETRY_TIMEOUT_PROPERTY, "30000");
-        return defaults;
     }
 
 }

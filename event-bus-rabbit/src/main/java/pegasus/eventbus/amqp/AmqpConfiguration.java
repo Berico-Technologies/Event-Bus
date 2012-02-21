@@ -24,29 +24,29 @@ import pegasus.eventbus.topology.StaticTopologyManager;
  */
 public class AmqpConfiguration {
 
-    public static final String CLIENT_NAME_PROPERTY = "clientName";
-    
-    private static final Logger LOG                          = LoggerFactory.getLogger(AmqpConfiguration.class);
+    public static final String   CLIENT_NAME_PROPERTY         = "event.bus.clientName";
+
+    private static final Logger  LOG                          = LoggerFactory.getLogger(AmqpConfiguration.class);
 
     // Must start with Alpha, Digit or _ and be no more than 255 chars. Special
     // chars, spaces, etc. are allowed.
     // We are limiting name to 215 chars to allow us to append UUID.
-    private static final Pattern  VALID_AMQP_NAME              = Pattern.compile("^\\w{1}.{0,214}+$");
+    private static final Pattern VALID_AMQP_NAME              = Pattern.compile("^\\w{1}.{0,214}+$");
     // AMQP name may not start with amq. as this is reserved
-    private static final Pattern  FIRST_CHARS_INVALID_FOR_AMQP = Pattern.compile("^(\\W|(amq\\.))");
+    private static final Pattern FIRST_CHARS_INVALID_FOR_AMQP = Pattern.compile("^(\\W|(amq\\.))");
 
     // Assumes command is anything prior to the first whitespace and then
     // extracts the final ., / or \ delimited segment thereof
     // however . appearing within the final 8 characters of command are included
     // in command as a presumed extension.
-    private static final Pattern  NAME_FROM_COMMAND            = Pattern
-                                                                       .compile("((?:^([^\\s./\\\\]+?(?:\\.[^\\s./\\\\]{0,7})*?))|((?:(?:^\\S*?[./\\\\])|^)([^\\s./\\\\]+?(?:\\.[^\\s./\\\\]{0,7})*?)))(?:\\s|$)");
+    private static final Pattern NAME_FROM_COMMAND            = Pattern
+                                                                      .compile("((?:^([^\\s./\\\\]+?(?:\\.[^\\s./\\\\]{0,7})*?))|((?:(?:^\\S*?[./\\\\])|^)([^\\s./\\\\]+?(?:\\.[^\\s./\\\\]{0,7})*?)))(?:\\s|$)");
 
-    private String                clientName;
-    private ConnectionParameters  connectionParameters;
-    private AmqpMessageBus        amqpMessageBus;
-    private TopologyManager       topologyManager;
-    private Serializer            serializer;
+    private String               clientName;
+    private ConnectionParameters connectionParameters;
+    private AmqpMessageBus       amqpMessageBus;
+    private TopologyManager      topologyManager;
+    private Serializer           serializer;
 
     /**
      * Get the Name of the Client.

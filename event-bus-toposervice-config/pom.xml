@@ -6,7 +6,7 @@
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
-    <artifactId>event-bus-rabbit-config</artifactId>
+    <artifactId>event-bus-toposervice-config</artifactId>
 
     <build>
         <plugins>
@@ -17,7 +17,8 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Fragment-Host>pegasus.eventbus.client.rabbitmq;bundle-version="0.0.1.SNAPSHOT"</Fragment-Host>
+                        <Bundle-SymbolicName>pegasus.eventbus.topology.service.config</Bundle-SymbolicName>
+                        <Fragment-Host>pegasus.eventbus.client.rabbitmq</Fragment-Host>
                     </instructions>
                 </configuration>
             </plugin>

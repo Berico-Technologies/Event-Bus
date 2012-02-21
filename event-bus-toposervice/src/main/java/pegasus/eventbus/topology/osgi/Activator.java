@@ -1,8 +1,5 @@
 package pegasus.eventbus.topology.osgi;
 
-import java.util.Dictionary;
-import java.util.Hashtable;
-
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -23,14 +20,14 @@ public class Activator implements BundleActivator {
     private static TopologyService topologyService;
 
     public void start(BundleContext bundleContext) throws Exception {
-        register(bundleContext, defaults());
+        register(bundleContext);
     }
 
     public void stop(BundleContext bundleContext) throws Exception {
         unregister(bundleContext);
     }
 
-    private void register(BundleContext bundleContext, Dictionary<String, String> config) {
+    private void register(BundleContext bundleContext) {
 
         LOG.info("Registering Topology Service: {}", TopologyService.class.getName());
 
@@ -62,11 +59,6 @@ public class Activator implements BundleActivator {
         }
 
         LOG.info("Topology Service Unregistered: {}", TopologyService.class.getName());
-    }
-
-    private Dictionary<String, String> defaults() {
-        Dictionary<String, String> defaults = new Hashtable<String, String>();
-        return defaults;
     }
 
 }

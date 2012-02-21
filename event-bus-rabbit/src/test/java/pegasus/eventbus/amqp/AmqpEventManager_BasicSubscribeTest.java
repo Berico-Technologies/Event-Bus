@@ -114,7 +114,7 @@ public class AmqpEventManager_BasicSubscribeTest extends AmqpEventManager_BasicS
 
         // @fixme - this needs some explaining
         // This first makes sure our test is set up properly and each thread makes its call in the correct order.
-        // assertTrue(handler.handlerBeganHandlingTheEventPriorToActionBeingInvoked());
+         assertTrue(handler.handlerBeganHandlingTheEventPriorToActionBeingInvoked());
         return handler;
     }
 
@@ -198,9 +198,7 @@ public class AmqpEventManager_BasicSubscribeTest extends AmqpEventManager_BasicS
             watch.start();
             while (watch.getTime() < 1000) {
                 try {
-                    Thread.sleep(1000000000);
                     Thread.sleep(500 - watch.getTime());
-                    // Thread.sleep(500 - watch.getTime());
                 } catch (InterruptedException e) {
                     interuptWasReceived = true;
                     continue;
