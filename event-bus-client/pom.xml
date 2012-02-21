@@ -20,9 +20,7 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>pegasus.eventbus.client</Bundle-SymbolicName>
-                        <Export-Package>pegasus.eventbus.client</Export-Package>
-                        <DynamicImport-Package>*</DynamicImport-Package>
-                        <Import-Package>!com.ibm.uvm.tools.*</Import-Package>
+                        <!-- <Export-Package>pegasus.eventbus.client</Export-Package> -->
                         <Embed-Dependency>
                             !mockito-core*,
                             !slf4j-api*,

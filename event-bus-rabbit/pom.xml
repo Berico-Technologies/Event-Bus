@@ -30,8 +30,8 @@
                     <instructions>
                         <Bundle-SymbolicName>pegasus.eventbus.client.rabbitmq</Bundle-SymbolicName>
                         <Bundle-Activator>pegasus.eventbus.osgi.Activator</Bundle-Activator>
-                        <Export-Service>pegasus.eventbus.client.EventManager</Export-Service>
-                        <Require-Bundle>pegasus.eventbus.client</Require-Bundle>
+                        <!-- <Export-Service>pegasus.eventbus.client.EventManager</Export-Service> -->
+                        <!-- <Require-Bundle>pegasus.eventbus.client</Require-Bundle> -->
                         <DynamicImport-Package>*</DynamicImport-Package>
                         <Import-Package>!com.ibm.uvm.tools.*</Import-Package>
                         <Embed-Dependency>
