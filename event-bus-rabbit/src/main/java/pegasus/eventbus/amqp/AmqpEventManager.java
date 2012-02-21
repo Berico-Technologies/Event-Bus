@@ -535,7 +535,7 @@ public class AmqpEventManager implements EventManager, UnexpectedConnectionClose
 
         try {
 
-            LOG.trace("Waiting for response {}ms, then returning result.", timeoutMills);
+            LOG.debug("Waiting for response {}ms, then returning result.", timeoutMills);
 
             return waitForAndReturnResponse(handler, timeoutMills);
 

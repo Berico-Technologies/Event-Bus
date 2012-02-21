@@ -46,11 +46,11 @@
             <map>
                 <entry>
                     <key>
-                        <value>chat.simpleClient.SimpleMessage</value>
+                        <value>pegasus.eventbus.topology.integration_tests.TestEvent</value>
                     </key>
                     <bean class="pegasus.eventbus.amqp.RoutingInfo">
                         <constructor-arg name="exchangeName" value="pegasus" />
-                        <constructor-arg name="routingKey" value="chat.simpleClient.SimpleMessage" />
+                        <constructor-arg name="routingKey" value="pegasus.eventbus.topology.integration_tests.TestEvent" />
                     </bean>
                 </entry>
             </map>

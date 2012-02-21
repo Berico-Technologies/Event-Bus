@@ -52,8 +52,8 @@ public class GlobalTopologyServiceManager implements TopologyManager {
             topologyRegistry = topologyUpdateResponseEvent.getTopologyRegistry();
         } catch (Exception e) {
 
-            // unable to connect with the topo service
-            // to be if this is the topo service
+            // unable to connect with the topo service.
+            // this is expected behavior if this is the topo service itself
             // @todo - review
             LOG.error("Error starting Global Topology Service.");
 

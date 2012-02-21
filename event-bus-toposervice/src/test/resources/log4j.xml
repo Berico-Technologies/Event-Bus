@@ -34,7 +34,7 @@
   	</logger>	
 	
 	<root>
-	  	<priority value="DEBUG"/>
+	  	<priority value="TRACE"/>
 	  	<appender-ref ref="stdout"/>
 	  	<!--appender-ref ref="file"/-->
 	</root>

@@ -2,14 +2,23 @@ package pegasus.eventbus.topology.event;
 
 public class Registration {
 
-    private final String clientName;
+    private String clientName;
+
+    //@todo - needed for gson in osgi
+    public Registration() {
+
+    }
 
     public Registration(String clientName) {
         this.clientName = clientName;
     }
-    
+
     public String getClientName() {
         return clientName;
+    }
+
+    public void setClientName(String clientName) {
+        this.clientName = clientName;
     }
 
 }

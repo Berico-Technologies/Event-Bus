@@ -10,6 +10,11 @@ public class RoutingInfo {
     protected Exchange exchange;
     protected String   routingKey;
 
+    // @todo - needed for gson in osgi
+    public RoutingInfo() {
+
+    }
+
     /**
      * Instantiate an instance with the required properties
      * 
@@ -60,6 +65,10 @@ public class RoutingInfo {
         return exchange;
     }
 
+    public void setExchange(String exchangeName) {
+        this.exchange = new Exchange(exchangeName, ExchangeType.Topic, true);
+    }
+
     /**
      * Get the routing key (also called "binding expression").
      * 
@@ -67,6 +76,10 @@ public class RoutingInfo {
      */
     public String getRoutingKey() {
         return routingKey;
+    }
+
+    public void setRoutingKey(String routingKey) {
+        this.routingKey = routingKey;
     }
 
     /**
@@ -125,6 +138,11 @@ public class RoutingInfo {
         protected ExchangeType type;
         protected boolean      isDurable;
 
+        // @todo - needed for gson in osgi
+        public Exchange() {
+
+        }
+
         /**
          * Instantiate an Exchange with the supplied Exchange properties.
          * 
@@ -150,6 +168,10 @@ public class RoutingInfo {
             return name;
         }
 
+        public void setName(String name) {
+            this.name = name;
+        }
+
         /**
          * Is the Exchange Durable (persistent)?
          * 
@@ -159,6 +181,10 @@ public class RoutingInfo {
             return isDurable;
         }
 
+        public void setIsDurable(boolean isDurable) {
+            this.isDurable = isDurable;
+        }
+
         /**
          * Get the Exchange Type
          * 
@@ -166,6 +192,10 @@ public class RoutingInfo {
          */
         public ExchangeType getType() {
             return type;
+        }
+
+        public void setType(ExchangeType type) {
+            this.type = type;
         }
 
         /**
@@ -222,4 +252,5 @@ public class RoutingInfo {
     public enum ExchangeType {
         Direct, Topic, Fanout
     }
+
 }

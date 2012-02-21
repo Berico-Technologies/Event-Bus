@@ -103,11 +103,4 @@ class EnvelopeHandlerBasedConsumer extends DefaultConsumer {
         }
 	}
 	
-	@Override
-	public void handleCancelOk(String consumerTag) {
-        LOG.info("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        LOG.info("handleCancelOk");
-        LOG.info("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-    }
-	
 }

@@ -35,6 +35,7 @@
                         <DynamicImport-Package>*</DynamicImport-Package>
                         <Import-Package>!com.ibm.uvm.tools.*</Import-Package>
                         <Embed-Dependency>
+                            !event-bus-client*,
                             !mockito-core*,
                             !slf4j-api*,
                             !logback-core*,
