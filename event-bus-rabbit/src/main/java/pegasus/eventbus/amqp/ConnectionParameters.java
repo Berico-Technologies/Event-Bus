@@ -11,16 +11,16 @@ import java.util.Hashtable;
  */
 public class ConnectionParameters {
 
-    public static final String USERNAME_PROPERTY = "event.bus.username";
-    public static final String PASSWORD_PROPERTY = "event.bus.password";
-    public static final String HOST_PROPERTY = "event.bus.host";
-    public static final String PORT_PROPERTY = "event.bus.port";
-    public static final String VHOST_PROPERTY = "event.bus.vhost";
-    public static final String CONNECTION_RETRY_TIMEOUT_PROPERTY = "event.bus.connectionRetryTimeout";
+    public static final String                      USERNAME_PROPERTY                 = "event.bus.username";
+    public static final String                      PASSWORD_PROPERTY                 = "event.bus.password";
+    public static final String                      HOST_PROPERTY                     = "event.bus.host";
+    public static final String                      PORT_PROPERTY                     = "event.bus.port";
+    public static final String                      VHOST_PROPERTY                    = "event.bus.vhost";
+    public static final String                      CONNECTION_RETRY_TIMEOUT_PROPERTY = "event.bus.connectionRetryTimeout";
 
-    private static final Dictionary<String, String> DEFAULT_VALUES = initializeDefaults();
+    private static final Dictionary<String, String> DEFAULT_VALUES                    = initializeDefaults();
 
-    private final Dictionary<String, String>        parametersMap  = new Hashtable<String, String>();
+    private final Dictionary<String, String>        parametersMap                     = new Hashtable<String, String>();
 
     /**
      * Default Constructor
@@ -126,7 +126,7 @@ public class ConnectionParameters {
      * 
      * @return Virtual Host
      */
-    public String getVirtualHost() {
+    public String getVHost() {
         return getValue(VHOST_PROPERTY, DEFAULT_VALUES.get(VHOST_PROPERTY));
     }
 
@@ -136,7 +136,7 @@ public class ConnectionParameters {
      * @param vhost
      *            Virtual Host
      */
-    public void setVirtualHost(String vhost) {
+    public void setVHost(String vhost) {
         setValue(VHOST_PROPERTY, vhost);
     }
 
@@ -214,35 +214,35 @@ public class ConnectionParameters {
 
         int usernameSep = uri.indexOf(":", position);
 
-        setValue(USERNAME_PROPERTY, uri.substring(position, usernameSep));
+        setValue("username", uri.substring(position, usernameSep));
 
         position = usernameSep + 1;
 
         int hostSep = uri.indexOf("@", position);
 
-        setValue(PASSWORD_PROPERTY, uri.substring(position, hostSep));
+        setValue("password", uri.substring(position, hostSep));
 
         position = hostSep + 1;
 
         int portSep = uri.indexOf(":", position);
 
-        setValue(HOST_PROPERTY, uri.substring(position, portSep));
+        setValue("host", uri.substring(position, portSep));
 
         position = portSep + 1;
 
         int vhostSep = uri.indexOf("/", position);
 
-        setValue(PORT_PROPERTY, uri.substring(position, vhostSep));
+        setValue("port", uri.substring(position, vhostSep));
 
         position = vhostSep;
 
         if (vhostSep == -1) {
 
-            setValue(VHOST_PROPERTY, "/");
+            setValue("vhost", "/");
 
         } else {
 
-            setValue(VHOST_PROPERTY, uri.substring(position));
+            setValue("vhost", uri.substring(position));
         }
     }
 

@@ -39,11 +39,29 @@
             <map>
                 <entry>
                     <key>
-                        <value>chat.simpleClient.SimpleMessage</value>
+                        <value>pegasus.eventbus.topology.event.RegisterClient</value>
                     </key>
                     <bean class="pegasus.eventbus.amqp.RoutingInfo">
-                        <constructor-arg name="exchangeName" value="pegasus" />
-                        <constructor-arg name="routingKey" value="chat.simpleClient.SimpleMessage" />
+                        <constructor-arg name="exchangeName" value="topology" />
+                        <constructor-arg name="routingKey" value="pegasus.eventbus.topology.event.RegisterClient" />
+                    </bean>
+                </entry>
+                <entry>
+                    <key>
+                        <value>pegasus.eventbus.topology.event.UnregisterClient</value>
+                    </key>
+                    <bean class="pegasus.eventbus.amqp.RoutingInfo">
+                        <constructor-arg name="exchangeName" value="topology" />
+                        <constructor-arg name="routingKey" value="pegasus.eventbus.topology.event.UnregisterClient" />
+                    </bean>
+                </entry>
+                <entry>
+                    <key>
+                        <value>pegasus.eventbus.topology.event.TopologyUpdate</value>
+                    </key>
+                    <bean class="pegasus.eventbus.amqp.RoutingInfo">
+                        <constructor-arg name="exchangeName" value="topology" />
+                        <constructor-arg name="routingKey" value="pegasus.eventbus.topology.event.TopologyUpdate" />
                     </bean>
                 </entry>
             </map>

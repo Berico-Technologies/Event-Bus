@@ -63,7 +63,7 @@ public abstract class AmqpEventManager_BasicSubscribeTestBase extends AmqpEventM
 	}
 	
 	@Test 
-	public void subscribingToMultipleEventsShouldCreateASignleQueue(){
+	public void subscribingToMultipleEventsShouldCreateASingleQueue(){
 		subscribe();
 		verify(messageBus, times(1)).createQueue(anyString(), any(RoutingInfo[].class), anyBoolean());
 	}

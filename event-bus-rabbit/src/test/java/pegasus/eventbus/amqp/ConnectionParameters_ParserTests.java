@@ -17,7 +17,7 @@ public class ConnectionParameters_ParserTests {
 		assertEquals(expectedPassword, actual.getPassword());
 		assertEquals(expectedHost, actual.getHost());
 		assertEquals(expectedPort, actual.getPort());
-		assertEquals(expectedVhost, actual.getVirtualHost());
+		assertEquals(expectedVhost, actual.getVHost());
 	}
 	
 	@Test

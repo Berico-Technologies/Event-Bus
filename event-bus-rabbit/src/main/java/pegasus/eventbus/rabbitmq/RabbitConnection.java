@@ -32,7 +32,7 @@ public class RabbitConnection implements ShutdownListener {
     public RabbitConnection(ConnectionParameters connectionParameters) {
         connectionFactory.setUsername(connectionParameters.getUsername());
         connectionFactory.setPassword(connectionParameters.getPassword());
-        connectionFactory.setVirtualHost(connectionParameters.getVirtualHost());
+        connectionFactory.setVirtualHost(connectionParameters.getVHost());
         connectionFactory.setHost(connectionParameters.getHost());
         connectionFactory.setPort(connectionParameters.getPort());
     }

@@ -34,7 +34,7 @@ public class IntegrationTestBase {
         FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext("src/test/resources/eventbus-context.xml");
 
         final ConnectionParameters connectionParameters = context.getBean(ConnectionParameters.class);
-        assertFalse("Cannot use default vhost for tests", "/" == connectionParameters.getVirtualHost());
+        assertFalse("Cannot use default vhost for tests", "/" == connectionParameters.getVHost());
 
         rabbitManagementApi = new RabbitManagementApiHelper(connectionParameters);
         rabbitManagementApi.createVirtualHost();

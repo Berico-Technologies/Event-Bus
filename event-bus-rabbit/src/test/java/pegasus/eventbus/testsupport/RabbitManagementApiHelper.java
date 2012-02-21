@@ -34,7 +34,7 @@ public class RabbitManagementApiHelper {
 
 	public RabbitManagementApiHelper(ConnectionParameters connectionProperties) {
 		this.hostName = connectionProperties.getHost();
-		this.virtualHostName = connectionProperties.getVirtualHost();
+		this.virtualHostName = connectionProperties.getVHost();
 	}
 
 	public void createVirtualHost(){

@@ -23,8 +23,8 @@ public class ConnectionParametersWithRandomVirtualHost extends
 	}
 
 	@Override 
-	public String getVirtualHost(){
-		return super.getVirtualHost() + "-" + uniqueVHostSuffix;
+	public String getVHost(){
+		return super.getVHost() + "-" + uniqueVHostSuffix;
 	}
 	
 }

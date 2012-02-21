@@ -11,7 +11,7 @@
         <property name="username" value="${event.bus.username:guest}" />
         <property name="password" value="${event.bus.password:guest}" />
         <property name="host" value="${event.bus.host:rabbit.pegasus.gov}" />
-        <property name="virtualHost" value="${event.bus.vhost:/}" />
+        <property name="vHost" value="${event.bus.vhost:/}" />
         <property name="port" value="${event.bus.port:5672}" />
     </bean>
 

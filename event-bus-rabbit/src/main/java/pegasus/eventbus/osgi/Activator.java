@@ -64,7 +64,6 @@ public class Activator implements BundleActivator {
             ResourceBundle properties = ResourceBundle.getBundle("eventbus");
             for (String key : properties.keySet()) {
                 config.put(key, properties.getString(key));
-                LOG.info("Key: {}, Value: {}", key, properties.getString(key));
             }
         } catch (MissingResourceException e) {
 

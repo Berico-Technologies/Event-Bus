@@ -11,8 +11,8 @@
         <module>event-bus-client</module>
         <module>event-bus-rabbit</module>
         <module>event-bus-toposervice</module>
+        <module>event-bus-toposervice-config</module>
         <module>services/event-stream-processor</module>
-        <module>event-bus-rabbit-config</module>
     </modules>
 
     <properties>

@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:util="http://www.springframework.org/schema/util"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util" xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="
             http://www.springframework.org/schema/beans
             http://www.springframework.org/schema/beans/spring-beans.xsd
             http://www.springframework.org/schema/osgi
@@ -13,13 +10,13 @@
             http://www.springframework.org/schema/context
             http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <context:property-placeholder location="classpath:eventbus.properties" />
+    <context:property-placeholder location="classpath:eventbus.topologyservice.properties" />
 
     <bean id="connectionParameters" class="pegasus.eventbus.amqp.ConnectionParameters">
         <property name="username" value="${event.bus.username:guest}" />
         <property name="password" value="${event.bus.password:guest}" />
         <property name="host" value="${event.bus.host:rabbit}" />
-        <property name="virtualHost" value="${event.bus.vhost:/}" />
+        <property name="vHost" value="${event.bus.vhost:/}" />
         <property name="port" value="${event.bus.port:5672}" />
     </bean>
 
@@ -47,7 +44,7 @@
         <constructor-arg ref="configuration" />
     </bean>
 
-    <bean id="topologyService" class="pegasus.eventbus.topology.service.TopologyService" init-method="start" destroy-method="stop" >
+    <bean id="topologyService" class="pegasus.eventbus.topology.service.TopologyService" init-method="start" destroy-method="stop">
         <constructor-arg ref="registrationHandler" />
         <constructor-arg ref="unknownTypeHandler" />
     </bean>
@@ -70,11 +67,29 @@
             <map>
                 <entry>
                     <key>
-                        <value>chat.simpleClient.SimpleMessage</value>
+                        <value>pegasus.eventbus.topology.event.RegisterClient</value>
                     </key>
                     <bean class="pegasus.eventbus.amqp.RoutingInfo">
-                        <constructor-arg name="exchangeName" value="pegasus" />
-                        <constructor-arg name="routingKey" value="chat.simpleClient.SimpleMessage" />
+                        <constructor-arg name="exchangeName" value="topology" />
+                        <constructor-arg name="routingKey" value="pegasus.eventbus.topology.event.RegisterClient" />
+                    </bean>
+                </entry>
+                <entry>
+                    <key>
+                        <value>pegasus.eventbus.topology.event.UnregisterClient</value>
+                    </key>
+                    <bean class="pegasus.eventbus.amqp.RoutingInfo">
+                        <constructor-arg name="exchangeName" value="topology" />
+                        <constructor-arg name="routingKey" value="pegasus.eventbus.topology.event.UnregisterClient" />
+                    </bean>
+                </entry>
+                <entry>
+                    <key>
+                        <value>pegasus.eventbus.topology.event.TopologyUpdate</value>
+                    </key>
+                    <bean class="pegasus.eventbus.amqp.RoutingInfo">
+                        <constructor-arg name="exchangeName" value="topology" />
+                        <constructor-arg name="routingKey" value="pegasus.eventbus.topology.event.TopologyUpdate" />
                     </bean>
                 </entry>
             </map>
