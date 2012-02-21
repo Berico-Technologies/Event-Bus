@@ -2,6 +2,7 @@ package pegasus.eventbus.osgi;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import org.osgi.framework.BundleActivator;
@@ -60,9 +61,15 @@ public class Activator implements BundleActivator {
     private Dictionary<String, String> getConfig() {
         Dictionary<String, String> config = getDefaults();
 
-        ResourceBundle properties = ResourceBundle.getBundle("eventbus");
-        for (String key : properties.keySet()) {
-            config.put(key, properties.getString(key));
+        try {
+            ResourceBundle properties = ResourceBundle.getBundle("eventbus");
+            for (String key : properties.keySet()) {
+                config.put(key, properties.getString(key));
+            }
+        } catch (MissingResourceException e) {
+
+            LOG.warn("No RabbitMQ Client configuration found.");
+
         }
 
         return config;
