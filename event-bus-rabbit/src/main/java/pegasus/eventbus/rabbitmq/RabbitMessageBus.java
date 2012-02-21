@@ -184,7 +184,13 @@ public class RabbitMessageBus implements AmqpMessageBus, UnexpectedCloseListener
 
         try {
 
-            commandChannel.queueDeclare(name, durable, false, false, null);
+        	Map<String, Object> params = new HashMap<String,Object>();
+        	if(!durable){
+        		//TODO: make this expiration configurable
+        		//We are using expiration vs auto-delete as this will allow for connection drops over bad comms and not loose messages due to a deleted queue.
+        		params.put("x-expires", 1000*60*30); //30-min timout in mills
+        	}
+            commandChannel.queueDeclare(name, durable, false, false, params);
 
         } catch (IOException e) {
 
