@@ -2,8 +2,8 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <artifactId>event-bus</artifactId>
     <groupId>pegasus.cip</groupId>
+    <artifactId>event-bus</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
@@ -23,15 +23,6 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.3.2</version>
-        <configuration>
-          <target>1.6</target>
-          <source>1.6</source>
-        </configuration>
-      </plugin>
-      <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
         <version>2.3.6</version>
@@ -41,13 +32,42 @@
             <Bundle-Activator>pegasus.esp.internal.osgiActivator</Bundle-Activator>
             <Bundle-SymbolicName>event-stream-processor</Bundle-SymbolicName>
             <Private-Package>pegasus.esp.internal.*</Private-Package>
-            <Require-Bundle>pegasus.ToBeDetermined.event-bus</Require-Bundle>
-            <Require-Bundle>com.espertech.esper</Require-Bundle>
-	    <!-- event-bus dependency embedding is temporary pending event bus bundle creation -->
-	    <Embed-Dependency>
+	    <Import-Package>!com.ibm.uvm.tools.*</Import-Package>
+	    <Require-Bundle>pegasus.eventbus.client</Require-Bundle>
+	    <DynamicImport-Package>*</DynamicImport-Package>
+	    <!-- <Embed-Dependency>
 	        guava;scope=!runtime,
 	        log4j;scope=!runtime,
-	    </Embed-Dependency>
+	        js;scope=!runtime,
+	    </Embed-Dependency> -->
+                        <Embed-Dependency>
+                            !mockito-core*,
+                            !slf4j-api*,
+                            !logback-core*,
+                            !logback-classic,
+                            !log4j*,
+                            !org.osgi*,
+                            !org.apache.felix*,
+                            !awaitility*,
+                            !junit*,
+                            !spring-context*,
+                            !aopalliance*,
+                            !spring-aop*,
+                            !spring-bean*,
+                            !spring-asm*,
+                            !spring-core*,
+                            !spring-expression*,
+                            !objenesis*,
+                            !hamcrest-core*,
+                            !hamcrest-library*,
+                            !cglib-nodep*,
+                            !commons-logging*,
+                            !commons-codec*,
+                            !commons-httpclient*,
+                            !commons-cli*
+                        </Embed-Dependency>
+
+	    <Embed-Transitive>true</Embed-Transitive>
           </instructions>
         </configuration>
       </plugin>
@@ -68,11 +88,6 @@
 	<version>11.0.1</version>
     </dependency>
 
-    <dependency>
-	<groupId>com.espertech</groupId>
-	<artifactId>esper</artifactId>
-	<version>3.4.0</version>
-    </dependency>
 
     <dependency>
 	    <groupId>rhino</groupId>
@@ -80,6 +95,11 @@
 	    <version>1.7R2</version>
     </dependency>
 
+    <dependency>
+    	<groupId>com.espertech</groupId>
+    	<artifactId>esper</artifactId>
+    	<version>4.5.0</version>
+    </dependency>
   </dependencies>
 
 </project>
