@@ -17,8 +17,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>pegasus.eventbus.topology.service.config</Bundle-SymbolicName>
-                        <Fragment-Host>pegasus.eventbus.client.rabbitmq</Fragment-Host>
+                        <Fragment-Host>pegasus.eventbus.topology.service</Fragment-Host>
                     </instructions>
                 </configuration>
             </plugin>

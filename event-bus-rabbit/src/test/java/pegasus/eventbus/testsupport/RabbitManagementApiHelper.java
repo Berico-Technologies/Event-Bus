@@ -18,7 +18,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 
-import pegasus.eventbus.amqp.ConnectionParameters;
+import pegasus.eventbus.amqp.AmqpConnectionParameters;
 
 public class RabbitManagementApiHelper {
 	private String hostName; 
@@ -32,7 +32,7 @@ public class RabbitManagementApiHelper {
 		this.virtualHostName = virtualHostName;
 	}
 
-	public RabbitManagementApiHelper(ConnectionParameters connectionProperties) {
+	public RabbitManagementApiHelper(AmqpConnectionParameters connectionProperties) {
 		this.hostName = connectionProperties.getHost();
 		this.virtualHostName = connectionProperties.getVHost();
 	}

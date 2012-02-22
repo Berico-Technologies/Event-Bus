@@ -4,28 +4,23 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
+import pegasus.eventbus.client.EventBusConnectionParameters;
+
 /**
  * Configuration for AMQP specific connection parameters.
  * 
  * @author Asa Martin (Berico Technologies)
  */
-public class ConnectionParameters {
+public class AmqpConnectionParameters implements EventBusConnectionParameters {
 
-    public static final String                      USERNAME_PROPERTY                 = "event.bus.username";
-    public static final String                      PASSWORD_PROPERTY                 = "event.bus.password";
-    public static final String                      HOST_PROPERTY                     = "event.bus.host";
-    public static final String                      PORT_PROPERTY                     = "event.bus.port";
-    public static final String                      VHOST_PROPERTY                    = "event.bus.vhost";
-    public static final String                      CONNECTION_RETRY_TIMEOUT_PROPERTY = "event.bus.connectionRetryTimeout";
+    private static final Dictionary<String, String> DEFAULT_VALUES = initializeDefaults();
 
-    private static final Dictionary<String, String> DEFAULT_VALUES                    = initializeDefaults();
-
-    private final Dictionary<String, String>        parametersMap                     = new Hashtable<String, String>();
+    private final Dictionary<String, String>        parametersMap  = new Hashtable<String, String>();
 
     /**
      * Default Constructor
      */
-    public ConnectionParameters() {
+    public AmqpConnectionParameters() {
 
     }
 
@@ -35,7 +30,7 @@ public class ConnectionParameters {
      * @param parametersMap
      *            Parameter Map
      */
-    public ConnectionParameters(Dictionary<String, String> parametersMap) {
+    public AmqpConnectionParameters(Dictionary<String, String> parametersMap) {
         Enumeration<String> keys = parametersMap.keys();
         for (String key = keys.nextElement(); keys.hasMoreElements(); keys.nextElement()) {
             this.parametersMap.put(key, parametersMap.get(key));
@@ -49,7 +44,7 @@ public class ConnectionParameters {
      * @param connectionParameters
      *            Semicolon delimited property hash
      */
-    public ConnectionParameters(String connectionParameters) {
+    public AmqpConnectionParameters(String connectionParameters) {
 
         if (connectionParameters == null) {
             throw new IllegalArgumentException("ConnectionParameters has no value.");

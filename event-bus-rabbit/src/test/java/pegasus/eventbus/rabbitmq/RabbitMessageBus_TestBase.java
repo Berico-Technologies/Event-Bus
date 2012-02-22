@@ -14,7 +14,7 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.GetResponse;
 
-import pegasus.eventbus.amqp.ConnectionParameters;
+import pegasus.eventbus.amqp.AmqpConnectionParameters;
 import pegasus.eventbus.amqp.RoutingInfo;
 import pegasus.eventbus.testsupport.RabbitManagementApiHelper;
 
@@ -22,7 +22,7 @@ public class RabbitMessageBus_TestBase {
 
     protected Logger                        log = Logger.getLogger(this.getClass());
 
-    protected ConnectionParameters          connectionParameters;
+    protected AmqpConnectionParameters          connectionParameters;
     protected RabbitMessageBus              rabbitBus;
     protected RabbitManagementApiHelper     rabbitManagementApi;
     protected RabbitConnection              connection;
@@ -35,7 +35,7 @@ public class RabbitMessageBus_TestBase {
         MockitoAnnotations.initMocks(this);
 
         context = new FileSystemXmlApplicationContext("src/test/resources/eventbus-context.xml");
-        connectionParameters = context.getBean(ConnectionParameters.class);
+        connectionParameters = context.getBean(AmqpConnectionParameters.class);
         connection = new RabbitConnection(connectionParameters);
 
         rabbitManagementApi = new RabbitManagementApiHelper(connectionParameters);

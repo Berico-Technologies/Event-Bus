@@ -14,7 +14,7 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.ShutdownListener;
 import com.rabbitmq.client.ShutdownSignalException;
 
-import pegasus.eventbus.amqp.ConnectionParameters;
+import pegasus.eventbus.amqp.AmqpConnectionParameters;
 
 public class RabbitConnection implements ShutdownListener {
 
@@ -29,7 +29,7 @@ public class RabbitConnection implements ShutdownListener {
     private volatile boolean             isClosing;
     private volatile boolean             isInConnectionErrorState;
 
-    public RabbitConnection(ConnectionParameters connectionParameters) {
+    public RabbitConnection(AmqpConnectionParameters connectionParameters) {
         connectionFactory.setUsername(connectionParameters.getUsername());
         connectionFactory.setPassword(connectionParameters.getPassword());
         connectionFactory.setVirtualHost(connectionParameters.getVHost());

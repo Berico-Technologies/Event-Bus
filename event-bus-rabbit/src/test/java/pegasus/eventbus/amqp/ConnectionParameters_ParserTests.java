@@ -11,7 +11,7 @@ public class ConnectionParameters_ParserTests {
 	private void assertConnectionParameters(
 			String expectedUsername, String expectedPassword, 
 			String expectedHost, int expectedPort, 
-			String expectedVhost, ConnectionParameters actual){
+			String expectedVhost, AmqpConnectionParameters actual){
 		
 		assertEquals(expectedUsername, actual.getUsername());
 		assertEquals(expectedPassword, actual.getPassword());
@@ -25,7 +25,7 @@ public class ConnectionParameters_ParserTests {
 		
 		String uri = "amqp://test:password123@rabbit-master.pegasus.mil:1234/";
 		
-		ConnectionParameters actualParameters = new ConnectionParameters(uri);
+		AmqpConnectionParameters actualParameters = new AmqpConnectionParameters(uri);
 		
 		assertConnectionParameters(
 			"test", "password123", "rabbit-master.pegasus.mil", 1234, "/", actualParameters);
@@ -36,7 +36,7 @@ public class ConnectionParameters_ParserTests {
 		
 		String delimited = "username=test;password=password123;host=rabbit-master.pegasus.mil;port=1234;vhost=/";
 		
-		ConnectionParameters actualParameters = new ConnectionParameters(delimited);
+		AmqpConnectionParameters actualParameters = new AmqpConnectionParameters(delimited);
 		
 		assertConnectionParameters(
 				"test", "password123", "rabbit-master.pegasus.mil", 1234, "/", actualParameters);

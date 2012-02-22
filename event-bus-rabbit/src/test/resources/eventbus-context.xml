@@ -23,7 +23,7 @@
     <bean id="messageBus" class="pegasus.eventbus.rabbitmq.RabbitMessageBus">
         <constructor-arg ref="connection" />
     </bean>
-    
+
     <bean id="topologyManager" class="pegasus.eventbus.testsupport.TopologyManagerForIntegrationTests" />
 
     <bean id="serializer" class="pegasus.eventbus.gson.GsonSerializer" />

@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.junit.*;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
-import pegasus.eventbus.amqp.ConnectionParameters;
+import pegasus.eventbus.amqp.AmqpConnectionParameters;
 
 /**
  * This class contains "test" that are not intended to be run as test in an automated fashion but 
@@ -18,7 +18,7 @@ public class MaintenanceTests {
 	@Before
 	public void beforeEachTest() throws IOException{
 		FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext("src/test/resources/eventbus-context.xml");
-		ConnectionParameters connectionParameters = context.getBean(ConnectionParameters.class);
+		AmqpConnectionParameters connectionParameters = context.getBean(AmqpConnectionParameters.class);
 
 		rabbitManagementApi = new RabbitManagementApiHelper(connectionParameters);
 	}
