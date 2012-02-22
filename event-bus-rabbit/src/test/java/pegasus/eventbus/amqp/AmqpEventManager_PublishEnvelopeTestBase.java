@@ -3,6 +3,8 @@ package pegasus.eventbus.amqp;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import java.util.Calendar;
+
 import org.junit.*;
 import org.mockito.*;
 
@@ -71,5 +73,12 @@ public abstract class AmqpEventManager_PublishEnvelopeTestBase extends AmqpEvent
     @Test
     public void theTopicOfThePublishedEnvelopeShouldBeTheRoutingKeyFromTheRoutingInfo() {
         assertEquals(routingInfo.routingKey, publishedEnvelope.getTopic());
+    }
+
+    @Test
+    public void theTimeStampOfThePublishedEnvelopeShouldBeTheCurrentTime() {
+    	//TODO: need to insert an abstraction for Calendar into AmqpEventManager so that we don't need this fuzzy match.
+        long delta = Calendar.getInstance().getTimeInMillis() - publishedEnvelope.getTimestamp().getTime();
+		assertTrue("Time delta was " + delta, delta < 1000);
     }
 }

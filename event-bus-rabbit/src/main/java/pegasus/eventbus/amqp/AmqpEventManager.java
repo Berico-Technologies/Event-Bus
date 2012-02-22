@@ -1,6 +1,7 @@
 package pegasus.eventbus.amqp;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -165,6 +166,7 @@ public class AmqpEventManager implements EventManager, UnexpectedConnectionClose
         envelope.setTopic(route.getRoutingKey());
         envelope.setEventType(event.getClass().getCanonicalName());
         envelope.setReplyTo(replyToQueue);
+        envelope.setTimestamp(Calendar.getInstance().getTime());
         envelope.setBody(body);
 
         LOG.trace("Publishing to the message bus instance.");

@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -42,6 +43,7 @@ public class RabbitMessageBus_PusblishTest extends RabbitMessageBus_TestBase {
         envelope.setEventType("test.event");
         envelope.setTopic("test.topic");
         envelope.setReplyTo("replyTo.routing_key");
+        envelope.setTimestamp(new Date(3290830423000L));  //TODO: test fail if we use time more precise than seconds.  Seems Rabbit looses the mills for some reason.
         return envelope;
     }
 
@@ -125,6 +127,11 @@ public class RabbitMessageBus_PusblishTest extends RabbitMessageBus_TestBase {
     @Test
     public void publishShouldTransmitReplyToAsAmqpReplyToHeader() throws IOException {
         assertEquals(sentEnvelope.getReplyTo(), receivedMessage.getProps().getReplyTo());
+    }
+
+    @Test
+    public void publishShouldTransmitTimestampAsAmqpTimestampHeader() throws IOException {
+        assertEquals(sentEnvelope.getTimestamp(), receivedMessage.getProps().getTimestamp());
     }
 
     @Test

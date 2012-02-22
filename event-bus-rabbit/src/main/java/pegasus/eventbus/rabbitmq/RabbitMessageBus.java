@@ -269,9 +269,13 @@ public class RabbitMessageBus implements AmqpMessageBus, UnexpectedCloseListener
 
             LOG.trace("Building AMQP property set for the message being published.");
 
-            BasicProperties props = new BasicProperties.Builder().messageId(message.getId() == null ? null : message.getId().toString())
-                    .correlationId(message.getCorrelationId() == null ? null : message.getCorrelationId().toString()).type(message.getEventType()).replyTo(message.getReplyTo()).headers(headersOut)
-                    .build();
+            BasicProperties props = new BasicProperties.Builder()
+            	.messageId(message.getId() == null ? null : message.getId().toString())
+                .correlationId(message.getCorrelationId() == null ? null : message.getCorrelationId().toString())
+                .type(message.getEventType())
+                .replyTo(message.getReplyTo()).headers(headersOut)
+                .timestamp(message.getTimestamp())
+                .build();
 
             LOG.trace("Publishing the message on the bus.");
 
@@ -308,6 +312,7 @@ public class RabbitMessageBus implements AmqpMessageBus, UnexpectedCloseListener
         envelope.setCorrelationId(props.getCorrelationId() == null ? null : UUID.fromString(props.getCorrelationId()));
         envelope.setEventType(props.getType());
         envelope.setReplyTo(props.getReplyTo());
+        envelope.setTimestamp(props.getTimestamp());
         envelope.setTopic(headers.get(TOPIC_HEADER_KEY));
 
         // We don't want the topic key to be a Header property of the envelope.

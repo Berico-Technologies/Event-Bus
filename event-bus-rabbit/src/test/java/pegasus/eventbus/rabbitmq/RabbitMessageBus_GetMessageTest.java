@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -22,6 +23,7 @@ import pegasus.eventbus.client.EventResult;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.AMQP.BasicProperties;
 
+//TODO: These tests need to be converted from testing getGetMessage to testing Consume
 @RunWith(value = Parameterized.class)
 public class RabbitMessageBus_GetMessageTest extends RabbitMessageBus_TestBase {
 
@@ -42,11 +44,18 @@ public class RabbitMessageBus_GetMessageTest extends RabbitMessageBus_TestBase {
         headers.put(RabbitMessageBus.TOPIC_HEADER_KEY, "test.topic");
         headers.put(CUSTOM_HEADER_NAME, "CustomHeaderValue");
 
-        BasicProperties props = new BasicProperties.Builder().messageId(UUID.randomUUID().toString()).correlationId(UUID.randomUUID().toString()).type("test.event").replyTo("replyto_routingkey")
-                .headers(headers).build();
+        BasicProperties props = new BasicProperties.Builder()
+        	.messageId(UUID.randomUUID().toString())
+        	.correlationId(UUID.randomUUID().toString())
+        	.type("test.event")
+        	.replyTo("replyto_routingkey")
+            //.timestamp(new Date(2930830423000L))
+            .headers(headers)
+            .build();
         return props;
     }
-
+    
+ 
     private static BasicProperties getEmptyProps() {
         return new BasicProperties();
     }
@@ -142,6 +151,11 @@ public class RabbitMessageBus_GetMessageTest extends RabbitMessageBus_TestBase {
     @Test
     public void getNextMessageShouldSetEnvelopeReplyToBaseOnAmqpReplyToHeader() throws IOException {
         assertEquals(propertiesSent.getReplyTo(), receivedEnvelope.getReplyTo());
+    }
+
+    @Test
+    public void getNextMessageShouldSetEnvelopeTimestampBaseOnAmqpTimestampHeader() throws IOException {
+        assertEquals(propertiesSent.getTimestamp(), receivedEnvelope.getTimestamp());
     }
 
     @Test

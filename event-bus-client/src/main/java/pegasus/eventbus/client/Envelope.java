@@ -1,5 +1,6 @@
 package pegasus.eventbus.client;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -14,6 +15,7 @@ public class Envelope {
 	private String topic;
 	private String eventType;
 	private String replyTo;
+	private Date timestamp;
 	private byte[] body = {};
 	private Map<String, String> headers = new HashMap<String, String>();
 
@@ -71,6 +73,14 @@ public class Envelope {
 	
 	public void setReplyTo(String replyTo) {
 		this.replyTo = replyTo;
+	}
+
+	public Date getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(Date timestamp) {
+		this.timestamp = timestamp;
 	}
 
 	public String toString() {
