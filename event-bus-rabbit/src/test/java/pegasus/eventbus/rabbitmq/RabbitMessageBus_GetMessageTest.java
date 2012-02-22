@@ -49,7 +49,7 @@ public class RabbitMessageBus_GetMessageTest extends RabbitMessageBus_TestBase {
         	.correlationId(UUID.randomUUID().toString())
         	.type("test.event")
         	.replyTo("replyto_routingkey")
-            //.timestamp(new Date(2930830423000L))
+            .timestamp(new Date(2930830423000L))
             .headers(headers)
             .build();
         return props;
