@@ -12,7 +12,7 @@
 
     <context:property-placeholder location="classpath:eventbus.topologyservice.properties" />
 
-    <bean id="connectionParameters" class="pegasus.eventbus.amqp.ConnectionParameters">
+    <bean id="connectionParameters" class="pegasus.eventbus.amqp.AmqpConnectionParameters">
         <property name="username" value="${event.bus.username:guest}" />
         <property name="password" value="${event.bus.password:guest}" />
         <property name="host" value="${event.bus.host:rabbit}" />

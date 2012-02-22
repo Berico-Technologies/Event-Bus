@@ -35,7 +35,7 @@
                     <instructions>
                         <Bundle-SymbolicName>pegasus.eventbus.topology.service</Bundle-SymbolicName>
                         <Bundle-Activator>pegasus.eventbus.topology.osgi.Activator</Bundle-Activator>
-                        <!-- <Require-Bundle>pegasus.eventbus.client,pegasus.eventbus.client.rabbitmq</Require-Bundle> -->
+                        <Require-Bundle>pegasus.eventbus.client</Require-Bundle>
                         <DynamicImport-Package>*</DynamicImport-Package>
                         <Import-Package>!com.ibm.uvm.tools.*</Import-Package>
                         <Embed-Dependency>

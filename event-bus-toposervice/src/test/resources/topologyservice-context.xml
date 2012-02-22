@@ -7,7 +7,7 @@
 
     <context:property-placeholder location="classpath:eventbus.properties" />
 
-    <bean id="connectionParameters" class="pegasus.eventbus.amqp.ConnectionParameters">
+    <bean id="connectionParameters" class="pegasus.eventbus.amqp.AmqpConnectionParameters">
         <property name="username" value="${event.bus.username:guest}" />
         <property name="password" value="${event.bus.password:guest}" />
         <property name="host" value="${event.bus.host:rabbit.pegasus.gov}" />
@@ -62,7 +62,7 @@
         <constructor-arg ref="clientRegistry" />
         <constructor-arg ref="topologyRegistry" />
     </bean>
-    
+
     <bean id="unknownTypeHandler" class="pegasus.eventbus.topology.service.UnknownEventTypeHandler">
         <constructor-arg ref="eventManager" />
         <constructor-arg ref="topologyRegistry" />
@@ -70,7 +70,7 @@
 
     <bean id="topologyService" class="pegasus.eventbus.topology.service.TopologyService">
         <constructor-arg ref="registrationHandler" />
-         <constructor-arg ref="unknownTypeHandler" />
+        <constructor-arg ref="unknownTypeHandler" />
     </bean>
 
 </beans>

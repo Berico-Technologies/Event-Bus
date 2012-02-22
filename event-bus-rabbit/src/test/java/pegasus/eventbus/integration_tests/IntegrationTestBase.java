@@ -13,7 +13,7 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import pegasus.eventbus.amqp.AmqpConfiguration;
 import pegasus.eventbus.amqp.AmqpEventManager;
-import pegasus.eventbus.amqp.ConnectionParameters;
+import pegasus.eventbus.amqp.AmqpConnectionParameters;
 import pegasus.eventbus.client.EventManager;
 import pegasus.eventbus.testsupport.RabbitManagementApiHelper;
 import pegasus.eventbus.testsupport.TestSendEvent;
@@ -33,7 +33,7 @@ public class IntegrationTestBase {
 
         FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext("src/test/resources/eventbus-context.xml");
 
-        final ConnectionParameters connectionParameters = context.getBean(ConnectionParameters.class);
+        final AmqpConnectionParameters connectionParameters = context.getBean(AmqpConnectionParameters.class);
         assertFalse("Cannot use default vhost for tests", "/" == connectionParameters.getVHost());
 
         rabbitManagementApi = new RabbitManagementApiHelper(connectionParameters);

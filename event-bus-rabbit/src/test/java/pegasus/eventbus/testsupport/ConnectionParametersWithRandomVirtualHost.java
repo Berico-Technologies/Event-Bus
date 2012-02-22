@@ -3,10 +3,10 @@ package pegasus.eventbus.testsupport;
 import java.util.Dictionary;
 import java.util.UUID;
 
-import pegasus.eventbus.amqp.ConnectionParameters;
+import pegasus.eventbus.amqp.AmqpConnectionParameters;
 
 public class ConnectionParametersWithRandomVirtualHost extends
-		ConnectionParameters {
+		AmqpConnectionParameters {
 
 	private String uniqueVHostSuffix = UUID.randomUUID().toString();
 	

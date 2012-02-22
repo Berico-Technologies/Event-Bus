@@ -1,11 +1,22 @@
 package pegasus.eventbus.topology.osgi;
 
+import java.util.Dictionary;
+import java.util.Hashtable;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.osgi.util.tracker.ServiceTracker;
+import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pegasus.eventbus.amqp.AmqpConnectionParameters;
+import pegasus.eventbus.client.EventBusConfiguration;
+import pegasus.eventbus.client.EventBusConnectionParameters;
+import pegasus.eventbus.client.EventBusFactory;
 import pegasus.eventbus.client.EventManager;
 import pegasus.eventbus.topology.TopologyRegistry;
 import pegasus.eventbus.topology.service.ClientRegistry;
@@ -15,50 +26,98 @@ import pegasus.eventbus.topology.service.UnknownEventTypeHandler;
 
 public class Activator implements BundleActivator {
 
-    protected static final Logger  LOG = LoggerFactory.getLogger(Activator.class);
+    protected static final Logger        LOG                     = LoggerFactory.getLogger(Activator.class);
+    private static final String          ServiceRegistrationName = EventBusFactory.class.getName();
 
-    private static TopologyService topologyService;
+    private TopoServiceTrackerCustomizer topoServiceTrackerCustomizer;
+    private ServiceTracker               serviceTracker;
+    private TopologyService              topologyService;
+    private Dictionary<String, String>   config                  = getConfig();
 
     public void start(BundleContext bundleContext) throws Exception {
-        register(bundleContext);
+
+        LOG.info("Topology Service OSGi start.");
+
+        topoServiceTrackerCustomizer = new TopoServiceTrackerCustomizer(bundleContext);
+        serviceTracker = new ServiceTracker(bundleContext, ServiceRegistrationName, topoServiceTrackerCustomizer);
+        serviceTracker.open();
     }
 
     public void stop(BundleContext bundleContext) throws Exception {
-        unregister(bundleContext);
+
+        LOG.info("Topology Service OSGi stop.");
+
+        serviceTracker.close();
     }
 
-    private void register(BundleContext bundleContext) {
+    private Dictionary<String, String> getConfig() {
+        Dictionary<String, String> config = new Hashtable<String, String>();
+        try {
+            ResourceBundle properties = ResourceBundle.getBundle("eventbus");
+            for (String key : properties.keySet()) {
+                config.put(key, properties.getString(key));
+            }
+        } catch (MissingResourceException e) {
 
-        LOG.info("Registering Topology Service: {}", TopologyService.class.getName());
-
-        ServiceReference eventManagerServiceReference = bundleContext.getServiceReference(EventManager.class.getName());
-        if (eventManagerServiceReference != null) {
-            EventManager eventManager = (EventManager) bundleContext.getService(eventManagerServiceReference);
-            TopologyRegistry topologyRegistry = new TopologyRegistry();
-            ClientRegistry clientRegistry = new ClientRegistry();
-            RegistrationHandler registrationHandler = new RegistrationHandler(eventManager, clientRegistry, topologyRegistry);
-            UnknownEventTypeHandler unknownEventTypeHandler = new UnknownEventTypeHandler(eventManager, topologyRegistry);
-            topologyService = new TopologyService(registrationHandler, unknownEventTypeHandler);
-            topologyService.start();
-
-            LOG.info("Topology Service Registered: {}", TopologyService.class.getName());
-
-        } else {
-
-            LOG.error("Unable to find EventManager service.");
+            LOG.warn("No Topology Service configuration found.");
 
         }
+
+        return config;
     }
 
-    private void unregister(BundleContext bundleContext) {
+    private void createTopoService(EventBusFactory eventBusFactory) {
+        EventBusConnectionParameters connectionParameters = new AmqpConnectionParameters(config);
+        String clientName = config.get(EventBusConfiguration.CLIENT_NAME_PROPERTY);
+        EventManager eventManager = eventBusFactory.getEventManager(clientName, connectionParameters);
+        eventManager.start();
 
-        LOG.info("Unregistering Topology Service: {}", TopologyService.class.getName());
+        TopologyRegistry topologyRegistry = new TopologyRegistry();
+        ClientRegistry clientRegistry = new ClientRegistry();
+        RegistrationHandler registrationHandler = new RegistrationHandler(eventManager, clientRegistry, topologyRegistry);
+        UnknownEventTypeHandler unknownEventTypeHandler = new UnknownEventTypeHandler(eventManager, topologyRegistry);
+        topologyService = new TopologyService(registrationHandler, unknownEventTypeHandler);
+        topologyService.start();
+    }
 
-        if (topologyService != null) {
-            topologyService.stop();
+    private void destroyTopoService() {
+        topologyService.stop();
+    }
+
+    private class TopoServiceTrackerCustomizer implements ServiceTrackerCustomizer {
+
+        private BundleContext bundleContext;
+
+        public TopoServiceTrackerCustomizer(BundleContext bundleContext) {
+            this.bundleContext = bundleContext;
         }
 
-        LOG.info("Topology Service Unregistered: {}", TopologyService.class.getName());
+        @Override
+        public Object addingService(ServiceReference serviceReference) {
+
+            LOG.info("Topology Service responding to {} service add.", topoServiceTrackerCustomizer);
+
+            EventBusFactory eventBusFactory = (EventBusFactory) bundleContext.getService(serviceReference);
+            createTopoService(eventBusFactory);
+            return eventBusFactory;
+        }
+
+        @Override
+        public void modifiedService(ServiceReference serviceReference, Object serviceObject) {
+
+            LOG.info("Topology Service responding to {} service modified.", topoServiceTrackerCustomizer);
+
+            // @todo - how should we handle modify?
+        }
+
+        @Override
+        public void removedService(ServiceReference serviceReference, Object serviceObject) {
+
+            LOG.info("Topology Service responding to {} service removed.", topoServiceTrackerCustomizer);
+
+            destroyTopoService();
+        }
+
     }
 
 }
