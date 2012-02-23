@@ -52,7 +52,7 @@ public class AmqpConnectionParameters implements EventBusConnectionParameters {
 
         if (connectionParameters.startsWith("amqp://")) {
 
-            parseUriString(connectionParameters);
+            parseAmqpUriString(connectionParameters);
         } else {
 
             parseDelimitedPropertyString(connectionParameters);
@@ -203,41 +203,41 @@ public class AmqpConnectionParameters implements EventBusConnectionParameters {
      * @param uri
      *            URI to Rabbit
      */
-    public void parseUriString(String uri) {
+    private void parseAmqpUriString(String uri) {
 
         int position = 7;
 
         int usernameSep = uri.indexOf(":", position);
 
-        setValue("username", uri.substring(position, usernameSep));
+        setValue(USERNAME_PROPERTY, uri.substring(position, usernameSep));
 
         position = usernameSep + 1;
 
         int hostSep = uri.indexOf("@", position);
 
-        setValue("password", uri.substring(position, hostSep));
+        setValue(PASSWORD_PROPERTY, uri.substring(position, hostSep));
 
         position = hostSep + 1;
 
         int portSep = uri.indexOf(":", position);
 
-        setValue("host", uri.substring(position, portSep));
+        setValue(HOST_PROPERTY, uri.substring(position, portSep));
 
         position = portSep + 1;
 
         int vhostSep = uri.indexOf("/", position);
 
-        setValue("port", uri.substring(position, vhostSep));
+        setValue(PORT_PROPERTY, uri.substring(position, vhostSep));
 
         position = vhostSep;
 
         if (vhostSep == -1) {
 
-            setValue("vhost", "/");
+            setValue(VHOST_PROPERTY, "/");
 
         } else {
 
-            setValue("vhost", uri.substring(position));
+            setValue(VHOST_PROPERTY, uri.substring(position));
         }
     }
 
@@ -247,7 +247,7 @@ public class AmqpConnectionParameters implements EventBusConnectionParameters {
      * @param propertyString
      *            Property String
      */
-    public void parseDelimitedPropertyString(String propertyString) {
+    private void parseDelimitedPropertyString(String propertyString) {
 
         String[] connectionPairs = propertyString.split(";");
         for (String connectionPair : connectionPairs) {
@@ -258,7 +258,19 @@ public class AmqpConnectionParameters implements EventBusConnectionParameters {
             if (parameterParts.length != 2) {
                 throw new IllegalArgumentException(String.format("Invalid connection string element: '%s' should be 'key=value'", connectionPair));
             }
-            parametersMap.put(parameterParts[0], parameterParts[1]);
+            if (parameterParts[0].equals("username")) {
+                parametersMap.put(USERNAME_PROPERTY, parameterParts[1]);
+            } else if (parameterParts[0].equals("password")) {
+                parametersMap.put(PASSWORD_PROPERTY, parameterParts[1]);
+            } else if (parameterParts[0].equals("host")) {
+                parametersMap.put(HOST_PROPERTY, parameterParts[1]);
+            } else if (parameterParts[0].equals("port")) {
+                parametersMap.put(PORT_PROPERTY, parameterParts[1]);
+            } else if (parameterParts[0].equals("vhost")) {
+                parametersMap.put(VHOST_PROPERTY, parameterParts[1]);
+            } else {
+                parametersMap.put(parameterParts[0], parameterParts[1]);
+            }
         }
     }
 
