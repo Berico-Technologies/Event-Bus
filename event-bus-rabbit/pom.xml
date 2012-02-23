@@ -30,9 +30,10 @@
                     <instructions>
                         <Bundle-SymbolicName>pegasus.eventbus.client.rabbitmq</Bundle-SymbolicName>
                         <Bundle-Activator>pegasus.eventbus.amqp.osgi.Activator</Bundle-Activator>
+                        <Export-Package>pegasus.eventbus.amqp,pegasus.eventbus.topology,pegasus.eventbus.topology.event</Export-Package>
                         <Require-Bundle>pegasus.eventbus.client</Require-Bundle>
                         <DynamicImport-Package>*</DynamicImport-Package>
-                        <Import-Package>!com.ibm.uvm.tools.*</Import-Package>
+                        <Import-Package>!*</Import-Package>
                         <Embed-Dependency>
                             !event-bus-client*,
                             !mockito-core*,
@@ -51,10 +52,8 @@
                             !spring-asm*,
                             !spring-core*,
                             !spring-expression*,
-                            !objenesis*,
                             !hamcrest-core*,
                             !hamcrest-library*,
-                            !cglib-nodep*,
                             !commons-logging*,
                             !commons-codec*,
                             !commons-httpclient*,

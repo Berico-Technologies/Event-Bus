@@ -1,45 +1,40 @@
 <?xml version="1.0"?>
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>pegasus.cip</groupId>
-    <artifactId>event-bus</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <relativePath>../../pom.xml</relativePath>
-  </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>pegasus.cip</groupId>
+        <artifactId>event-bus</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
 
-  <groupId>pegasus.esp</groupId>
-  <artifactId>event-stream-processor</artifactId>
-  <version>1.0-SNAPSHOT</version>
-  <name>Event Stream Processor</name>
-  <packaging>bundle</packaging>
+    <groupId>pegasus.esp</groupId>
+    <artifactId>event-stream-processor</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <name>Event Stream Processor</name>
+    <packaging>bundle</packaging>
 
-  <properties>
-    <bundle.symbolicName>pegasus.esp.event-stream-processor</bundle.symbolicName>
-    <bundle.namespace>pegasus.esp.event-stream-processor</bundle.namespace>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
+    <properties>
+        <bundle.symbolicName>pegasus.esp.event-stream-processor</bundle.symbolicName>
+        <bundle.namespace>pegasus.esp.event-stream-processor</bundle.namespace>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <version>2.3.6</version>
-        <extensions>true</extensions>
-        <configuration>
-          <instructions>
-            <Bundle-Activator>pegasus.esp.internal.osgiActivator</Bundle-Activator>
-            <Bundle-SymbolicName>event-stream-processor</Bundle-SymbolicName>
-            <Private-Package>pegasus.esp.internal.*</Private-Package>
-	    <Import-Package>!com.ibm.uvm.tools.*</Import-Package>
-	    <Require-Bundle>pegasus.eventbus.client</Require-Bundle>
-	    <DynamicImport-Package>*</DynamicImport-Package>
-	    <!-- <Embed-Dependency>
-	        guava;scope=!runtime,
-	        log4j;scope=!runtime,
-	        js;scope=!runtime,
-	    </Embed-Dependency> -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.3.6</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-Activator>pegasus.esp.internal.osgiActivator</Bundle-Activator>
+                        <Bundle-SymbolicName>pegasus.esp</Bundle-SymbolicName>
+                        <Require-Bundle>pegasus.eventbus.client</Require-Bundle>
+                        <Import-Package>!*</Import-Package>
+                        <DynamicImport-Package>*</DynamicImport-Package>
+                        <!-- <Embed-Dependency> guava;scope=!runtime, log4j;scope=!runtime, js;scope=!runtime, </Embed-Dependency> -->
                         <Embed-Dependency>
                             !mockito-core*,
                             !slf4j-api*,
@@ -57,49 +52,44 @@
                             !spring-asm*,
                             !spring-core*,
                             !spring-expression*,
-                            !objenesis*,
-                            !hamcrest-core*,
-                            !hamcrest-library*,
-                            !cglib-nodep*,
                             !commons-logging*,
                             !commons-codec*,
                             !commons-httpclient*,
                             !commons-cli*
                         </Embed-Dependency>
+                        <Embed-Transitive>true</Embed-Transitive>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
-	    <Embed-Transitive>true</Embed-Transitive>
-          </instructions>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+    <dependencies>
 
-  <dependencies>
+        <dependency>
+            <groupId>pegasus.cip</groupId>
+            <artifactId>event-bus-client</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
 
-    <dependency>
-	<groupId>pegasus.cip</groupId>
-	<artifactId>event-bus-client</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-    </dependency>
-
-    <dependency>
-	<groupId>com.google.guava</groupId>
-	<artifactId>guava</artifactId>
-	<version>11.0.1</version>
-    </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>11.0.1</version>
+        </dependency>
 
 
-    <dependency>
-	    <groupId>rhino</groupId>
-	    <artifactId>js</artifactId>
-	    <version>1.7R2</version>
-    </dependency>
+        <dependency>
+            <groupId>rhino</groupId>
+            <artifactId>js</artifactId>
+            <version>1.7R2</version>
+        </dependency>
 
-    <dependency>
-    	<groupId>com.espertech</groupId>
-    	<artifactId>esper</artifactId>
-    	<version>4.5.0</version>
-    </dependency>
-  </dependencies>
+        <dependency>
+            <groupId>com.espertech</groupId>
+            <artifactId>esper</artifactId>
+            <version>4.5.0</version>
+        </dependency>
+    </dependencies>
 
 </project>

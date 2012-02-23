@@ -36,8 +36,9 @@
                         <Bundle-SymbolicName>pegasus.eventbus.topology.service</Bundle-SymbolicName>
                         <Bundle-Activator>pegasus.eventbus.topology.osgi.Activator</Bundle-Activator>
                         <Require-Bundle>pegasus.eventbus.client</Require-Bundle>
+                        <Export-Package>!*</Export-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>
-                        <Import-Package>!com.ibm.uvm.tools.*</Import-Package>
+                        <Import-Package>!*</Import-Package>
                         <Embed-Dependency>
                             !event-bus-client*,
                             !event-bus-rabbit*,
@@ -57,10 +58,8 @@
                             !spring-asm*,
                             !spring-core*,
                             !spring-expression*,
-                            !objenesis*,
                             !hamcrest-core*,
                             !hamcrest-library*,
-                            !cglib-nodep*,
                             !commons-logging*,
                             !commons-codec*,
                             !commons-httpclient*,
