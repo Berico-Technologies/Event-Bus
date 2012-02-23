@@ -17,7 +17,7 @@ import pegasus.eventbus.client.Envelope;
 import pegasus.eventbus.client.EnvelopeHandler;
 import pegasus.eventbus.client.EventResult;
 
-public class EnvelopeHandlerBasedConsumer_MessageAcknowledgementTests {
+public class EnvelopeHandlerBasedConsumer_MessageAcknowledgementTest {
 
 	
 	@Mock private Channel channel;
