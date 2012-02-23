@@ -7,8 +7,8 @@
         <relativePath>..</relativePath>
     </parent>
     <artifactId>event-bus-client</artifactId>
-    <name>Event Bus API</name>
-    <description>The event bus API</description>
+    <name>Event Bus Client API</name>
+    <description>The Event Bus Client API for the Orion Event Bus.</description>
 
     <build>
         <plugins>

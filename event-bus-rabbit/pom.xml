@@ -8,8 +8,8 @@
         <relativePath>..</relativePath>
     </parent>
     <artifactId>event-bus-rabbit</artifactId>
-    <name>Event Bus Rabbit Client</name>
-    <description>The Event Bus RabbitMQ implementation</description>
+    <name>Event Bus Client - Rabbit Impl</name>
+    <description>The RabbitMQ based implementation of the Client API for the Orion Event Bus.</description>
 
     <dependencies>
         <dependency>

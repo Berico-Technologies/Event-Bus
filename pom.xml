@@ -4,8 +4,8 @@
     <artifactId>event-bus</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>Pegasus Event Bus Client</name>
-    <description>The Pegasus Event Bus Client for the Pegasus High Computing Environment</description>
+    <name>Orion Event Bus</name>
+    <description>The Event Bus component of the Orion High-capacity Computing Environment</description>
 
     <modules>
         <module>event-bus-client</module>
