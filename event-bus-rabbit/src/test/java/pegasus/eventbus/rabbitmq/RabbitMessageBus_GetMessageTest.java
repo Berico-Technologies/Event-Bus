@@ -27,7 +27,7 @@ import com.rabbitmq.client.AMQP.BasicProperties;
 @RunWith(value = Parameterized.class)
 public class RabbitMessageBus_GetMessageTest extends RabbitMessageBus_TestBase {
 
-    @Parameters
+	@Parameters
     public static Collection<Object[]> testDataForReception() {
 
         byte[] bytesToSend = { 35, 74, 3, 50, 93, 19, 3, 83, 29, 2 };
@@ -42,6 +42,7 @@ public class RabbitMessageBus_GetMessageTest extends RabbitMessageBus_TestBase {
     private static BasicProperties getNormalProps() {
         Map<String, Object> headers = new HashMap<String, Object>();
         headers.put(RabbitMessageBus.TOPIC_HEADER_KEY, "test.topic");
+        headers.put(RabbitMessageBus.PUB_TIMESTAMP_HEADER_KEY, 2930830423403L);
         headers.put(CUSTOM_HEADER_NAME, "CustomHeaderValue");
 
         BasicProperties props = new BasicProperties.Builder()
@@ -49,7 +50,7 @@ public class RabbitMessageBus_GetMessageTest extends RabbitMessageBus_TestBase {
         	.correlationId(UUID.randomUUID().toString())
         	.type("test.event")
         	.replyTo("replyto_routingkey")
-            //.timestamp(new Date(2930830423000L))
+            .timestamp(new Date(2889870423000L))
             .headers(headers)
             .build();
         return props;
@@ -154,8 +155,10 @@ public class RabbitMessageBus_GetMessageTest extends RabbitMessageBus_TestBase {
     }
 
     @Test
-    public void getNextMessageShouldSetEnvelopeTimestampBaseOnAmqpTimestampHeader() throws IOException {
-        assertEquals(propertiesSent.getTimestamp(), receivedEnvelope.getTimestamp());
+    public void getNextMessageShouldSetEnvelopeTimestampBaseOnCustomeHeader() throws IOException {
+        if ((propertiesSent.getHeaders() == null || !propertiesSent.getHeaders().containsKey(RabbitMessageBus.PUB_TIMESTAMP_HEADER_KEY)) && receivedEnvelope.getTimestamp() == null)
+            return;
+        assertEquals(new Date((Long)(propertiesSent.getHeaders().get(RabbitMessageBus.PUB_TIMESTAMP_HEADER_KEY))), receivedEnvelope.getTimestamp());
     }
 
     @Test
@@ -174,6 +177,7 @@ public class RabbitMessageBus_GetMessageTest extends RabbitMessageBus_TestBase {
 
     @Test
     public void getNextMessageShouldNotIncludedEnvelopePropertiesSentAsCustomHeadersInEnvelopeHeaders() throws IOException {
-        assertFalse(receivedEnvelope.getHeaders().containsKey(RabbitMessageBus.TOPIC_HEADER_KEY));
+        assertFalse("Found header: " + RabbitMessageBus.TOPIC_HEADER_KEY, receivedEnvelope.getHeaders().containsKey(RabbitMessageBus.TOPIC_HEADER_KEY));
+        assertFalse("Found header: " + RabbitMessageBus.PUB_TIMESTAMP_HEADER_KEY, receivedEnvelope.getHeaders().containsKey(RabbitMessageBus.PUB_TIMESTAMP_HEADER_KEY));
     }
 }

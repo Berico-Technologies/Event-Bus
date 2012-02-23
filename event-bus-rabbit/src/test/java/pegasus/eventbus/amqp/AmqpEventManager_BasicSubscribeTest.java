@@ -48,7 +48,7 @@ public class AmqpEventManager_BasicSubscribeTest extends AmqpEventManager_BasicS
     }
 
     @Test
-    @Ignore("Convert to subscriber model from thread.")
+    @Ignore("Needs to be moved to RabbitMq package as this is now an integration test.")
     public void unsubscribingShouldSendtInteruptRequestsToAllHandlerThreadsOfThatSubscription() throws Exception {
 
         BackgroundUnsubscriber actor = new BackgroundUnsubscriber();
@@ -57,6 +57,7 @@ public class AmqpEventManager_BasicSubscribeTest extends AmqpEventManager_BasicS
     }
 
     @Test
+    @Ignore("Needs to be moved to RabbitMq package as this is now an integration test.")
     public void unsubscribingShouldWaitForAnyHandlerThreadsForThatSubscriptionWhichAreCurrentyProcessingAnEventToCompleteProcesing() throws Exception {
 
         BackgroundUnsubscriber actor = new BackgroundUnsubscriber();
@@ -65,7 +66,7 @@ public class AmqpEventManager_BasicSubscribeTest extends AmqpEventManager_BasicS
     }
 
     @Test
-    @Ignore("Convert to subscriber model from thread.")
+    @Ignore("Needs to be moved to RabbitMq package as this is now an integration test.")
     public void closingTheManagerShouldSendtInteruptRequestsToAllHandlerThreadsOfThatSubscription() throws Exception {
 
         BackgroundCloser actor = new BackgroundCloser();
@@ -74,6 +75,7 @@ public class AmqpEventManager_BasicSubscribeTest extends AmqpEventManager_BasicS
     }
 
     @Test
+    @Ignore("Needs to be moved to RabbitMq package as this is now an integration test.")
     public void closingTheManagerShouldWaitForAnyHandlerThreadsWhichAreCurrentyProcessingAnEventToCompleteProcesing() throws Exception {
 
         BackgroundCloser actor = new BackgroundCloser();

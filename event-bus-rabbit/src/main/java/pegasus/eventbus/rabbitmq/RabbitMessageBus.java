@@ -1,6 +1,7 @@
 package pegasus.eventbus.rabbitmq;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -30,6 +31,7 @@ public class RabbitMessageBus implements AmqpMessageBus, UnexpectedCloseListener
     private static final Logger                    LOG                                = LoggerFactory.getLogger(RabbitMessageBus.class);
 
     final static String                            TOPIC_HEADER_KEY                   = "pegasus.eventbus.event.topic";
+    final static String                            PUB_TIMESTAMP_HEADER_KEY           = "pegasus.eventbus.event.publication_timestamp";
 
     private RabbitConnection                       connection;
     private Channel                                commandChannel;
@@ -261,6 +263,13 @@ public class RabbitMessageBus implements AmqpMessageBus, UnexpectedCloseListener
                 headersOut.put(TOPIC_HEADER_KEY, message.getTopic());
             }
 
+            if (message.getTimestamp() != null) {
+                //AMQP Timestamp values only have 1 second resolution so we are using a Long custom header vice props.setTimestamp() to transmit the time stamp for our use.
+            	//However we still set the AMQP timestamp property for interoperability reasons.
+                //See AMPQ 0-9-1 specification,  section 4.2.5.4 "Timestamps"
+               headersOut.put(PUB_TIMESTAMP_HEADER_KEY, message.getTimestamp().getTime());
+            }
+
             final Map<String, String> headersIn = message.getHeaders();
 
             for (String key : headersIn.keySet()) {
@@ -297,12 +306,16 @@ public class RabbitMessageBus implements AmqpMessageBus, UnexpectedCloseListener
 
         LOG.trace("Placing the headers from the message into the Envelope.");
 
+        Map<String, Object> propHeaders = props.getHeaders();
         Map<String, String> headers = envelope.getHeaders();
-
-        if (props.getHeaders() != null) {
-            for (String key : props.getHeaders().keySet()) {
-                headers.put(key, props.getHeaders().get(key).toString());
+        Long timestampMills = null;
+        
+		if (propHeaders != null) {
+            for (String key : propHeaders.keySet()) {
+                headers.put(key, propHeaders.get(key).toString());
             }
+            
+            timestampMills = (Long)propHeaders.get(PUB_TIMESTAMP_HEADER_KEY);
         }
 
         LOG.trace("Mapping AMQP specific properties to Envelope properties.");
@@ -312,11 +325,12 @@ public class RabbitMessageBus implements AmqpMessageBus, UnexpectedCloseListener
         envelope.setCorrelationId(props.getCorrelationId() == null ? null : UUID.fromString(props.getCorrelationId()));
         envelope.setEventType(props.getType());
         envelope.setReplyTo(props.getReplyTo());
-        envelope.setTimestamp(props.getTimestamp());
+        envelope.setTimestamp(timestampMills == null ? null : new Date(timestampMills));
         envelope.setTopic(headers.get(TOPIC_HEADER_KEY));
 
-        // We don't want the topic key to be a Header property of the envelope.
+        // We don't want our internally used headers to be a Header property of the envelope.
         headers.remove(TOPIC_HEADER_KEY);
+        headers.remove(PUB_TIMESTAMP_HEADER_KEY);
         return envelope;
     }
 

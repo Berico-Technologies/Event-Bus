@@ -22,7 +22,7 @@ public class RabbitConnection implements ShutdownListener {
     private static final long            DEFAULT_RETRY_TIMEOUT    = 30000;
 
     private ConnectionFactory            connectionFactory        = new ConnectionFactory();
-    private Connection                   connection;
+    protected Connection                   connection;
     private long                         retryTimeout             = DEFAULT_RETRY_TIMEOUT;
     private Set<UnexpectedCloseListener> unexpectedCloseListeners = new HashSet<UnexpectedCloseListener>();
 
@@ -163,7 +163,7 @@ public class RabbitConnection implements ShutdownListener {
 
     public interface UnexpectedCloseListener {
 
-        void onUnexpectedClose(boolean successfulllyReopened);
+        void onUnexpectedClose(boolean successfullyReopened);
 
     }
 

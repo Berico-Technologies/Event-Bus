@@ -43,7 +43,7 @@ public class RabbitMessageBus_PusblishTest extends RabbitMessageBus_TestBase {
         envelope.setEventType("test.event");
         envelope.setTopic("test.topic");
         envelope.setReplyTo("replyTo.routing_key");
-        envelope.setTimestamp(new Date(3290830423000L));  //TODO: test fail if we use time more precise than seconds.  Seems Rabbit looses the mills for some reason.
+        envelope.setTimestamp(new Date(3290830423452L));  
         return envelope;
     }
 
@@ -54,10 +54,12 @@ public class RabbitMessageBus_PusblishTest extends RabbitMessageBus_TestBase {
     private static final String  CUSTOM_HEADER_NAME        = "CustomHeader";
     private static final Pattern acceptableUUIDFormatRegEx = Pattern.compile("^([0-9a-fA-F]){8}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){12}$");
 
-    String                       testDescription;
-    Envelope                     sentEnvelope;
-    GetResponse                  receivedMessage;
+    private String                       testDescription;
+    private Envelope                     sentEnvelope;
+    private GetResponse                  receivedMessage;
 
+    private Map<String, Object> headers;
+    
     public RabbitMessageBus_PusblishTest(Envelope sentEnvelope, String testDescription) {
         super();
         System.out.println("Test instance: " + testDescription);
@@ -82,6 +84,7 @@ public class RabbitMessageBus_PusblishTest extends RabbitMessageBus_TestBase {
         rabbitBus.publish(new RoutingInfo(exchangeName, exchangeType, true, queueName), sentEnvelope);
 
         receivedMessage = getMessageFromDestination(channel, queueName);
+        headers = receivedMessage.getProps().getHeaders();
     }
 
     @Test
@@ -131,12 +134,22 @@ public class RabbitMessageBus_PusblishTest extends RabbitMessageBus_TestBase {
 
     @Test
     public void publishShouldTransmitTimestampAsAmqpTimestampHeader() throws IOException {
-        assertEquals(sentEnvelope.getTimestamp(), receivedMessage.getProps().getTimestamp());
+        if (sentEnvelope.getTimestamp() == null && !headers.containsKey(RabbitMessageBus.PUB_TIMESTAMP_HEADER_KEY))
+            return;
+       //AMQP Timestamp values only have 1 second resolution...
+       //See AMPQ 0-9-1 specification,  section 4.2.5.4 "Timestamps"
+       assertEquals(sentEnvelope.getTimestamp().getTime()/1000, receivedMessage.getProps().getTimestamp().getTime()/1000);
     }
 
     @Test
+    public void publishShouldAlsoTransmitTimestampMillsAsCustomHeader() throws IOException {
+        if (sentEnvelope.getTimestamp() == null && !headers.containsKey(RabbitMessageBus.PUB_TIMESTAMP_HEADER_KEY))
+            return;
+    	assertEquals(sentEnvelope.getTimestamp().getTime(), headers.get(RabbitMessageBus.PUB_TIMESTAMP_HEADER_KEY));
+    }
+    
+    @Test
     public void publishShouldTransmitEnvelopeTopicAsCustomHeader() throws IOException {
-        final Map<String, Object> headers = receivedMessage.getProps().getHeaders();
         if (sentEnvelope.getTopic() == null && !headers.containsKey(RabbitMessageBus.TOPIC_HEADER_KEY))
             return;
         assertEquals(sentEnvelope.getTopic(), headers.get(RabbitMessageBus.TOPIC_HEADER_KEY).toString());
