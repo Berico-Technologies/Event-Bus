@@ -12,13 +12,13 @@ import java.util.concurrent.TimeoutException;
 import org.junit.*;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
-import pegasus.eventbus.amqp.ConnectionParameters;
+import pegasus.eventbus.amqp.AmqpConnectionParameters;
 import pegasus.eventbus.rabbitmq.RabbitConnection.UnexpectedCloseListener;
 import pegasus.eventbus.testsupport.RabbitManagementApiHelper;
 
 public class RabbitConnection_Test implements UnexpectedCloseListener{
 
-    protected ConnectionParameters          connectionParameters;
+    protected AmqpConnectionParameters          connectionParameters;
     protected RabbitManagementApiHelper     rabbitManagementApi;
     protected TestableConnection              connection;
     private FileSystemXmlApplicationContext context;
@@ -29,7 +29,7 @@ public class RabbitConnection_Test implements UnexpectedCloseListener{
 	public void beforeEachTest() throws IOException {
 
 		context = new FileSystemXmlApplicationContext("src/test/resources/eventbus-context.xml");
-		connectionParameters = context.getBean(ConnectionParameters.class);
+		connectionParameters = context.getBean(AmqpConnectionParameters.class);
 		connection = new TestableConnection(connectionParameters);
 
         rabbitManagementApi = new RabbitManagementApiHelper(connectionParameters);
@@ -49,7 +49,7 @@ public class RabbitConnection_Test implements UnexpectedCloseListener{
 	
 	private class TestableConnection extends RabbitConnection{
 
-		public TestableConnection(ConnectionParameters connectionParameters) {
+		public TestableConnection(AmqpConnectionParameters connectionParameters) {
 			super(connectionParameters);
 		}
 		
