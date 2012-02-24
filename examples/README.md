@@ -1,1 +1,1 @@
-Examples of how tp use the Event Bus.
+Examples of how to use the Event Bus.
