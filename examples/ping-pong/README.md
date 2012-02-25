@@ -1,6 +1,6 @@
 # Ping-Pong Example
 
-### Description
+## Description ##
 
 In this example, we have created two [EventHandler][1]s, 
 one that handles [Ping][2] events and the other that 
@@ -18,7 +18,7 @@ when they are received.  This contents include the timespan between Ping and Pon
 which can be a simple metric indicating how latent message transfers are between
 publish and subscriber, including serialization.
 
-### Running the Example
+## Running the Example ##
 
 To run the example, you will need to have and active Event Bus (RabbitMQ and the
 Global Topology Service).  You will also need to start the following services
