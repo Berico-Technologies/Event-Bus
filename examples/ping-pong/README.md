@@ -1,6 +1,10 @@
 # Ping-Pong Example
 
-### Description
+Demonstrates the use of the EventHandler interface, as well as, how to publish events.  Developers
+should get a pretty good idea of how simple it is to create a client-server architecture on the 
+Event Bus, using Event Types as the routing mechanism.
+
+## Description ##
 
 In this example, we have created two [EventHandler][1]s, 
 one that handles [Ping][2] events and the other that 
@@ -18,7 +22,7 @@ when they are received.  This contents include the timespan between Ping and Pon
 which can be a simple metric indicating how latent message transfers are between
 publish and subscriber, including serialization.
 
-### Running the Example
+## Running the Example ##
 
 To run the example, you will need to have and active Event Bus (RabbitMQ and the
 Global Topology Service).  You will also need to start the following services
