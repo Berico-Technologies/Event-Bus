@@ -1,5 +1,9 @@
 # Ping-Pong Example
 
+Demonstrates the use of the EventHandler interface, as well as, how to publish events.  Developers
+should get a pretty good idea of how simple it is to create a client-server architecture on the 
+Event Bus, using Event Types as the routing mechanism.
+
 ## Description ##
 
 In this example, we have created two [EventHandler][1]s, 
