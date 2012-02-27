@@ -27,13 +27,26 @@
                 <version>2.3.6</version>
                 <extensions>true</extensions>
                 <configuration>
+                    <manifestLocation>META-INF</manifestLocation>
                     <instructions>
                         <Bundle-SymbolicName>pegasus.eventbus.client.rabbitmq</Bundle-SymbolicName>
                         <Bundle-Activator>pegasus.eventbus.amqp.osgi.Activator</Bundle-Activator>
-                        <Export-Package>pegasus.eventbus.amqp,pegasus.eventbus.topology,pegasus.eventbus.topology.event</Export-Package>
-                        <Require-Bundle>pegasus.eventbus.client</Require-Bundle>
-                        <DynamicImport-Package>*</DynamicImport-Package>
-                        <Import-Package>!*</Import-Package>
+                        <Export-Package>
+                            pegasus.eventbus.amqp,
+                            pegasus.eventbus.amqp.osgi,
+                            pegasus.eventbus.gson,
+                            pegasus.eventbus.rabbitmq,
+                            pegasus.eventbus.topology,
+                            pegasus.eventbus.topology.event
+                        </Export-Package>
+                        <Import-Package>
+                            !COM.jrockit.reflect,
+                            !jrockit.vm,
+                            !net.sf.cglib.asm.util,
+                            !org.apache.tools.ant*,
+                            !sun.reflect,
+                            *
+                        </Import-Package>
                         <Embed-Dependency>
                             !event-bus-client*,
                             !mockito-core*,
@@ -61,6 +74,22 @@
                         </Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jboss.as.plugins</groupId>
+                <artifactId>jboss-as-maven-plugin</artifactId>
+                <version>7.1.0.Final</version>
+                <configuration>
+                    <filename>${project.build.finalName}.jar</filename>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.1</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
                 </configuration>
             </plugin>
         </plugins>

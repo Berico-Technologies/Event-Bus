@@ -1,0 +1,44 @@
+Manifest-Version: 1.0
+Bnd-LastModified: 1330348469677
+Build-Jdk: 1.7.0_03
+Built-By: asa
+Bundle-Activator: pegasus.eventbus.topology.osgi.Activator
+Bundle-ClassPath: .,commons-lang-2.5.jar,gson-2.1.jar,amqp-client-2.7.1.
+ jar,commons-io-1.2.jar,objenesis-1.0.jar,cglib-nodep-2.2.jar
+Bundle-Description: The Event Bus Topology Service
+Bundle-DocURL: http://www.bericotechnologies.com
+Bundle-ManifestVersion: 2
+Bundle-Name: Event Bus Topology Service
+Bundle-SymbolicName: pegasus.eventbus.topology.service
+Bundle-Vendor: Berico Technologies
+Bundle-Version: 0.0.1.SNAPSHOT
+Created-By: Apache Maven Bundle Plugin
+Embed-Dependency: !event-bus-client*,!event-bus-rabbit*,!mockito-core*,!
+ slf4j-api*,!logback-core*,!logback-classic,!log4j*,!org.osgi*,!org.apac
+ he.felix*,!awaitility*,!junit*,!spring-context*,!aopalliance*,!spring-a
+ op*,!spring-bean*,!spring-asm*,!spring-core*,!spring-expression*,!hamcr
+ est-core*,!hamcrest-library*,!commons-logging*,!commons-codec*,!commons
+ -httpclient*,!commons-cli*
+Embed-Transitive: true
+Embedded-Artifacts: commons-lang-2.5.jar;g="commons-lang";a="commons-lan
+ g";v="2.5",gson-2.1.jar;g="com.google.code.gson";a="gson";v="2.1",amqp-
+ client-2.7.1.jar;g="com.rabbitmq";a="amqp-client";v="2.7.1",commons-io-
+ 1.2.jar;g="commons-io";a="commons-io";v="1.2",objenesis-1.0.jar;g="org.
+ objenesis";a="objenesis";v="1.0",cglib-nodep-2.2.jar;g="cglib";a="cglib
+ -nodep";v="2.2"
+Export-Package: pegasus.eventbus.topology.admin;version="0.0.1.SNAPSHOT"
+ ,pegasus.eventbus.topology.osgi;uses:="org.osgi.util.tracker,org.osgi.f
+ ramework,pegasus.eventbus.client,org.slf4j,pegasus.eventbus.topology,pe
+ gasus.eventbus.amqp,pegasus.eventbus.topology.service";version="0.0.1.S
+ NAPSHOT",pegasus.eventbus.topology.service;uses:="pegasus.eventbus.topo
+ logy.event,org.slf4j,pegasus.eventbus.topology,pegasus.eventbus.client,
+ pegasus.eventbus.amqp";version="0.0.1.SNAPSHOT"
+Ignore-Package: sun.reflect,jrockit.vm,COM.jrockit.reflect,org.springfra
+ mework.context.support,org.apache.tools.ant.types,net.sf.cglib.asm.util
+ ,org.apache.tools.ant
+Import-Package: javax.net,javax.net.ssl,javax.security.auth.callback,jav
+ ax.security.sasl,org.osgi.framework;version="[1.3,2)",org.osgi.util.tra
+ cker;version="[1.4,2)",org.slf4j;version="[1.6,2)",pegasus.eventbus.amq
+ p;version="[0.0,1)",pegasus.eventbus.client,pegasus.eventbus.topology;v
+ ersion="[0.0,1)",pegasus.eventbus.topology.event;version="[0.0,1)"
+Tool: Bnd-1.50.0

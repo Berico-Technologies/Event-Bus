@@ -1,0 +1,46 @@
+Manifest-Version: 1.0
+Bnd-LastModified: 1330348460158
+Build-Jdk: 1.7.0_03
+Built-By: asa
+Bundle-Activator: pegasus.eventbus.amqp.osgi.Activator
+Bundle-ClassPath: .,commons-lang-2.5.jar,gson-2.1.jar,amqp-client-2.7.1.
+ jar,commons-io-1.2.jar,objenesis-1.0.jar,cglib-nodep-2.2.jar
+Bundle-Description: The RabbitMQ based implementation of the Client API 
+ for the Orion Event Bus.
+Bundle-DocURL: http://www.bericotechnologies.com
+Bundle-ManifestVersion: 2
+Bundle-Name: Event Bus Client - Rabbit Impl
+Bundle-SymbolicName: pegasus.eventbus.client.rabbitmq
+Bundle-Vendor: Berico Technologies
+Bundle-Version: 0.0.1.SNAPSHOT
+Created-By: Apache Maven Bundle Plugin
+Embed-Dependency: !event-bus-client*,!mockito-core*,!slf4j-api*,!logback
+ -core*,!logback-classic,!log4j*,!org.osgi*,!org.apache.felix*,!awaitili
+ ty*,!junit*,!spring-context*,!aopalliance*,!spring-aop*,!spring-bean*,!
+ spring-asm*,!spring-core*,!spring-expression*,!hamcrest-core*,!hamcrest
+ -library*,!commons-logging*,!commons-codec*,!commons-httpclient*,!commo
+ ns-cli*
+Embed-Transitive: true
+Embedded-Artifacts: commons-lang-2.5.jar;g="commons-lang";a="commons-lan
+ g";v="2.5",gson-2.1.jar;g="com.google.code.gson";a="gson";v="2.1",amqp-
+ client-2.7.1.jar;g="com.rabbitmq";a="amqp-client";v="2.7.1",commons-io-
+ 1.2.jar;g="commons-io";a="commons-io";v="1.2",objenesis-1.0.jar;g="org.
+ objenesis";a="objenesis";v="1.0",cglib-nodep-2.2.jar;g="cglib";a="cglib
+ -nodep";v="2.2"
+Export-Package: pegasus.eventbus.amqp;uses:="pegasus.eventbus.topology,p
+ egasus.eventbus.gson,pegasus.eventbus.rabbitmq,pegasus.eventbus.client,
+ org.slf4j";version="0.0.1.SNAPSHOT",pegasus.eventbus.amqp.osgi;uses:="p
+ egasus.eventbus.amqp,org.osgi.framework,pegasus.eventbus.client,org.slf
+ 4j";version="0.0.1.SNAPSHOT",pegasus.eventbus.gson;uses:="pegasus.event
+ bus.amqp,org.slf4j";version="0.0.1.SNAPSHOT",pegasus.eventbus.rabbitmq;
+ uses:="pegasus.eventbus.client,org.slf4j,pegasus.eventbus.amqp";version
+ ="0.0.1.SNAPSHOT",pegasus.eventbus.topology;uses:="pegasus.eventbus.amq
+ p,pegasus.eventbus.client,org.slf4j,pegasus.eventbus.topology.event";ve
+ rsion="0.0.1.SNAPSHOT",pegasus.eventbus.topology.event;uses:="pegasus.e
+ ventbus.amqp,pegasus.eventbus.topology";version="0.0.1.SNAPSHOT"
+Ignore-Package: sun.reflect,jrockit.vm,COM.jrockit.reflect,org.apache.to
+ ols.ant.types,net.sf.cglib.asm.util,org.apache.tools.ant
+Import-Package: javax.net,javax.net.ssl,javax.security.auth.callback,jav
+ ax.security.sasl,org.osgi.framework;version="[1.3,2)",org.slf4j;version
+ ="[1.6,2)",pegasus.eventbus.client
+Tool: Bnd-1.50.0

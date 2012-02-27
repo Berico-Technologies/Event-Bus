@@ -22,7 +22,7 @@ public class RabbitConnection implements ShutdownListener {
     private static final long            DEFAULT_RETRY_TIMEOUT    = 30000;
 
     private ConnectionFactory            connectionFactory        = new ConnectionFactory();
-    protected Connection                   connection;
+    protected Connection                 connection;
     private long                         retryTimeout             = DEFAULT_RETRY_TIMEOUT;
     private Set<UnexpectedCloseListener> unexpectedCloseListeners = new HashSet<UnexpectedCloseListener>();
 
@@ -74,20 +74,20 @@ public class RabbitConnection implements ShutdownListener {
     }
 
     public void shutdownCompleted(ShutdownSignalException signal) {
-        if(isClosing){
-            
-        	LOG.info("Connection shutdown notice received as part of routine bus shutdown.  Taking no action.");
-        	
-        	return;
+        if (isClosing) {
+
+            LOG.info("Connection shutdown notice received as part of routine bus shutdown.  Taking no action.");
+
+            return;
         } else {
-	    	if (signal == null) {
-	
-	            LOG.info("Connection shutdown notice received unexpectedly.");
-	
-	        } else {
-	
-	            LOG.error("Connection shutdown exception received unexpectedly.", signal);
-	        }
+            if (signal == null) {
+
+                LOG.info("Connection shutdown notice received unexpectedly.");
+
+            } else {
+
+                LOG.error("Connection shutdown exception received unexpectedly.", signal);
+            }
         }
 
         if (isInConnectionErrorState || isClosing) {
@@ -101,9 +101,9 @@ public class RabbitConnection implements ShutdownListener {
         try {
 
             while (watch.getTime() < retryTimeout) {
-                
+
                 LOG.info("Attempting to reopen connection.");
-                
+
                 try {
                     open();
 

@@ -1,0 +1,29 @@
+Manifest-Version: 1.0
+Bnd-LastModified: 1330003525684
+Build-Jdk: 1.7.0_03
+Built-By: asa
+Bundle-ClassPath: .,commons-lang-2.5.jar,gson-2.1.jar,amqp-client-2.7.1.
+ jar,commons-io-1.2.jar
+Bundle-Description: The event bus API
+Bundle-DocURL: http://www.bericotechnologies.com
+Bundle-ManifestVersion: 2
+Bundle-Name: Event Bus API
+Bundle-SymbolicName: pegasus.eventbus.client
+Bundle-Vendor: Berico Technologies
+Bundle-Version: 0.0.1.SNAPSHOT
+Created-By: Apache Maven Bundle Plugin
+Embed-Dependency: !mockito-core*,!slf4j-api*,!logback-core*,!logback-cla
+ ssic,!log4j*,!org.osgi*,!org.apache.felix*,!awaitility*,!junit*,!spring
+ -context*,!aopalliance*,!spring-aop*,!spring-bean*,!spring-asm*,!spring
+ -core*,!spring-expression*,!objenesis*,!hamcrest-core*,!hamcrest-librar
+ y*,!cglib-nodep*,!commons-logging*,!commons-codec*,!commons-httpclient*
+ ,!commons-cli*
+Embed-Transitive: true
+Embedded-Artifacts: commons-lang-2.5.jar;g="commons-lang";a="commons-lan
+ g";v="2.5",gson-2.1.jar;g="com.google.code.gson";a="gson";v="2.1",amqp-
+ client-2.7.1.jar;g="com.rabbitmq";a="amqp-client";v="2.7.1",commons-io-
+ 1.2.jar;g="commons-io";a="commons-io";v="1.2"
+Export-Package: pegasus.eventbus.client;version="0.0.1.SNAPSHOT"
+Import-Package: javax.net,javax.net.ssl,javax.security.auth.callback,jav
+ ax.security.sasl
+Tool: Bnd-1.50.0

@@ -54,7 +54,6 @@ public class RabbitMessageBus_PusblishTest extends RabbitMessageBus_TestBase {
     private static final String  CUSTOM_HEADER_NAME        = "CustomHeader";
     private static final Pattern acceptableUUIDFormatRegEx = Pattern.compile("^([0-9a-fA-F]){8}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){12}$");
 
-    private String                       testDescription;
     private Envelope                     sentEnvelope;
     private GetResponse                  receivedMessage;
 
@@ -64,7 +63,6 @@ public class RabbitMessageBus_PusblishTest extends RabbitMessageBus_TestBase {
         super();
         System.out.println("Test instance: " + testDescription);
         this.sentEnvelope = sentEnvelope;
-        this.testDescription = testDescription;
     }
 
     @Before
