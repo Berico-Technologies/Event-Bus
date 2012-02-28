@@ -3,7 +3,7 @@
     <parent>
         <groupId>pegasus.cip</groupId>
         <artifactId>event-bus</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>0.0.2-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
     <artifactId>event-bus-toposervice-config</artifactId>
