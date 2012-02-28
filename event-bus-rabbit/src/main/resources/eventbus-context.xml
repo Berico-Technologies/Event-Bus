@@ -1,21 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:osgi="http://www.springframework.org/schema/osgi"
        xmlns:util="http://www.springframework.org/schema/util"
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="
             http://www.springframework.org/schema/beans
             http://www.springframework.org/schema/beans/spring-beans.xsd
-            http://www.springframework.org/schema/osgi
-            http://www.springframework.org/schema/osgi/spring-osgi.xsd
             http://www.springframework.org/schema/util
             http://www.springframework.org/schema/util/spring-util.xsd
             http://www.springframework.org/schema/context
             http://www.springframework.org/schema/context/spring-context.xsd">
     
-    <osgi:service ref="eventManager" interface="pegasus.eventbus.client.EventManager" />
-
 	<!-- If you don't want the EventManager to start when it is pulled from the ApplicationContext,
 	     remove the 'init-method="start"' property. -->
     <bean id="eventManager" class="pegasus.eventbus.amqp.AmqpEventManager" init-method="start" destroy-method="close">
