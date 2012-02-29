@@ -63,6 +63,25 @@
                 </entry>
             </map>
         </property>
+        <property name="eventSetMap">
+        	<map>
+        		<entry>
+	        		<key>
+	        			<value>All</value>
+	         		</key>
+        			<list>
+	                    <bean class="pegasus.eventbus.amqp.RoutingInfo">
+	                        <constructor-arg name="exchangeName" value="pegasus" />
+	                        <constructor-arg name="routingKey" value="#" />
+	                    </bean>
+	                    <bean class="pegasus.eventbus.amqp.RoutingInfo">
+	                        <constructor-arg name="exchangeName" value="topology" />
+	                        <constructor-arg name="routingKey" value="#" />
+	                    </bean>
+        			</list>
+       			</entry>
+        	</map>
+        </property>
     </bean>
 
 </beans>
