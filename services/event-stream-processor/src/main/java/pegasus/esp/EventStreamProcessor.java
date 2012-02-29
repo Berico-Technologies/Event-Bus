@@ -92,7 +92,7 @@ public class EventStreamProcessor {
 
         @Override
         public String getEventSetName() {
-            return "ALL";
+            return "All";
         }
 
     }
