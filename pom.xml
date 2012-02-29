@@ -15,6 +15,7 @@
         <module>event-bus-toposervice</module>
         <module>event-bus-toposervice-war</module>
         <module>services/event-stream-processor</module>
+        <module>services/event-stream-processor-war</module>
   </modules>
 
     <properties>

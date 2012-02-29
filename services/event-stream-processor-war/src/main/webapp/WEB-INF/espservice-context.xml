@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.springframework.org/schema/beans" xmlns:context="http://www.springframework.org/schema/context" xmlns:util="http://www.springframework.org/schema/util"
+    xsi:schemaLocation="http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit-1.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:property-placeholder location="classpath:eventbus.properties" />
+
+    <bean id="connectionParameters" class="pegasus.eventbus.amqp.AmqpConnectionParameters">
+        <property name="username" value="${event.bus.username:guest}" />
+        <property name="password" value="${event.bus.password:guest}" />
+        <property name="host" value="${event.bus.host:rabbit}" />
+        <property name="vHost" value="${event.bus.vhost:/}" />
+        <property name="port" value="${event.bus.port:5672}" />
+    </bean>
+
+    <bean id="defaultConfiguration" class="pegasus.eventbus.amqp.AmqpConfiguration" factory-method="getDefault">
+        <constructor-arg name="clientName" value="${event.bus.clientName:abc}" />
+        <constructor-arg name="connectionParameters" ref="connectionParameters" />
+    </bean>
+
+    <bean id="eventManager" class="pegasus.eventbus.amqp.AmqpEventManager" destroy-method="close">
+        <constructor-arg ref="defaultConfiguration" />
+    </bean>
+
+    <bean id="esp" class="pegasus.esp.EventStreamProcessor">
+        <property name="eventManager" ref="eventManager" />
+    </bean>
+
+</beans>
