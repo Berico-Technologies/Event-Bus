@@ -12,57 +12,11 @@
     <artifactId>event-stream-processor</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>Event Stream Processor</name>
-    <packaging>bundle</packaging>
+    <packaging>jar</packaging>
 
     <properties>
-        <bundle.symbolicName>pegasus.esp.event-stream-processor</bundle.symbolicName>
-        <bundle.namespace>pegasus.esp.event-stream-processor</bundle.namespace>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.3.6</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Bundle-Activator>pegasus.esp.internal.osgiActivator</Bundle-Activator>
-                        <Bundle-SymbolicName>pegasus.esp</Bundle-SymbolicName>
-                        <Require-Bundle>pegasus.eventbus.client</Require-Bundle>
-                        <Import-Package>!*</Import-Package>
-                        <DynamicImport-Package>*</DynamicImport-Package>
-                        <!-- <Embed-Dependency> guava;scope=!runtime, log4j;scope=!runtime, js;scope=!runtime, </Embed-Dependency> -->
-                        <Embed-Dependency>
-                            !mockito-core*,
-                            !slf4j-api*,
-                            !logback-core*,
-                            !logback-classic,
-                            !log4j*,
-                            !org.osgi*,
-                            !org.apache.felix*,
-                            !awaitility*,
-                            !junit*,
-                            !spring-context*,
-                            !aopalliance*,
-                            !spring-aop*,
-                            !spring-bean*,
-                            !spring-asm*,
-                            !spring-core*,
-                            !spring-expression*,
-                            !commons-logging*,
-                            !commons-codec*,
-                            !commons-httpclient*,
-                            !commons-cli*
-                        </Embed-Dependency>
-                        <Embed-Transitive>true</Embed-Transitive>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
     <dependencies>
 
