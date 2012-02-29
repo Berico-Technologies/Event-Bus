@@ -1,4 +1,4 @@
-package pegasus.eventbus.testsupport;
+package pegasus.eventbus.test_maintenance;
 
 import java.io.IOException;
 
@@ -6,6 +6,7 @@ import org.junit.*;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import pegasus.eventbus.amqp.AmqpConnectionParameters;
+import pegasus.eventbus.testsupport.RabbitManagementApiHelper;
 
 /**
  * This class contains "test" that are not intended to be run as test in an automated fashion but 
