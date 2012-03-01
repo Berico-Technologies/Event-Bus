@@ -35,8 +35,11 @@ public class PublisherService {
 		List<Runnable> monitors = getMonitorPublishers();
 		
 		scheduler = Executors.newScheduledThreadPool(monitors.size());
+		int intervalBetweenMonitors = 1000 / monitors.size();
+		int delay = 0;
 		for(Runnable monitor : monitors){
-			scheduler.scheduleAtFixedRate(monitor, 0, 1, TimeUnit.SECONDS);
+			scheduler.scheduleAtFixedRate(monitor, delay, 1000, TimeUnit.MILLISECONDS);
+			delay += intervalBetweenMonitors;
 		}
 		
 		LOG.info("Rabbit Status Publisher Service started.");
