@@ -22,6 +22,7 @@ public abstract class VolumeMetricMonitor implements Monitor {
 		metric.setLabel(getLabel());
 		metric.setTime(Calendar.getInstance().getTimeInMillis());
 		metric.setValue(rate);
+		LOG.debug("Sending metric '{}', value: {}." , metric.getLabel(), metric.getValue());
 		return metric;
 	
 	}
