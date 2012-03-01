@@ -10,14 +10,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pegasus.eventbus.client.EventManager;
-import pegasus.eventbus.services.rabbit.status.monitors.ChannelCountMonitor;
-import pegasus.eventbus.services.rabbit.status.monitors.ConnectionCountMonitor;
-import pegasus.eventbus.services.rabbit.status.monitors.DeliveredMessagesPerSecondMonitor;
-import pegasus.eventbus.services.rabbit.status.monitors.PublishedMessagesPerSecondMonitor;
-import pegasus.eventbus.services.rabbit.status.monitors.QueueCountMonitor;
-import pegasus.eventbus.services.rabbit.status.monitors.QueuedMessagesMonitor;
-import pegasus.eventbus.services.rabbit.status.monitors.TotalMessagesMonitor;
-import pegasus.eventbus.services.rabbit.status.monitors.UnacknowledgedMessagesMonitor;
+import pegasus.eventbus.services.rabbit.status.monitors.volume.ChannelCountMonitor;
+import pegasus.eventbus.services.rabbit.status.monitors.volume.ConnectionCountMonitor;
+import pegasus.eventbus.services.rabbit.status.monitors.volume.DeliveredMessagesPerSecondMonitor;
+import pegasus.eventbus.services.rabbit.status.monitors.volume.PublishedMessagesPerSecondMonitor;
+import pegasus.eventbus.services.rabbit.status.monitors.volume.QueueCountMonitor;
+import pegasus.eventbus.services.rabbit.status.monitors.volume.QueuedMessagesMonitor;
+import pegasus.eventbus.services.rabbit.status.monitors.volume.TotalMessagesMonitor;
+import pegasus.eventbus.services.rabbit.status.monitors.volume.UnacknowledgedMessagesMonitor;
 
 public class PublisherService {
 

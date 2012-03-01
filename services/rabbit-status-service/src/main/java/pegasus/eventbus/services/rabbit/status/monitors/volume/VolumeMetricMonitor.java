@@ -1,4 +1,4 @@
-package pegasus.eventbus.services.rabbit.status.monitors;
+package pegasus.eventbus.services.rabbit.status.monitors.volume;
 
 import java.util.Calendar;
 import java.util.regex.Matcher;
@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pegasus.eventbus.services.rabbit.status.PublisherService;
+import pegasus.eventbus.services.rabbit.status.monitors.Monitor;
 import dashboard.server.metric.Metric;
 import dashboard.server.metric.VolumeMetric;
 
