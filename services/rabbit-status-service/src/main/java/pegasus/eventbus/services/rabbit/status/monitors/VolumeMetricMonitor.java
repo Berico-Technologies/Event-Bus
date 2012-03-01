@@ -1,6 +1,5 @@
 package pegasus.eventbus.services.rabbit.status.monitors;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,7 +31,6 @@ public abstract class VolumeMetricMonitor implements Monitor {
 		try{
 			String overview = PublisherService.apiHelper.getOverviewJson();
 			Matcher matcher = getRateFinder().matcher(overview);
-			ArrayList<String> names = new ArrayList<String>();
 			if (matcher.find())
 				return Integer.parseInt(matcher.group(1));
 			else 
