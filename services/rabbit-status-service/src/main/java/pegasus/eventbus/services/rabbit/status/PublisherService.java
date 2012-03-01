@@ -10,7 +10,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pegasus.eventbus.client.EventManager;
+import pegasus.eventbus.services.rabbit.status.monitors.DeliveredMessagesPerSecondMonitor;
 import pegasus.eventbus.services.rabbit.status.monitors.PublishedMessagesPerSecondMonitor;
+import pegasus.eventbus.services.rabbit.status.monitors.QueuedMessagesMonitor;
+import pegasus.eventbus.services.rabbit.status.monitors.TotalMessagesMonitor;
+import pegasus.eventbus.services.rabbit.status.monitors.UnacknowledgedMessagesMonitor;
 
 public class PublisherService {
 
@@ -42,6 +46,10 @@ public class PublisherService {
 		ArrayList<Runnable> publishers = new ArrayList<Runnable>();
 		
 		publishers.add( new Publisher( new PublishedMessagesPerSecondMonitor()));
+		publishers.add( new Publisher( new DeliveredMessagesPerSecondMonitor()));
+		publishers.add( new Publisher( new UnacknowledgedMessagesMonitor()));
+		publishers.add( new Publisher( new QueuedMessagesMonitor()));
+		publishers.add( new Publisher( new TotalMessagesMonitor()));
 		
 		return publishers;
 	}
