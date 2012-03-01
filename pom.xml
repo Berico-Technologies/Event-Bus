@@ -16,6 +16,8 @@
         <module>event-bus-toposervice-war</module>
         <module>services/event-stream-processor</module>
         <module>services/event-stream-processor-war</module>
+        <module>services/rabbit-status-service</module>
+        <module>services/rabbit-status-service-war</module>
   </modules>
 
     <properties>
