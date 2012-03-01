@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +28,7 @@ public abstract class VolumeMetricMonitor implements Monitor {
 	
 	}
 
-	private int GetRate() {
+	protected int GetRate() {
 		try{
 			String overview = PublisherService.apiHelper.getOverviewJson();
 			Matcher matcher = getRateFinder().matcher(overview);
@@ -43,6 +44,8 @@ public abstract class VolumeMetricMonitor implements Monitor {
 	}
 
 	protected abstract String getLabel();
-	protected abstract Pattern getRateFinder();
-
+	
+	protected Pattern getRateFinder() {
+		throw new NotImplementedException("getRateFinder must be implemented if getRate is not overridden.");
+	}
 }

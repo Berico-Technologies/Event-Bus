@@ -29,16 +29,30 @@ public class RabbitManagementApiHelper {
 		this.virtualHostName = connectionProperties.getVHost();
 	}
 	
-	public ArrayList<String> getAllQueueNames(){
-		GetMethod vhostGetter = getUrl(getUrlForQueues());
-		String vhostJson ;
-		try {
-			vhostJson = vhostGetter.getResponseBodyAsString();
-		} catch (IOException e) {
-			throw new RuntimeException("Failed to get vhostList. See inner exception for details", e);
-		}
-		return getNamesFromJson(vhostJson);
+	public ArrayList<String> getAllConnectionNames(){
+		return getNamesForUrl(getUrlForConnections());
 	}
+
+	public ArrayList<String> getAllChannelNames(){
+		return getNamesForUrl(getUrlForChannels());
+	}
+
+	public ArrayList<String> getAllQueueNames(){
+		return getNamesForUrl(getUrlForQueues());
+	}
+
+	private ArrayList<String> getNamesForUrl(String url) {
+		GetMethod getter = getUrl(url);
+		String json ;
+		try {
+			json = getter.getResponseBodyAsString();
+		} catch (IOException e) {
+			throw new RuntimeException("Failed to get url: " + url + " See inner exception for details", e);
+		}
+		return getNamesFromJson(json);
+	}
+	
+	
 	
 	public ArrayList<String> GetBindingsForQueue(String queueName, boolean omitBindingToDefaultExchange) {
 		return getBindingsForQueue(queueName, omitBindingToDefaultExchange);
@@ -125,6 +139,14 @@ public class RabbitManagementApiHelper {
 	
 	private String getUrlForQueue(String queueName) {
 		return getUrlForQueues() + "/" + urlEncode(queueName);
+	}
+
+	private String getUrlForConnections() {
+		return getRabbitApiUrl() + "connections";
+	}
+	
+	private String getUrlForChannels() {
+		return getRabbitApiUrl() + "channels";
 	}
 
 	private String getUrlForQueues() {
