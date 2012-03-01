@@ -12,15 +12,10 @@
 
 	<artifactId>rabbit-status-publisher-war</artifactId>
 	<packaging>war</packaging>
-	<name>RabbitMQ Server Status Publication Service</name>
+	<name>RabbitMQ Server Status Publication Service War</name>
 	<description>A war deployment wrapper for the RabbitMQ Server Status Publication Service</description>
 
 	<dependencies>
-		<dependency>
-			<groupId>pegasus.cip</groupId>
-			<artifactId>event-bus-rabbit</artifactId>
-			<version>0.0.2-SNAPSHOT</version>
-		</dependency>
 		<dependency>
 			<groupId>pegasus.cip</groupId>
 			<artifactId>rabbit-status-publisher</artifactId>

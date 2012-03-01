@@ -1,28 +1,55 @@
 package pegasus.eventbus.services.rabbit.status;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pegasus.eventbus.client.EventManager;
+import pegasus.eventbus.services.rabbit.status.monitors.PublishedMessagesPerSecondMonitor;
 
 public class PublisherService {
 
 	private static final Logger                    LOG                                = LoggerFactory.getLogger(PublisherService.class);
+	public static EventManager eventManager;
+	public static RabbitManagementApiHelper apiHelper;
+	
+	private ScheduledExecutorService scheduler ;
 
-	private final EventManager eventManager;
-	
-	
-	public PublisherService(EventManager eventManager) {
-		super();
-		this.eventManager = eventManager;
+	public PublisherService(EventManager eventManager, RabbitManagementApiHelper apiHelper) {
+		PublisherService.eventManager = eventManager;
+		PublisherService.apiHelper = apiHelper;
 	}
 
 	public void start(){
+		LOG.info("Rabbit Status Publisher Service starting...");
+		
+		List<Runnable> monitors = getMonitorPublishers();
+		
+		scheduler = Executors.newScheduledThreadPool(monitors.size());
+		for(Runnable monitor : monitors){
+			scheduler.scheduleAtFixedRate(monitor, 0, 1, TimeUnit.SECONDS);
+		}
+		
 		LOG.info("Rabbit Status Publisher Service started.");
 	}
 	
+	private List<Runnable> getMonitorPublishers() {
+		ArrayList<Runnable> publishers = new ArrayList<Runnable>();
+		
+		publishers.add( new Publisher( new PublishedMessagesPerSecondMonitor()));
+		
+		return publishers;
+	}
+
 	public void stop(){
 		LOG.info("Rabbit Status Publisher Service started.");
+		if(scheduler != null && !scheduler.isShutdown()){
+			scheduler.shutdown();
+		}
 	}
-	
 }

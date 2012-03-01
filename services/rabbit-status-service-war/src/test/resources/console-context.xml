@@ -24,8 +24,13 @@
         <constructor-arg ref="defaultConfiguration" />
     </bean>
 
+   <bean id="apiHelper" class="pegasus.eventbus.services.rabbit.status.RabbitManagementApiHelper">
+        <constructor-arg ref="connectionParameters" />
+    </bean>
+
     <bean id="service" class="pegasus.eventbus.services.rabbit.status.PublisherService" init-method="start" destroy-method="stop">
         <constructor-arg ref="eventManager" />
+        <constructor-arg ref="apiHelper" />
     </bean>
 
 </beans>

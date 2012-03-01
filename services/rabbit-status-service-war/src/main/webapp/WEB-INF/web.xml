@@ -3,7 +3,7 @@
  "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
 <web-app>
-  <display-name>Event Stream Processor Service</display-name>
+  <display-name>RabbitMQ Server Status Publication Service</display-name>
   <context-param> 
     <param-name>contextConfigLocation</param-name>
     <param-value>WEB-INF/war-context.xml</param-value>
