@@ -14,7 +14,7 @@ public class ConnectionCountMonitor extends VolumeMetricMonitor {
 	}
 	
 	@Override
-	protected int GetRate() {
+	protected int getRate() {
 		return PublisherService.apiHelper.getAllConnectionNames().size();
 	}
 }

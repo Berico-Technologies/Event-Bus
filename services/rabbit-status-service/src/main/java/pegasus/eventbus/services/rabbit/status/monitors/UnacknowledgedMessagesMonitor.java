@@ -15,6 +15,7 @@ public class UnacknowledgedMessagesMonitor extends VolumeMetricMonitor {
 		return "Total Unacknowledged Messages";
 	}
 	
+	@Override
 	protected Pattern getRateFinder() {
 		return rateFinder;
 	}

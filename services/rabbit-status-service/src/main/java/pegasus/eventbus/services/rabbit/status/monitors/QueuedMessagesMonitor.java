@@ -15,6 +15,7 @@ public class QueuedMessagesMonitor extends VolumeMetricMonitor {
 		return "Total Queued Messages";
 	}
 	
+	@Override
 	protected Pattern getRateFinder() {
 		return rateFinder;
 	}

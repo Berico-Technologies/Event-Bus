@@ -14,7 +14,7 @@ public class QueueCountMonitor extends VolumeMetricMonitor {
 	}
 	
 	@Override
-	protected int GetRate() {
+	protected int getRate() {
 		return PublisherService.apiHelper.getAllQueueNames().size();
 	}
 }

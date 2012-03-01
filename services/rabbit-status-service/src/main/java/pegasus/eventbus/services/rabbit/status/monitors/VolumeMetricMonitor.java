@@ -17,7 +17,7 @@ public abstract class VolumeMetricMonitor implements Monitor {
 	final protected Logger LOG = LoggerFactory.getLogger(this.getClass());
 
 	public Metric getMetric() {
-		int rate = GetRate();
+		int rate = getRateSafely();
 		VolumeMetric metric = new VolumeMetric();
 		metric.setLabel(getLabel());
 		metric.setTime(Calendar.getInstance().getTimeInMillis());
@@ -27,18 +27,22 @@ public abstract class VolumeMetricMonitor implements Monitor {
 	
 	}
 
-	protected int GetRate() {
+	private int getRateSafely() {
 		try{
-			String overview = PublisherService.apiHelper.getOverviewJson();
-			Matcher matcher = getRateFinder().matcher(overview);
-			if (matcher.find())
-				return Integer.parseInt(matcher.group(1));
-			else 
-				return 0;
+			return getRate();
 		} catch (Exception e) {
 			LOG.error("Error getting rate." , e);
 			return 0;
 		}
+	}
+
+	protected int getRate() {
+		String overview = PublisherService.apiHelper.getOverviewJson();
+		Matcher matcher = getRateFinder().matcher(overview);
+		if (matcher.find())
+			return Integer.parseInt(matcher.group(1));
+		else 
+			return 0;
 	}
 
 	protected abstract String getLabel();

@@ -15,6 +15,7 @@ public class PublishedMessagesPerSecondMonitor extends VolumeMetricMonitor {
 		return "Msg/Sec. Published";
 	}
 	
+	@Override
 	protected Pattern getRateFinder() {
 		return rateFinder;
 	}
