@@ -57,8 +57,11 @@ public class RabbitManagementApiHelper {
 			json = getter.getResponseBodyAsString();
 		} catch (IOException e) {
 			throw new RuntimeException("Failed to get url: " + url + " See inner exception for details", e);
+		} finally {
+			getter.releaseConnection();
 		}
 		return json;
+		
 	}
 	
 	public ArrayList<String> GetBindingsForQueue(String queueName, boolean omitBindingToDefaultExchange) {
@@ -68,16 +71,20 @@ public class RabbitManagementApiHelper {
 	public ArrayList<String> getBindingsForQueue(String queueName, boolean omitBindingToDefaultExchange) {
 		String url = getRabbitApiUrl() + "queues/"+urlEncode(virtualHostName)+"/" + urlEncode(queueName) + "/bindings";
 		GetMethod getBindings = getUrl( url);
-		if(200 != getBindings.getStatusCode()){
-			throw new RuntimeException("Failed to get url:" + url);
+		try{
+			if(200 != getBindings.getStatusCode()){
+				throw new RuntimeException("Failed to get url:" + url);
+			}
+			String bindingListJson;
+			try {
+				bindingListJson = getBindings.getResponseBodyAsString();
+			} catch (IOException e) {
+				throw new RuntimeException("Failed to get response body for binding list. See inner exception for details", e);
+			}
+			return getBindingKeysFromJson(bindingListJson, omitBindingToDefaultExchange);
+		} finally {
+			getBindings.releaseConnection();
 		}
-		String bindingListJson;
-		try {
-			bindingListJson = getBindings.getResponseBodyAsString();
-		} catch (IOException e) {
-			throw new RuntimeException("Failed to get response body for binding list. See inner exception for details", e);
-		}
-		return getBindingKeysFromJson(bindingListJson, omitBindingToDefaultExchange);
 	}
 	
 	public String getOverviewJson(){
@@ -87,6 +94,8 @@ public class RabbitManagementApiHelper {
 			return getter.getResponseBodyAsString();
 		} catch (IOException e) {
 			throw new RuntimeException("Failed to get vhostList. See inner exception for details", e);
+		} finally {
+			getter.releaseConnection();
 		}
 	}
 	
