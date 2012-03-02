@@ -48,12 +48,14 @@ public abstract class TopTenMonitor implements Monitor {
 		Collections.sort(metrics, new Comparator<TrendMetric>(){
 			@Override
 			public int compare(TrendMetric arg0, TrendMetric arg1) {
-				return arg0.getValue() - arg1.getValue();
+				return arg1.getValue() - arg0.getValue();
 			}});
 
-		int leastValueToReturn = metrics.get(maxMetrics -1).getValue();
-		for(int i = metrics.size()-1; metrics.get(i).getValue() < leastValueToReturn; i--){
-			metrics.remove(i);
+		if(metrics.size() > maxMetrics){
+			int leastValueToReturn = metrics.get(maxMetrics -1).getValue();
+			for(int i = metrics.size()-1; metrics.get(i).getValue() < leastValueToReturn; i--){
+				metrics.remove(i);
+			}
 		}
 		
 		for(TrendMetric  m :metrics){
@@ -79,6 +81,9 @@ public abstract class TopTenMonitor implements Monitor {
 				while(matcher.find()){
 					String valueString = matcher.group(1);
 					String label = matcher.group(2);
+					
+					LOG.debug("Label: '{}' Value: '{}'", label, valueString);
+
 					int value = 0;
 					try{
 						value = Integer.parseInt(valueString);
@@ -86,6 +91,7 @@ public abstract class TopTenMonitor implements Monitor {
 						LOG.warn("Could not parse value of '{}' to integer for label '{}'.", valueString, label);
 						continue;
 					}
+					
 					if(value <= threshold ) continue;
 					
 					TrendMetric metric = new TrendMetric();
