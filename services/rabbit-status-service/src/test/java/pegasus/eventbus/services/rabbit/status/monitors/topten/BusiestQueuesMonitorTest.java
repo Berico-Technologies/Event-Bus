@@ -7,7 +7,7 @@ import org.junit.*;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import dashboard.server.metric.TopTenMetric;
+import dashboard.server.metric.TopNMetric;
 
 import pegasus.eventbus.services.rabbit.status.PublisherService;
 import pegasus.eventbus.services.rabbit.status.RabbitManagementApiHelper;
@@ -17,7 +17,7 @@ public class BusiestQueuesMonitorTest {
 	@Mock
 	private RabbitManagementApiHelper apiHelper;
 
-	private TopTenMetric metric;
+	private TopNMetric metric;
 
 	@Before
 	public void beforeEachTest() {
@@ -28,7 +28,7 @@ public class BusiestQueuesMonitorTest {
 
 		when(apiHelper.getQueuesJson()).thenReturn(json);
 
-		metric = (TopTenMetric) new BusiestQueuesMonitor().getMetric();
+		metric = (TopNMetric) new BusiestQueuesMonitor().getMetric();
 	}
 
 	@Test

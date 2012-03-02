@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dashboard.server.metric.Metric;
-import dashboard.server.metric.TopTenMetric;
+import dashboard.server.metric.TopNMetric;
 import dashboard.server.metric.TrendMetric;
 import pegasus.eventbus.services.rabbit.status.monitors.Monitor;
 
@@ -26,7 +26,7 @@ public abstract class TopTenMonitor implements Monitor {
 	@Override
 	public Metric getMetric() {
 		
-		TopTenMetric metric = new TopTenMetric();
+		TopNMetric metric = new TopNMetric();
 		metric.setLabel(getLabel());
 		metric.setMetrics(getMetrics().toArray(new TrendMetric[0]));
 		metric.setTime(calendar.getTimeInMillis());
