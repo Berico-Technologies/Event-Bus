@@ -10,14 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pegasus.eventbus.client.EventManager;
-import pegasus.eventbus.services.rabbit.status.monitors.volume.ChannelCountMonitor;
-import pegasus.eventbus.services.rabbit.status.monitors.volume.ConnectionCountMonitor;
-import pegasus.eventbus.services.rabbit.status.monitors.volume.DeliveredMessagesPerSecondMonitor;
-import pegasus.eventbus.services.rabbit.status.monitors.volume.PublishedMessagesPerSecondMonitor;
-import pegasus.eventbus.services.rabbit.status.monitors.volume.QueueCountMonitor;
-import pegasus.eventbus.services.rabbit.status.monitors.volume.QueuedMessagesMonitor;
-import pegasus.eventbus.services.rabbit.status.monitors.volume.TotalMessagesMonitor;
-import pegasus.eventbus.services.rabbit.status.monitors.volume.UnacknowledgedMessagesMonitor;
+import pegasus.eventbus.services.rabbit.status.monitors.topten.*;
+import pegasus.eventbus.services.rabbit.status.monitors.volume.*;
 
 public class PublisherService {
 
@@ -59,7 +53,7 @@ public class PublisherService {
 		publishers.add( new Publisher( new ConnectionCountMonitor()));
 		publishers.add( new Publisher( new ChannelCountMonitor()));
 		publishers.add( new Publisher( new QueueCountMonitor()));
-		
+		publishers.add( new Publisher( new BusiestQueuesMonitor()));
 		return publishers;
 	}
 

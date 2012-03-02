@@ -36,12 +36,21 @@ public class RabbitManagementApiHelper {
 	public ArrayList<String> getAllChannelNames(){
 		return getNamesForUrl(getUrlForChannels());
 	}
-
+	
 	public ArrayList<String> getAllQueueNames(){
-		return getNamesForUrl(getUrlForQueues());
+		return getNamesFromJson(getQueuesJson());
+	}
+
+	public String getQueuesJson() {
+		return getResponseStringForUrl(getUrlForQueues());
 	}
 
 	private ArrayList<String> getNamesForUrl(String url) {
+		String json = getResponseStringForUrl(url);
+		return getNamesFromJson(json);
+	}
+
+	protected String getResponseStringForUrl(String url) {
 		GetMethod getter = getUrl(url);
 		String json ;
 		try {
@@ -49,10 +58,8 @@ public class RabbitManagementApiHelper {
 		} catch (IOException e) {
 			throw new RuntimeException("Failed to get url: " + url + " See inner exception for details", e);
 		}
-		return getNamesFromJson(json);
+		return json;
 	}
-	
-	
 	
 	public ArrayList<String> GetBindingsForQueue(String queueName, boolean omitBindingToDefaultExchange) {
 		return getBindingsForQueue(queueName, omitBindingToDefaultExchange);
