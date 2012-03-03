@@ -18,15 +18,16 @@ public class RabbitManagementApiHelper {
 	private String userName = "guest";
 	private String userPassword = "guest";
 	private String virtualHostName;
+	private HttpClient httpClient;
 	
 	public RabbitManagementApiHelper(String hostName, String virtualHostName) {
 		this.hostName = hostName;
 		this.virtualHostName = virtualHostName;
+		setupHttpClient();
 	}
 
 	public RabbitManagementApiHelper(AmqpConnectionParameters connectionProperties) {
-		this.hostName = connectionProperties.getHost();
-		this.virtualHostName = connectionProperties.getVHost();
+		this(connectionProperties.getHost(),connectionProperties.getVHost());
 	}
 	
 	public ArrayList<String> getAllConnectionNames(){
@@ -173,13 +174,19 @@ public class RabbitManagementApiHelper {
 		return "http://" + urlEncode(hostName) + ":55672/api/";
 	}
 
-	private HttpClient getClientForRabbitManagementRestApi() {
-		HttpClient client = new HttpClient();
-		client.getParams().setAuthenticationPreemptive(true);
+	private void setupHttpClient() {
+		MultiThreadedHttpConnectionManager mgr = new MultiThreadedHttpConnectionManager();
+		mgr.getParams().setDefaultMaxConnectionsPerHost(50);
+		mgr.getParams().setMaxTotalConnections(200);
+		httpClient = new HttpClient(mgr);
+		httpClient.getParams().setAuthenticationPreemptive(true);
 
 		Credentials defaultcreds = new UsernamePasswordCredentials(userName, userPassword);
-		client.getState().setCredentials(new AuthScope(hostName, 55672, AuthScope.ANY_REALM), defaultcreds);
-		return client;
+		httpClient.getState().setCredentials(new AuthScope(hostName, 55672, AuthScope.ANY_REALM), defaultcreds);
+	}
+
+	private HttpClient getClientForRabbitManagementRestApi() {
+		return httpClient;
 	}
 	
 	private static String urlEncode(String rawString){
