@@ -4,7 +4,7 @@ import java.util.regex.Pattern;
 
 public class QueuedMessagesMonitor extends VolumeMetricMonitor {
 	
-	Pattern rateFinder = Pattern.compile("\"queue_totals\":\\{\"messages_ready\":(\\d+)");
+	Pattern rateFinder = Pattern.compile("\"queue_totals\":\\{.*?\"messages_ready\":(\\d+)");
 	
 	public QueuedMessagesMonitor(){
 		super();

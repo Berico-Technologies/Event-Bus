@@ -4,7 +4,7 @@ import java.util.regex.Pattern;
 
 public class UnacknowledgedMessagesMonitor extends VolumeMetricMonitor {
 	
-	Pattern rateFinder = Pattern.compile("\"queue_totals\":\\{\"messages_unacknowledged\":(\\d+)");
+	Pattern rateFinder = Pattern.compile("\"queue_totals\":\\{.*?\"messages_unacknowledged\":(\\d+)");
 	
 	public UnacknowledgedMessagesMonitor(){
 		super();
