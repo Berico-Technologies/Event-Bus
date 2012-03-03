@@ -16,7 +16,7 @@ import dashboard.server.metric.TopNMetric;
 import dashboard.server.metric.TrendMetric;
 import pegasus.eventbus.services.rabbit.status.monitors.Monitor;
 
-public abstract class TopTenMonitor implements Monitor {
+public abstract class TopNMonitor implements Monitor {
 
 	final protected Logger LOG = LoggerFactory.getLogger(this.getClass());
 	final protected int maxMetrics = 10;
