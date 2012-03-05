@@ -60,7 +60,7 @@ public class PublisherService {
 	public void stop(){
 		LOG.info("Rabbit Status Publisher Service started.");
 		if(scheduler != null && !scheduler.isShutdown()){
-			scheduler.shutdown();
+			scheduler.shutdownNow();
 		}
 	}
 }
