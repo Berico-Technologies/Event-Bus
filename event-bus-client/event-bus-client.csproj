@@ -7,7 +7,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{61C42B9F-9CC7-44C5-A345-0E5884BC2EDD}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>eventbusclient</RootNamespace>
+    <RootNamespace>pegasus.eventbus.client</RootNamespace>
     <AssemblyName>event-bus-client</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
@@ -32,9 +32,13 @@
   <ItemGroup>
     <Reference Include="System" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="MyClass.cs" />
-    <Compile Include="AssemblyInfo.cs" />
-  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Compile Include="src\main\dotnet\AssemblyInfo.cs" />
+    <Compile Include="src\main\dotnet\IEventManager.cs" />
+    <Compile Include="src\main\dotnet\SubscriptionToken.cs" />
+    <Compile Include="src\main\dotnet\IEventHandler.cs" />
+    <Compile Include="src\main\dotnet\Envelope.cs" />
+    <Compile Include="src\main\dotnet\EventHeaders.cs" />
+  </ItemGroup>
 </Project>
