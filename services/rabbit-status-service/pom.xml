@@ -6,7 +6,7 @@
 		<groupId>pegasus.cip</groupId>
 		<artifactId>event-bus</artifactId>
 		<version>0.0.2-SNAPSHOT</version>
-		<relativePath>..</relativePath>
+		<relativePath>../..</relativePath>
 	</parent>
 
 	<artifactId>rabbit-status-publisher</artifactId>
