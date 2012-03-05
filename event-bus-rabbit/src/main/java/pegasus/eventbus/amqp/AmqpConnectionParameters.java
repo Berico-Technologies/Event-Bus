@@ -285,7 +285,7 @@ public class AmqpConnectionParameters implements EventBusConnectionParameters {
 
         defaults.put(USERNAME_PROPERTY, "guest");
         defaults.put(PASSWORD_PROPERTY, "guest");
-        defaults.put(HOST_PROPERTY, "rabbit.pegasus.gov");
+        defaults.put(HOST_PROPERTY, "rabbit");
         defaults.put(PORT_PROPERTY, "5672");
         defaults.put(VHOST_PROPERTY, "/");
         defaults.put(CONNECTION_RETRY_TIMEOUT_PROPERTY, "30000");

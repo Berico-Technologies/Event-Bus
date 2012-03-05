@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <packaging>bundle</packaging>
+    <packaging>jar</packaging>
     <parent>
         <artifactId>event-bus</artifactId>
         <groupId>pegasus.cip</groupId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>0.0.2-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
     <artifactId>event-bus-toposervice</artifactId>
@@ -15,60 +15,20 @@
         <dependency>
             <groupId>pegasus.cip</groupId>
             <artifactId>event-bus-client</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>0.0.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>pegasus.cip</groupId>
             <artifactId>event-bus-rabbit</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>0.0.2-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>3.1.0.RELEASE</version>
+            <scope>compile</scope>
+        </dependency>
+         
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.3.6</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>pegasus.eventbus.topology.service</Bundle-SymbolicName>
-                        <Bundle-Activator>pegasus.eventbus.topology.osgi.Activator</Bundle-Activator>
-                        <Require-Bundle>pegasus.eventbus.client</Require-Bundle>
-                        <Export-Package>!*</Export-Package>
-                        <DynamicImport-Package>*</DynamicImport-Package>
-                        <Import-Package>!*</Import-Package>
-                        <Embed-Dependency>
-                            !event-bus-client*,
-                            !event-bus-rabbit*,
-                            !mockito-core*,
-                            !slf4j-api*,
-                            !logback-core*,
-                            !logback-classic,
-                            !log4j*,
-                            !org.osgi*,
-                            !org.apache.felix*,
-                            !awaitility*,
-                            !junit*,
-                            !spring-context*,
-                            !aopalliance*,
-                            !spring-aop*,
-                            !spring-bean*,
-                            !spring-asm*,
-                            !spring-core*,
-                            !spring-expression*,
-                            !hamcrest-core*,
-                            !hamcrest-library*,
-                            !commons-logging*,
-                            !commons-codec*,
-                            !commons-httpclient*,
-                            !commons-cli*
-                        </Embed-Dependency>
-                        <Embed-Transitive>true</Embed-Transitive>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>

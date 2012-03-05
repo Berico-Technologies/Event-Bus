@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:osgi="http://www.springframework.org/schema/osgi"
        xmlns:util="http://www.springframework.org/schema/util"
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="
@@ -29,8 +28,6 @@
         <constructor-arg ref="eventManagerService" />
         <constructor-arg ref="topologyRegistry" />
     </bean>
-
-    <osgi:reference id="eventManagerService" interface="pegasus.eventbus.client.EventManager" />
 
     <bean id="clientRegistry" class="pegasus.eventbus.topology.service.ClientRegistry" />
 
@@ -65,6 +62,25 @@
                     </bean>
                 </entry>
             </map>
+        </property>
+        <property name="eventSetMap">
+        	<map>
+        		<entry>
+	        		<key>
+	        			<value>All</value>
+	         		</key>
+        			<list>
+	                    <bean class="pegasus.eventbus.amqp.RoutingInfo">
+	                        <constructor-arg name="exchangeName" value="pegasus" />
+	                        <constructor-arg name="routingKey" value="#" />
+	                    </bean>
+	                    <bean class="pegasus.eventbus.amqp.RoutingInfo">
+	                        <constructor-arg name="exchangeName" value="topology" />
+	                        <constructor-arg name="routingKey" value="#" />
+	                    </bean>
+        			</list>
+       			</entry>
+        	</map>
         </property>
     </bean>
 
