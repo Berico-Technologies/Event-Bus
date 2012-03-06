@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,6 +24,7 @@ public abstract class TopNMonitor implements Monitor {
 	final protected int maxMetrics = 10;
 	final static protected Calendar calendar = Calendar.getInstance();
 	
+	private Map<String, TrendMetric> previousMetrics = new HashMap<String, TrendMetric>();
 	
 	@Override
 	public Metric getMetric() {
@@ -38,7 +41,6 @@ public abstract class TopNMonitor implements Monitor {
 		MetricSource source = getMetricSource();
 		
 		ArrayList<TrendMetric> metrics = new ArrayList<TrendMetric>();
-		
 		TrendMetric metric = source.getNextMetricGreaterThan(0);
 		while(metric != null){
 			metrics.add(metric);
@@ -58,8 +60,17 @@ public abstract class TopNMonitor implements Monitor {
 			}
 		}
 		
-		for(TrendMetric  m :metrics){
-			LOG.debug("Value {} Queue: {}", m.getValue(), m.getLabel());
+		synchronized (previousMetrics){
+			Map<String, TrendMetric> currentMetrics = new HashMap<String, TrendMetric>();
+			for(TrendMetric  m :metrics){
+				TrendMetric p = previousMetrics.get(m.getLabel());
+				if(p != null && p.getValue() != 0){
+					m.setTrend( 100 * (m.getValue() - p.getValue()) / Math.abs(p.getValue()));
+				}
+				currentMetrics.put(m.getLabel(), m);
+				LOG.debug("label: {} Value{} Trend{}", m.getLabel());
+			}
+			previousMetrics = currentMetrics;
 		}
 		
 		return metrics;	
