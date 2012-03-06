@@ -28,7 +28,7 @@ public abstract class TopNMonitor implements Monitor {
 		
 		TopNMetric metric = new TopNMetric();
 		metric.setLabel(getLabel());
-		metric.setMetrics(getMetrics().toArray(new TrendMetric[0]));
+		metric.setMetrics(getMetrics());
 		metric.setTime(calendar.getTimeInMillis());
 		return metric;
 	}
