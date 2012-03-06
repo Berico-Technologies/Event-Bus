@@ -1,20 +1,14 @@
 using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace pegasus.eventbus.client
 {
 	public class Envelope
 	{
-		// actual properties
 		public byte[] Body { get; set; }
 		public IDictionary<string, string> Headers { get; set; }
 		
-		// convenience properties that pull from headers
-		public Guid Id
-		{
-			get { return new Guid(this.GetHeader(EventHeaders.ID)); }
-			set { this.SetHeader(EventHeaders.ID, value.ToString()); }
-		}
-			
 		
 		public Envelope ()
 		{
@@ -22,7 +16,7 @@ namespace pegasus.eventbus.client
 		}
 		
 		
-		public string GetHeader(string name)
+		public virtual string GetHeader(string name)
 		{
 			string val = null;
 			
@@ -34,10 +28,33 @@ namespace pegasus.eventbus.client
 			return val;
 		}
 		
-		public string SetHeader(string name, string value)
+		public virtual void SetHeader(string name, string value)
 		{
-			
+            if (false == this.Headers.ContainsKey(name))
+            {
+                this.Headers.Add(name, string.Empty);
+            }
+
+            this.Headers[name] = value;
 		}
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("Envelope[REPLYTO=");
+            sb.Append(this.GetReplyTo());
+            sb.Append(",EVENT_TYPE=");
+            sb.Append(this.GetEventType());
+            sb.Append(",TOPIC=");
+            sb.Append(this.GetTopic());
+            sb.Append(",ID=");
+            sb.Append(this.GetId().ToString());
+            sb.Append(",CORRELATION_ID=");
+            sb.Append(this.GetCorrelationId().ToString());
+            sb.Append("]");
+
+            return sb.ToString();
+        }
 	}
 }
 

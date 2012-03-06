@@ -35,7 +35,10 @@ namespace pegasus.eventbus.client
 		/// A <see cref='SubscriptionToken' /> that uniquely identifies this subscription and can be used when invoking 
 		/// <code>EnvelopeHandler.Unsubscribe(SubscriptionToken)</code>.
 		/// </returns>
-		SubscriptionToken Subscribe(IEventHandler handler);
+        /// <exception cref="ArgumentException">
+        /// Thrown is types contains a type that is not TEvent or a type assignable to a TEvent.
+        /// </exception>
+        SubscriptionToken Subscribe<TEvent>(Action<TEvent> handler, params Type[] types);
 		
 		/// <summary>
      	/// Subscribes an <see cref='IEventHandler'/> to a named queue to receive one or more event types according to 
@@ -54,7 +57,7 @@ namespace pegasus.eventbus.client
      	/// A <see cref='SubscriptionToken'/> that uniquely identifies this subscription and can be used when invoking 
      	/// <code>EnvelopeHandler.Unsubscribe(SubscriptionToken)</code>.
      	/// </returns>
-	    SubscriptionToken Subscribe(IEventHandler handler, string queueName);
+	    SubscriptionToken Subscribe(Action<object> handler, string queueName);
 
 		/// <summary>
 		/// Subscribes an <see cref='IEventHandler'/> to receive one or more event types according to the value 
@@ -68,7 +71,7 @@ namespace pegasus.eventbus.client
 		/// A <see cref='SubscriptionToken'/> that uniquely identifies this subscription and can be used when invoking 
 		/// <code>EnvelopeHandler.Unsubscribe(SubscriptionToken)</code>.
 		/// </returns>
-	    SubscriptionToken Subscribe(EnvelopeHandler handler);
+	    SubscriptionToken Subscribe(IEnvelopeHandler handler);
 
 	    /// <summary>
 	    /// Subscribes an <see cref='EventHandler'/> to a named queue to receive one or more event types according to the 
@@ -89,7 +92,7 @@ namespace pegasus.eventbus.client
 	    /// A <see cref='SubscriptionToken'/> that uniquely identifies this subscription and can be used when invoking 
 	    /// <code>EnvelopeHandler.Unsubscribe(SubscriptionToken)</code>.
 	    /// </returns>
-	    SubscriptionToken Subscribe(EnvelopeHandler handler, string queueName);
+	    SubscriptionToken Subscribe(IEnvelopeHandler handler, string queueName);
 	
 	    /// <summary>
 		/// Subscribes using a <see cref='ISubscription'/> instance to describe the subscription. Used for advanced 

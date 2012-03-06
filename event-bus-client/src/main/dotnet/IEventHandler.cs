@@ -2,11 +2,11 @@ using System;
 
 namespace pegasus.eventbus.client
 {
-	public interface IEventHandler<TEvent>
+	public interface IEventHandler
 	{
-		TEvent[] GetHandledEventTypes();
+		Type[] GetHandledEventTypes();
 		
-		EventResult HandleEvent(TEvent ev);
+		EventResult HandleEvent(object ev);
 	}
 }
 
