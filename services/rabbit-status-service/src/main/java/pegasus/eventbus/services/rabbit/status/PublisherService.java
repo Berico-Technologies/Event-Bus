@@ -10,14 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pegasus.eventbus.client.EventManager;
-import pegasus.eventbus.services.rabbit.status.monitors.ChannelCountMonitor;
-import pegasus.eventbus.services.rabbit.status.monitors.ConnectionCountMonitor;
-import pegasus.eventbus.services.rabbit.status.monitors.DeliveredMessagesPerSecondMonitor;
-import pegasus.eventbus.services.rabbit.status.monitors.PublishedMessagesPerSecondMonitor;
-import pegasus.eventbus.services.rabbit.status.monitors.QueueCountMonitor;
-import pegasus.eventbus.services.rabbit.status.monitors.QueuedMessagesMonitor;
-import pegasus.eventbus.services.rabbit.status.monitors.TotalMessagesMonitor;
-import pegasus.eventbus.services.rabbit.status.monitors.UnacknowledgedMessagesMonitor;
+import pegasus.eventbus.services.rabbit.status.monitors.topten.*;
+import pegasus.eventbus.services.rabbit.status.monitors.volume.*;
 
 public class PublisherService {
 
@@ -59,14 +53,14 @@ public class PublisherService {
 		publishers.add( new Publisher( new ConnectionCountMonitor()));
 		publishers.add( new Publisher( new ChannelCountMonitor()));
 		publishers.add( new Publisher( new QueueCountMonitor()));
-		
+		publishers.add( new Publisher( new BusiestQueuesMonitor()));
 		return publishers;
 	}
 
 	public void stop(){
 		LOG.info("Rabbit Status Publisher Service started.");
 		if(scheduler != null && !scheduler.isShutdown()){
-			scheduler.shutdown();
+			scheduler.shutdownNow();
 		}
 	}
 }

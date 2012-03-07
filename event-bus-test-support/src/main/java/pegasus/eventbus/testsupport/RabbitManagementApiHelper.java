@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.DeleteMethod;
@@ -27,33 +28,39 @@ public class RabbitManagementApiHelper {
 	private String userPassword = "guest";
 	private String virtualHostName;
 	
+	private HttpClient httpClient;
+	
 	public RabbitManagementApiHelper(String hostName, String virtualHostName) {
 		this.hostName = hostName;
 		this.virtualHostName = virtualHostName;
+		setupHttpClient();
 	}
 
 	public RabbitManagementApiHelper(AmqpConnectionParameters connectionProperties) {
-		this.hostName = connectionProperties.getHost();
-		this.virtualHostName = connectionProperties.getVHost();
+		this(connectionProperties.getHost(),connectionProperties.getVHost());
 	}
 
 	public void createVirtualHost(){
 		HttpClient client = getClientForRabbitManagementRestApi();
 
 		PutMethod method = new PutMethod("http://" + hostName + ":55672/api/vhosts/" + urlEncode(virtualHostName));
-		final Header contentType = new Header("content-type","application/json");
-		method.addRequestHeader(contentType);
-		try {
-			client.executeMethod(method);
-			
-			method = new PutMethod("http://" + hostName + ":55672/api/permissions/" +urlEncode(virtualHostName) + "/" + urlEncode(userName));
-			method.setRequestEntity(new StringRequestEntity(
-					"{\"configure\":\".*\",\"write\":\".*\",\"read\":\".*\"}",
-					"application/json",
-					null));
-			client.executeMethod(method);
-		} catch (Exception e) {
-			throw new RuntimeException("Failed to create virtual host. See inner exception for details", e);
+		try{
+			final Header contentType = new Header("content-type","application/json");
+			method.addRequestHeader(contentType);
+			try {
+				client.executeMethod(method);
+				
+				method = new PutMethod("http://" + hostName + ":55672/api/permissions/" +urlEncode(virtualHostName) + "/" + urlEncode(userName));
+				method.setRequestEntity(new StringRequestEntity(
+						"{\"configure\":\".*\",\"write\":\".*\",\"read\":\".*\"}",
+						"application/json",
+						null));
+				client.executeMethod(method);
+			} catch (Exception e) {
+				throw new RuntimeException("Failed to create virtual host. See inner exception for details", e);
+			}
+		} finally {
+			method.releaseConnection();
 		}
 	}
 
@@ -68,13 +75,17 @@ public class RabbitManagementApiHelper {
 		HttpClient client = getClientForRabbitManagementRestApi();
 
 		DeleteMethod method = new DeleteMethod("http://" + hostName + ":55672/api/vhosts/" + urlEncode(vhostName));
-		final Header contentType = new Header("content-type","application/json");
-		method.addRequestHeader(contentType);
 		try {
-			client.executeMethod(method);
-		} catch (Exception e) {
-			throw new RuntimeException("Failed to delete virtual host. See inner exception for details", e);
-		} 
+			final Header contentType = new Header("content-type","application/json");
+			method.addRequestHeader(contentType);
+			try {
+				client.executeMethod(method);
+			} catch (Exception e) {
+				throw new RuntimeException("Failed to delete virtual host. See inner exception for details", e);
+			} 
+		} finally {
+			method.releaseConnection();
+		}
 	}
 
 	public void deleteAllTestVhosts(){
@@ -84,6 +95,8 @@ public class RabbitManagementApiHelper {
 			vhostJson = vhostGetter.getResponseBodyAsString();
 		} catch (IOException e) {
 			throw new RuntimeException("Failed to get vhostList. See inner exception for details", e);
+		} finally {
+			vhostGetter.releaseConnection();
 		}
 		ArrayList<String> vhostNames = getNamesFromJson(vhostJson);
 		for(String vhostName : vhostNames)
@@ -109,7 +122,11 @@ public class RabbitManagementApiHelper {
 	
 	private void assertThatUrlReturnsStatusCode(String url, int statusCode){
 		GetMethod getExchange = getUrl(url);
-		assertEquals(statusCode, getExchange.getStatusCode());
+		try{
+			assertEquals(statusCode, getExchange.getStatusCode());
+		} finally {
+			getExchange.releaseConnection();
+		}
 	}
 
 	public ArrayList<String> getAllQueueNames(){
@@ -119,6 +136,8 @@ public class RabbitManagementApiHelper {
 			vhostJson = vhostGetter.getResponseBodyAsString();
 		} catch (IOException e) {
 			throw new RuntimeException("Failed to get vhostList. See inner exception for details", e);
+		} finally {
+			vhostGetter.releaseConnection();
 		}
 		return getNamesFromJson(vhostJson);
 	}
@@ -129,14 +148,18 @@ public class RabbitManagementApiHelper {
 
 	public ArrayList<String> getBindingsForQueue(String queueName, boolean omitBindingToDefaultExchange) {
 		GetMethod getBindings = getUrl( getRabbitApiUrl() + "queues/"+urlEncode(virtualHostName)+"/" + urlEncode(queueName) + "/bindings");
-		assertEquals(200, getBindings.getStatusCode());
-		String bindingListJson;
-		try {
-			bindingListJson = getBindings.getResponseBodyAsString();
-		} catch (IOException e) {
-			throw new RuntimeException("Failed to get response body for binding list. See inner exception for details", e);
+		try{
+			assertEquals(200, getBindings.getStatusCode());
+			String bindingListJson;
+			try {
+				bindingListJson = getBindings.getResponseBodyAsString();
+			} catch (IOException e) {
+				throw new RuntimeException("Failed to get response body for binding list. See inner exception for details", e);
+			}
+			return getBindingKeysFromJson(bindingListJson, omitBindingToDefaultExchange);			
+		} finally {
+			getBindings.releaseConnection();
 		}
-		return getBindingKeysFromJson(bindingListJson, omitBindingToDefaultExchange);
 	}
 	
 	Pattern bindingFinder = Pattern.compile("\"routing_key\":\"(.*?)\"");
@@ -205,13 +228,19 @@ public class RabbitManagementApiHelper {
 		return "http://" + urlEncode(hostName) + ":55672/api/";
 	}
 
-	private HttpClient getClientForRabbitManagementRestApi() {
-		HttpClient client = new HttpClient();
-		client.getParams().setAuthenticationPreemptive(true);
+	private void setupHttpClient() {
+		MultiThreadedHttpConnectionManager mgr = new MultiThreadedHttpConnectionManager();
+		mgr.getParams().setDefaultMaxConnectionsPerHost(50);
+		mgr.getParams().setMaxTotalConnections(200);
+		httpClient = new HttpClient(mgr);
+		httpClient.getParams().setAuthenticationPreemptive(true);
 
 		Credentials defaultcreds = new UsernamePasswordCredentials(userName, userPassword);
-		client.getState().setCredentials(new AuthScope(hostName, 55672, AuthScope.ANY_REALM), defaultcreds);
-		return client;
+		httpClient.getState().setCredentials(new AuthScope(hostName, 55672, AuthScope.ANY_REALM), defaultcreds);
+	}
+
+	private HttpClient getClientForRabbitManagementRestApi() {
+		return httpClient;
 	}
 	
 	private static String urlEncode(String rawString){

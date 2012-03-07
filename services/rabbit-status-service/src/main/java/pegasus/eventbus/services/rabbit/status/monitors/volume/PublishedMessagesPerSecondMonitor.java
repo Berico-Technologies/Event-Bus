@@ -1,4 +1,4 @@
-package pegasus.eventbus.services.rabbit.status.monitors;
+package pegasus.eventbus.services.rabbit.status.monitors.volume;
 
 import java.util.regex.Pattern;
 
@@ -15,6 +15,7 @@ public class PublishedMessagesPerSecondMonitor extends VolumeMetricMonitor {
 		return "Msg/Sec. Published";
 	}
 	
+	@Override
 	protected Pattern getRateFinder() {
 		return rateFinder;
 	}

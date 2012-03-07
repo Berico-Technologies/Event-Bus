@@ -1,10 +1,10 @@
-package pegasus.eventbus.services.rabbit.status.monitors;
+package pegasus.eventbus.services.rabbit.status.monitors.volume;
 
 import java.util.regex.Pattern;
 
 public class UnacknowledgedMessagesMonitor extends VolumeMetricMonitor {
 	
-	Pattern rateFinder = Pattern.compile("\"queue_totals\":\\{\"messages_unacknowledged\":(\\d+)");
+	Pattern rateFinder = Pattern.compile("\"queue_totals\":\\{.*?\"messages_unacknowledged\":(\\d+)");
 	
 	public UnacknowledgedMessagesMonitor(){
 		super();
@@ -15,6 +15,7 @@ public class UnacknowledgedMessagesMonitor extends VolumeMetricMonitor {
 		return "Total Unacknowledged Messages";
 	}
 	
+	@Override
 	protected Pattern getRateFinder() {
 		return rateFinder;
 	}

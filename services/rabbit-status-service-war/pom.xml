@@ -7,7 +7,7 @@
 		<groupId>pegasus.cip</groupId>
 		<artifactId>event-bus</artifactId>
 		<version>0.0.2-SNAPSHOT</version>
-		<relativePath>../../pom.xml</relativePath>
+		<relativePath>../..</relativePath>
 	</parent>
 
 	<artifactId>rabbit-status-publisher-war</artifactId>
@@ -38,6 +38,12 @@
 			<version>3.1.0.RELEASE</version>
 			<scope>compile</scope>
 		</dependency>
+        <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+            <version>3.1</version>
+            <scope>compile</scope>
+        </dependency>
 	</dependencies>
 
 	<build>

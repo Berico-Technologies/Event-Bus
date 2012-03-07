@@ -18,15 +18,16 @@ public class RabbitManagementApiHelper {
 	private String userName = "guest";
 	private String userPassword = "guest";
 	private String virtualHostName;
+	private HttpClient httpClient;
 	
 	public RabbitManagementApiHelper(String hostName, String virtualHostName) {
 		this.hostName = hostName;
 		this.virtualHostName = virtualHostName;
+		setupHttpClient();
 	}
 
 	public RabbitManagementApiHelper(AmqpConnectionParameters connectionProperties) {
-		this.hostName = connectionProperties.getHost();
-		this.virtualHostName = connectionProperties.getVHost();
+		this(connectionProperties.getHost(),connectionProperties.getVHost());
 	}
 	
 	public ArrayList<String> getAllConnectionNames(){
@@ -36,23 +37,33 @@ public class RabbitManagementApiHelper {
 	public ArrayList<String> getAllChannelNames(){
 		return getNamesForUrl(getUrlForChannels());
 	}
-
+	
 	public ArrayList<String> getAllQueueNames(){
-		return getNamesForUrl(getUrlForQueues());
+		return getNamesFromJson(getQueuesJson());
+	}
+
+	public String getQueuesJson() {
+		return getResponseStringForUrl(getUrlForQueues());
 	}
 
 	private ArrayList<String> getNamesForUrl(String url) {
+		String json = getResponseStringForUrl(url);
+		return getNamesFromJson(json);
+	}
+
+	protected String getResponseStringForUrl(String url) {
 		GetMethod getter = getUrl(url);
 		String json ;
 		try {
 			json = getter.getResponseBodyAsString();
 		} catch (IOException e) {
 			throw new RuntimeException("Failed to get url: " + url + " See inner exception for details", e);
+		} finally {
+			getter.releaseConnection();
 		}
-		return getNamesFromJson(json);
+		return json;
+		
 	}
-	
-	
 	
 	public ArrayList<String> GetBindingsForQueue(String queueName, boolean omitBindingToDefaultExchange) {
 		return getBindingsForQueue(queueName, omitBindingToDefaultExchange);
@@ -61,16 +72,20 @@ public class RabbitManagementApiHelper {
 	public ArrayList<String> getBindingsForQueue(String queueName, boolean omitBindingToDefaultExchange) {
 		String url = getRabbitApiUrl() + "queues/"+urlEncode(virtualHostName)+"/" + urlEncode(queueName) + "/bindings";
 		GetMethod getBindings = getUrl( url);
-		if(200 != getBindings.getStatusCode()){
-			throw new RuntimeException("Failed to get url:" + url);
+		try{
+			if(200 != getBindings.getStatusCode()){
+				throw new RuntimeException("Failed to get url:" + url);
+			}
+			String bindingListJson;
+			try {
+				bindingListJson = getBindings.getResponseBodyAsString();
+			} catch (IOException e) {
+				throw new RuntimeException("Failed to get response body for binding list. See inner exception for details", e);
+			}
+			return getBindingKeysFromJson(bindingListJson, omitBindingToDefaultExchange);
+		} finally {
+			getBindings.releaseConnection();
 		}
-		String bindingListJson;
-		try {
-			bindingListJson = getBindings.getResponseBodyAsString();
-		} catch (IOException e) {
-			throw new RuntimeException("Failed to get response body for binding list. See inner exception for details", e);
-		}
-		return getBindingKeysFromJson(bindingListJson, omitBindingToDefaultExchange);
 	}
 	
 	public String getOverviewJson(){
@@ -80,6 +95,8 @@ public class RabbitManagementApiHelper {
 			return getter.getResponseBodyAsString();
 		} catch (IOException e) {
 			throw new RuntimeException("Failed to get vhostList. See inner exception for details", e);
+		} finally {
+			getter.releaseConnection();
 		}
 	}
 	
@@ -157,13 +174,19 @@ public class RabbitManagementApiHelper {
 		return "http://" + urlEncode(hostName) + ":55672/api/";
 	}
 
-	private HttpClient getClientForRabbitManagementRestApi() {
-		HttpClient client = new HttpClient();
-		client.getParams().setAuthenticationPreemptive(true);
+	private void setupHttpClient() {
+		MultiThreadedHttpConnectionManager mgr = new MultiThreadedHttpConnectionManager();
+		mgr.getParams().setDefaultMaxConnectionsPerHost(50);
+		mgr.getParams().setMaxTotalConnections(200);
+		httpClient = new HttpClient(mgr);
+		httpClient.getParams().setAuthenticationPreemptive(true);
 
 		Credentials defaultcreds = new UsernamePasswordCredentials(userName, userPassword);
-		client.getState().setCredentials(new AuthScope(hostName, 55672, AuthScope.ANY_REALM), defaultcreds);
-		return client;
+		httpClient.getState().setCredentials(new AuthScope(hostName, 55672, AuthScope.ANY_REALM), defaultcreds);
+	}
+
+	private HttpClient getClientForRabbitManagementRestApi() {
+		return httpClient;
 	}
 	
 	private static String urlEncode(String rawString){

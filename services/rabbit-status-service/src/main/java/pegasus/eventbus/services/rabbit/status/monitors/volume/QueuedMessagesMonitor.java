@@ -1,10 +1,10 @@
-package pegasus.eventbus.services.rabbit.status.monitors;
+package pegasus.eventbus.services.rabbit.status.monitors.volume;
 
 import java.util.regex.Pattern;
 
 public class QueuedMessagesMonitor extends VolumeMetricMonitor {
 	
-	Pattern rateFinder = Pattern.compile("\"queue_totals\":\\{\"messages_ready\":(\\d+)");
+	Pattern rateFinder = Pattern.compile("\"queue_totals\":\\{.*?\"messages_ready\":(\\d+)");
 	
 	public QueuedMessagesMonitor(){
 		super();
@@ -15,6 +15,7 @@ public class QueuedMessagesMonitor extends VolumeMetricMonitor {
 		return "Total Queued Messages";
 	}
 	
+	@Override
 	protected Pattern getRateFinder() {
 		return rateFinder;
 	}

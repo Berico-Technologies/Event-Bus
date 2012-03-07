@@ -1,4 +1,4 @@
-package pegasus.eventbus.services.rabbit.status.monitors;
+package pegasus.eventbus.services.rabbit.status.monitors.volume;
 
 import pegasus.eventbus.services.rabbit.status.PublisherService;
 
@@ -14,7 +14,7 @@ public class ConnectionCountMonitor extends VolumeMetricMonitor {
 	}
 	
 	@Override
-	protected int GetRate() {
+	protected int getRate() {
 		return PublisherService.apiHelper.getAllConnectionNames().size();
 	}
 }
