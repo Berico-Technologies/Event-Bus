@@ -1,5 +1,7 @@
 package pegasus.esp;
 
+import java.util.Collection;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -17,7 +19,7 @@ public abstract class EventMonitor {
     protected final Log logger = LogFactory.getLog(this.getClass());
 
     /** register the patterns to be matched by this monitor with the event stream processor */
-    public abstract void registerPatterns(EventStreamProcessor esp);
+    public abstract Collection<Publisher> registerPatterns(EventStreamProcessor esp);
 
     /** Processes the matching event or events and return an inferred event, if any */
     public abstract InferredEvent receive(EventBean eventBean);

@@ -1,4 +1,4 @@
-package eventbus.esp.metric;
+package pegasus.esp;
 
 public interface Broker {
 

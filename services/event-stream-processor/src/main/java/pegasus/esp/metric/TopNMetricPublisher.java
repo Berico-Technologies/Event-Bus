@@ -1,4 +1,4 @@
-package eventbus.esp.metric;
+package pegasus.esp.metric;
 
 import java.util.Calendar;
 import java.util.List;
@@ -7,14 +7,15 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pegasus.esp.AbstractPublisher;
+import pegasus.esp.DataProvider;
+
 import dashboard.server.metric.TopNMetric;
 import dashboard.server.metric.TrendMetric;
-import eventbus.esp.metric.AbstractMetricGenerator;
-import eventbus.esp.metric.DataProvider;
 
-public class TopNMetricGenerator extends AbstractMetricGenerator {
+public class TopNMetricPublisher extends AbstractPublisher {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TopNMetricGenerator.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TopNMetricPublisher.class);
 
     @SuppressWarnings("unchecked")
     public void run() {

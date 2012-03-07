@@ -1,6 +1,9 @@
 
 package pegasus.esp;
 
+import java.util.Collection;
+import java.util.HashSet;
+
 import com.espertech.esper.client.EventBean;
 
 class UnauthorizedAccessAttemptsDetector extends EventMonitor {
@@ -28,7 +31,7 @@ class UnauthorizedAccessAttemptsDetector extends EventMonitor {
     }
 
     @Override
-    public void registerPatterns(EventStreamProcessor esp) {
+    public Collection<Publisher> registerPatterns(EventStreamProcessor esp) {
 
         String ipattern = "every request=Envelope(eventType='Request')" +
                 " -> response=Envelope(eventType='Response' and " +
@@ -47,6 +50,9 @@ class UnauthorizedAccessAttemptsDetector extends EventMonitor {
         esp.monitor(true, createUA, null);
         esp.monitor(true, createUAF, null);
         esp.monitor(true, getUAF, this);
+
+        // @todo = this needs to be integrated
+        return new HashSet<Publisher>();
     }
 
     @Override

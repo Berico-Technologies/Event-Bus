@@ -31,6 +31,7 @@
     <bean id="service" class="pegasus.eventbus.services.rabbit.status.PublisherService" init-method="start" destroy-method="stop">
         <constructor-arg ref="eventManager" />
         <constructor-arg ref="apiHelper" />
+        <constructor-arg value="${publisher.intervalMills:1000}"/>
     </bean>
 
 </beans>

@@ -1,6 +1,6 @@
 package pegasus.esp.data;
 
-import eventbus.esp.metric.DataProvider;
+import pegasus.esp.DataProvider;
 
 import java.util.ArrayList;
 import java.util.HashMap;

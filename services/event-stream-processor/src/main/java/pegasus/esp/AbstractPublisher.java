@@ -1,6 +1,6 @@
-package eventbus.esp.metric;
+package pegasus.esp;
 
-public abstract class AbstractMetricGenerator implements MetricGenerator {
+public abstract class AbstractPublisher implements Publisher {
 
     protected Broker broker;
     protected DataProvider dataProvider;
