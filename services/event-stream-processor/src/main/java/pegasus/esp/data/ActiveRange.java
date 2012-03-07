@@ -5,7 +5,7 @@ import pegasus.esp.data.StreamRange.TimeValFunc;
 /*
  * An ActiveRange is a range of a stream that represents an interval with a
  * maximum time width, specified by the periodInMillis initialization parameter.
- * 
+ *
  * @author israel
  *
  */
@@ -34,21 +34,30 @@ public class ActiveRange extends StreamRange {
     public int getAdjustedSize() {
         return adjustedSize;
     }
-    
+
     public int getTrend() {
         int curtotal = getTotal();
         if (prev == null || curtotal == 0) return 0;
         int prevtotal = prev.getTotal();
         int trendval = (curtotal - prevtotal) * 100 / prevtotal;
-        System.out.println(String.format("%s -> %s = %s%%", prevtotal, curtotal, trendval));
         return trendval;
+    }
+
+    public String getTrendDesc() {
+        String res;
+        int curtotal = getTotal();
+        if (prev == null) { return item + ": No previous value"; }
+        if (curtotal == 0) { return item + ": No current value"; }
+        int prevtotal = prev.getTotal();
+        int trendval = (curtotal - prevtotal) * 100 / prevtotal;
+        return String.format("%s: %s -> %s = %s%%", item, prevtotal, curtotal, trendval);
     }
 
     public ActiveRange(StreamRange range, int periodInMillis, String category, String item) {
         this(range, range.start, range.end, periodInMillis, category, item);
     }
 
-    public ActiveRange(StreamRange range, 
+    public ActiveRange(StreamRange range,
             TimeEntry start, TimeEntry end, int periodInMillis, String category, String item) {
         super(start, end);
         this.range = range;
@@ -60,7 +69,7 @@ public class ActiveRange extends StreamRange {
     public ActiveRange getPrev() {
         return prev;
     }
-    
+
     // TODO: fix bug where no events within a period doesn't cause the ActiveRange to become empty
     public ActiveRange adjust(long now) {
         lastEnd = updateEnd(end);
@@ -91,8 +100,8 @@ public class ActiveRange extends StreamRange {
 
         if (adjusted) {
             if (prev == null) {
-                prev = new ActiveRange(range, range.start, wkgstart, periodInMillis, 
-                        "PREV PERIOD " + category, item); 
+                prev = new ActiveRange(range, range.start, wkgstart, periodInMillis,
+                        "PREV PERIOD " + category, item);
                 prev.initialize();
             } else {
                 prev.updateEnd(wkgstart);
@@ -117,23 +126,23 @@ public class ActiveRange extends StreamRange {
     public void dumpActiveRanges(String vsname, String name) {
         dumpActiveRanges(vsname, name, "");
     }
-    
+
     public void dumpActiveRanges(String vsname, String name, String indent) {
-        System.out.println(String.format(indent + "/%s/%s[%d] %s = %s", 
+        System.out.println(String.format(indent + "/%s/%s[%d] %s = %s",
                 vsname, name, periodInMillis, category, this));
         if (prev != null) {
             prev.dumpActiveRanges(vsname, name, "  " + indent);
         }
     }
-    
+
     @Override
     public String toString() {
-        
+
         TimeValFunc<String> makeString = new TimeValFunc<String>() {
 
             StringBuffer sb = new StringBuffer();
             String sep = "";
-            
+
             @Override
             public String apply(long time, int value, boolean last) {
                 if (time == lastEnd.getTimestamp()) sep = sep + "&";
@@ -142,7 +151,7 @@ public class ActiveRange extends StreamRange {
                 if (last) return sb.toString();
                 return null;
             }
-            
+
         };
         String itemList = applyTo(makeString);
 
