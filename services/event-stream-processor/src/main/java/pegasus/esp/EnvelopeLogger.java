@@ -33,7 +33,7 @@ public class EnvelopeLogger extends EventMonitor {
             String base = new DateTime().toString("yyyy-MM-dd");
             this.logFile = logdir + "/" + base + ".log";
             this.jsonFile = logdir + "/" + base + ".json";
-            String msg = "Logging started into " + logdir + " at " + new Date() + "\n";
+            String msg = "Logging started into " + logFile + " at " + new Date() + "\n";
             System.out.println(msg);
         } else {
             System.err.println("Logging could not start into " +
@@ -55,10 +55,30 @@ public class EnvelopeLogger extends EventMonitor {
         this.cond = cond;
     }
 
+    /**
+     *  Write debugging output to a file
+     *
+     * @param fname the file to be written to
+     * @param data The debug string to be written
+     **/
+    public static void fprint(String fname, String data) {
+      java.io.PrintWriter file;
+      boolean append = true;
+      try {
+        file = new java.io.PrintWriter(new java.io.FileOutputStream(fname, append));
+      } catch (Exception exc) {
+        return;
+      }
+      file.print(data + "\n");
+      file.close();
+    }
+
     @Override
     public InferredEvent receive(EventBean eventBean) {
         if (logdir != null) {
             Envelope env = (Envelope) eventBean.get("resp");
+            fprint(logFile, EnvelopeUtils.envelopeToReadableJson(env));
+            fprint(jsonFile, EnvelopeUtils.toJson(env));
         }
         return null;
     }
