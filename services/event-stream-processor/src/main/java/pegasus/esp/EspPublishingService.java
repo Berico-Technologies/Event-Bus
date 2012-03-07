@@ -1,5 +1,6 @@
 package pegasus.esp;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -20,7 +21,7 @@ public class EspPublishingService implements PublishingService, Broker {
     private static final int POOL_SIZE = 10;
 
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(POOL_SIZE);
-    private List<Publisher> publishers;
+    private List<Publisher> publishers = new ArrayList<Publisher>();
     private EventManager eventManager;
     private boolean started = false;
 
@@ -50,14 +51,17 @@ public class EspPublishingService implements PublishingService, Broker {
         LOG.info("EspPublishingService starting...");
 
         started = true;
-        int delay = 0;
-        int intervalBetweenMonitors = PERIOD / publishers.size();
-
-        for (Publisher publisher : publishers) {
-            schedule(publisher, delay);
-            delay += intervalBetweenMonitors;
+        
+        if(publishers.size() > 0){
+	        int delay = 0;
+	        int intervalBetweenMonitors = PERIOD / publishers.size();
+	
+	        for (Publisher publisher : publishers) {
+	            schedule(publisher, delay);
+	            delay += intervalBetweenMonitors;
+	        }
         }
-
+        
         LOG.info("EspPublishingService started.");
     }
     
