@@ -24,7 +24,9 @@ public class Stream {
             // HACK alert!  To avoid losing data when information comes in out of order
             // (this may not actually be possible), this will adjust earlier data to be 
             // the same as the time for the already stored later data.
-	        System.err.println(String.format("WARNING: timestamp=%d inserted after last timestamp=%d in stream %s", timestamp, lastTimestamp, name));
+            if (lastTimestamp > timestamp + 100) {
+                System.err.println(String.format("WARNING: timestamp=%d inserted after last timestamp=%d in stream %s", timestamp, lastTimestamp, name));
+            }
 	        timestamp = lastTimestamp;
 	    }
 		TimeEntry newEntry = new TimeEntry(timestamp, value);
