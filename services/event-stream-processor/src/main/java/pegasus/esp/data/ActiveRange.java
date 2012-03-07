@@ -57,51 +57,14 @@ public class ActiveRange extends StreamRange {
         this.item = item;
     }
 
-    /**
-     *  Write debugging output to a file
-     *
-     * @param fname the file to be written to
-     * @param data The debug string to be written
-     **/
-
-    public static void fprint(String fname, String data) {
-      java.io.PrintWriter file;
-      boolean append = true;
-      try {
-        file = new java.io.PrintWriter(new java.io.FileOutputStream(fname, append));
-      } catch (Exception exc) {
-        return;
-      }
-      file.print(data + "\n");
-      file.close();
-    }
-    
-    private void dbgAdj(String str) {
-        fprint("/tmp/ranges.dbg", str);
-//        System.out.println("@@@@ " + str);
-    }
-    
     public ActiveRange getPrev() {
         return prev;
-    }
-
-    private void dbg(String str) {
-        boolean show = true;
-        show = false;
-        if (show) {
-            System.out.println(this + "(" + category + ")" + str);
-        }
     }
     
     // TODO: fix bug where no events within a period doesn't cause the ActiveRange to become empty
     public ActiveRange adjust(long now) {
-        dbgAdj("Pre-Adjust: " + this + " based on: " + range);
-
-        dbg("INIT: " + total + "/" + adjustedSize + String.format(" with [%s,%s]", start, lastEnd));
         lastEnd = updateEnd(end);
-        dbgAdj("Mid-Adjust: " + this);
         start = updateStart(getLast().getTimestamp());
-        dbgAdj("Post-Adjust: " + this);
         return this;
     }
 
@@ -111,7 +74,6 @@ public class ActiveRange extends StreamRange {
             lastEnd = lastEnd.getNext();
             total += lastEnd.getValue();
             adjustedSize++;
-            dbg("=> looking at " + lastEnd + "=" + total + "/" + adjustedSize);
         }
         return lastEnd;
     }
@@ -120,11 +82,9 @@ public class ActiveRange extends StreamRange {
         TimeEntry wkgstart = getFirst();
         boolean adjusted = false;
         long startlimit = finaltime - periodInMillis;
-        dbg("Moving start (currently at " + wkgstart.getTimestamp() + "->" + wkgstart.getNext().getTimestamp() + ") with a limit of " + startlimit);
         while (wkgstart.getTimestamp() < startlimit) {
             total -= wkgstart.getValue();
             adjustedSize--;
-            dbgAdj("<= looking at " + wkgstart + "=" + total + "/" + adjustedSize);
             wkgstart = wkgstart.getNext();
             adjusted = true;
         }
@@ -152,8 +112,6 @@ public class ActiveRange extends StreamRange {
             working = working.getNext();
         }
         lastEnd = getLast();
-        dbgAdj("Initialize: " + this + " from " + range);
-        
     }
 
     public void dumpActiveRanges(String vsname, String name) {
