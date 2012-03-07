@@ -16,19 +16,6 @@ public class EnvelopeLogger extends EventMonitor {
     private String logFile = null;
     private String jsonFile = null;
 
-
-    public static void fprint(String fname, String data) {
-        java.io.PrintWriter file;
-        boolean append = true;
-        try {
-            file = new java.io.PrintWriter(new java.io.FileOutputStream(fname, append));
-        } catch (Exception exc) {
-            return;
-        }
-        file.print(data + "\n");
-        file.close();
-    }
-
     public EnvelopeLogger() {
     }
 
@@ -48,7 +35,6 @@ public class EnvelopeLogger extends EventMonitor {
             this.jsonFile = logdir + "/" + base + ".json";
             String msg = "Logging started into " + logdir + " at " + new Date() + "\n";
             System.out.println(msg);
-            fprint(logFile, msg);
         } else {
             System.err.println("Logging could not start into " +
                     logdir + " at " + new Date() + "\n");
@@ -73,8 +59,6 @@ public class EnvelopeLogger extends EventMonitor {
     public InferredEvent receive(EventBean eventBean) {
         if (logdir != null) {
             Envelope env = (Envelope) eventBean.get("resp");
-            fprint(logFile, EnvelopeUtils.envelopeToReadableJson(env));
-            fprint(jsonFile, EnvelopeUtils.toJson(env));
         }
         return null;
     }
@@ -83,8 +67,6 @@ public class EnvelopeLogger extends EventMonitor {
     public void registerPatterns(EventStreamProcessor esp) {
         esp.monitor(true, getPattern(), this);
         String name = this.getClass().getSimpleName();
-        esp.flog("Registering " + name + " with " + esp +
-                ", writing to " + logdir + ", pattern=" + getPattern());
     }
 
     private String getPattern() {
