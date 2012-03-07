@@ -8,19 +8,19 @@ import pegasus.esp.data.StreamRange.TimeValFunc;
  * Note that START and END represent an exclusive interval, i.e. the
  * START and END items are not part of this sequence (allowing for an
  * empty interval).
- * 
+ *
  * @author israel
  *
  */
 public class StreamRange {
-	
+
 	public interface TimeValFunc<T extends Object> {
 		public T apply(long time, int value, boolean last);
 	}
 
 	protected TimeEntry start;
 	protected TimeEntry end;
-	
+
 	public StreamRange(TimeEntry start, TimeEntry end) {
 		super();
 		this.start = start;
@@ -37,13 +37,13 @@ public class StreamRange {
 			while (newEntry.getTimestamp() < last.getTimestamp()) { last = last.getPrev(); }
 			newEntry.insertAfter(last);
 	}
-	
+
 	public String toString() {
 	    TimeValFunc<String> makeString = new TimeValFunc<String>() {
 
 	        StringBuffer sb = new StringBuffer();
 	        String sep = "";
-	        
+
             @Override
             public String apply(long time, int value, boolean last) {
                 sb.append(String.format("%s%s@%s", sep, value, time));
@@ -51,14 +51,14 @@ public class StreamRange {
                 if (last) return sb.toString();
                 return null;
             }
-	        
+
         };
         return applyTo(makeString);
 	}
-	
+
 	public int size() {
 		TimeValFunc<Integer> sizer = new TimeValFunc<Integer>() {
-			
+
 			int size = 0;
 
 			@Override
@@ -70,7 +70,7 @@ public class StreamRange {
 				return null;
 			}
 		};
-		
+
 		Integer size = applyTo(sizer);
 		if (size == null) return 0;
 		return size;

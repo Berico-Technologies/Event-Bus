@@ -38,12 +38,12 @@ public class JavascriptDetector extends EventMonitor {
 			throw new RuntimeException("unknown monitor of class " + evalresult.getClass().getCanonicalName() + " returned.");
 		}
 	}
-	
+
     @Override
     public InferredEvent receive(EventBean eventBean) {
         Envelope env = (Envelope) eventBean.get("env");
 		Object[] args = {env};
-		InferredEvent ie = 
+		InferredEvent ie =
 				(InferredEvent) unwrap(ScriptableObject.callMethod(eventMonitor, "receive", args));
         return ie;
     }
@@ -53,7 +53,7 @@ public class JavascriptDetector extends EventMonitor {
 			NativeJavaObject res = (NativeJavaObject) obj;
 			return res.unwrap();
 		}
-		
+
 		if (obj != null) {
 			System.err.println("Cannot handle Javascript result of type " + obj.getClass().getCanonicalName());
 		}

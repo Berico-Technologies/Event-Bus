@@ -8,7 +8,7 @@ import com.espertech.esper.client.PropertyAccessException;
 
 public class JsEnvelopeCounter extends JavascriptDetector {
 
-	private static final String BODY = 
+	private static final String BODY =
 			"var clock = {" +
 					"  getTime : function() { return new Date().getTime(); }," +
 					"  getElapsed : function(prev) { return this.getTime() - prev; }" +
@@ -28,7 +28,7 @@ public class JsEnvelopeCounter extends JavascriptDetector {
 					"    ie.putData('Rate', '' + this.curRate);" +
 					"    out.println('IE: ' + ie + ' for ' + env.getEventType());" +
 					"    return ie;" +
-					"  }" + 
+					"  }" +
 					"};" +
 					"// test calls\n" +
 					"searchCounter;" ;

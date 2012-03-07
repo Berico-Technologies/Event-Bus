@@ -2,7 +2,7 @@ package pegasus.esp.data;
 
 /**
  * a Bidirectional linked list for values at timestamps.
- * 
+ *
  * @author israel
  *
  */
@@ -12,11 +12,11 @@ public class TimeEntry {
 	private long timestamp;
 	private int value;
 	private TimeEntry next;
-	
+
 	public TimeEntry getPrev() {
 		return prev;
 	}
-	
+
 	public long getTimestamp() {
 		return timestamp;
 	}
@@ -47,7 +47,7 @@ public class TimeEntry {
 		entry.prev = entry;
 		return entry;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "TimeEntry [prev=" + prev.getTimestamp() + ", timestamp=" + timestamp
@@ -68,6 +68,6 @@ public class TimeEntry {
 		nprev.next = this;
 		nnext.prev = this;
 	}
-	
+
 
 }

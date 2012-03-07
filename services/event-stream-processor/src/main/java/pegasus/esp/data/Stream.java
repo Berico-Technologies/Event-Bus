@@ -16,13 +16,13 @@ public class Stream {
 		this.name = name;
 		this.streamref = new StreamRange();
 	}
-	
+
 	public void addInfo(long timestamp, int value) {
 	    long lastTimestamp = streamref.getLast().getTimestamp();
         if (timestamp < lastTimestamp) {
             // TODO: deal with this situation in a cleaner fashion
             // HACK alert!  To avoid losing data when information comes in out of order
-            // (this may not actually be possible), this will adjust earlier data to be 
+            // (this may not actually be possible), this will adjust earlier data to be
             // the same as the time for the already stored later data.
             if (lastTimestamp > timestamp + 100) {
                 System.err.println(String.format("WARNING: timestamp=%d inserted after last timestamp=%d in stream %s", timestamp, lastTimestamp, name));
@@ -44,9 +44,9 @@ public class Stream {
             ar.initialize();
         }
         // TODO Auto-generated method stub
-        
+
     }
-	
+
 	public int size() {
 		return streamref.size();
 	}
@@ -60,21 +60,21 @@ public class Stream {
             ar.adjust(lastTick).dumpActiveRanges(vsname, name);
         }
         // TODO Auto-generated method stub
-        
+
     }
-	
-	
+
+
 	public void dump() {
 		TimeValFunc<Object> dumper = new TimeValFunc<Object>() {
 			int ct = 0;
 			@Override
 			public Object apply(long time, int value, boolean last) {
-				System.out.println("  " + (last ? "* " : "  ") + (ct++) + ": " + 
+				System.out.println("  " + (last ? "* " : "  ") + (ct++) + ": " +
 				        value + " @ " + time);
 				return null;
 			}
 		};
-		
+
 		System.out.println("  " + name + ":");
 		streamref.applyTo(dumper);
 		System.out.println();
