@@ -39,6 +39,7 @@ public class EnvelopeCounter extends EventMonitor {
 
     Collection<EnvelopeRetriever> counters = Lists.newArrayList();
     private Map<String, ValueStreams> streamsMap = Maps.newHashMap();
+    private Set<Publisher> publishers = new HashSet<Publisher>();
 
     public EnvelopeCounter() {
 
@@ -84,9 +85,9 @@ public class EnvelopeCounter extends EventMonitor {
                 ValueStreamsDataProvider provider = new ValueStreamsDataProvider(valueStreams, desc);
                 TopNMetricPublisher publisher = new TopNMetricPublisher();
                 publisher.setDataProvider(provider);
+                publishers.add(publisher);
             }
         }
-
 
     }
 
@@ -144,8 +145,7 @@ public class EnvelopeCounter extends EventMonitor {
     public Collection<Publisher> registerPatterns(EventStreamProcessor esp) {
         esp.monitor(true, getPattern(), this);
 
-        // @todo = this needs to be integrated
-        return new HashSet<Publisher>();
+        return publishers;
     }
 
     private String getPattern() {

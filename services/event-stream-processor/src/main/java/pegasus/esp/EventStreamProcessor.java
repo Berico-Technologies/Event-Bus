@@ -207,15 +207,9 @@ public class EventStreamProcessor {
         }
     }
     
-    public void registerPublishers(Collection<Publisher> publishers) {
-        if (publishingService != null) {
-            publishingService.addPublishers(publishers);
-        }
-    }
-
     public void watchFor(EventMonitor monitor) {
         Collection<Publisher> publishers = monitor.registerPatterns(this);
-        registerPublishers(publishers);
+        publishingService.addPublishers(publishers);
     }
 
     @VisibleForTesting
