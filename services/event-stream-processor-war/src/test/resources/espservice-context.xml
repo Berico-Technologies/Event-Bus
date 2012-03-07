@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.springframework.org/schema/beans" xmlns:context="http://www.springframework.org/schema/context" xmlns:util="http://www.springframework.org/schema/util"
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:util="http://www.springframework.org/schema/util"
     xsi:schemaLocation="http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit-1.0.xsd
-		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
     <context:property-placeholder location="classpath:eventbus.properties" />
 
@@ -20,12 +23,33 @@
         <constructor-arg name="connectionParameters" ref="connectionParameters" />
     </bean>
 
-    <bean id="eventManager" class="pegasus.eventbus.amqp.AmqpEventManager" init-method="start" destroy-method="close">
+    <bean id="eventManager"
+        class="pegasus.eventbus.amqp.AmqpEventManager"
+        destroy-method="close" init-method="start">
         <constructor-arg ref="defaultConfiguration" />
     </bean>
 
-    <bean id="esp" class="pegasus.esp.EventStreamProcessor">
+<!-- 
+    <bean id="envLogger" class="pegasus.esp.EnvelopeLogger">
+        <property name="logdir" value='/tmp/EventBus-traffic' />
+    </bean>
+ -->
+
+    <bean id="publishingService"
+        class="pegasus.esp.EspPublishingService"
+        init-method="start" destroy-method="stop">
         <property name="eventManager" ref="eventManager" />
     </bean>
+    
+    <bean id="envCounter" class="pegasus.esp.EnvelopeCounter"/>
 
+    <bean id="envLogRepo" class="pegasus.esp.StorageRepository">
+        <!-- <constructor-arg ref="envLogger"></constructor-arg> -->
+        <constructor-arg ref="envCounter"></constructor-arg>
+    </bean>
+    <bean id="esp" class="pegasus.esp.EventStreamProcessor">
+        <property name="eventManager" ref="eventManager" />
+        <property name="publishingService" ref="publishingService" />
+        <property name="repository" ref="envLogRepo" />
+    </bean>
 </beans>
