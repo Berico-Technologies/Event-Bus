@@ -1,4 +1,4 @@
-package eventbus.esp.metric;
+package pegasus.esp.metric;
 
 import java.util.Calendar;
 import java.util.Map;
