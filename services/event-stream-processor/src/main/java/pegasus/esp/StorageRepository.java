@@ -14,7 +14,13 @@ public class StorageRepository implements EventMonitorRepository {
 
     // TODO: extend this to take a list
     public StorageRepository(EventMonitor monitor) {
+        this();
         addMonitor(monitor);
+    }
+
+    public StorageRepository(EventMonitor monitor, EventMonitor monitor2) {
+        this(monitor);
+        addMonitor(monitor2);
     }
 
     public List<EventMonitor> getMonitors() {
