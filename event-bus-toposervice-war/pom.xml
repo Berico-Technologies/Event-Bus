@@ -35,6 +35,6 @@
     </dependency>
   </dependencies>
   <build>
-    <finalName>event-bus-toposervice-war</finalName>
+    <finalName>event-bus-toposervice</finalName>
   </build>
 </project>
