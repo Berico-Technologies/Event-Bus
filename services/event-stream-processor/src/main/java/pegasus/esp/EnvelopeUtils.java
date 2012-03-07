@@ -39,8 +39,8 @@ public class EnvelopeUtils {
 	    return id;
 	}
 
-	private static long testTime = 104;
-	private static long timeIncr = 10;
+	private static long testTime = 12104;
+	private static long timeIncr = 2000;
 
 	public static Envelope makeEnvelope(String type, String idsymbol, String correlationIdsymbol,
 	        String topic, String replyTo) {
@@ -55,6 +55,7 @@ public class EnvelopeUtils {
 	    Date timestamp = new Date(testTime);
 	    testTime += timeIncr;
         e.setTimestamp(timestamp);
+        e.setBody((type + topic).getBytes());
 	    return e;
 	}
 
