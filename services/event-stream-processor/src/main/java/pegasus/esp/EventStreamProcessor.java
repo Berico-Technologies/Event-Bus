@@ -207,9 +207,17 @@ public class EventStreamProcessor {
         }
     }
     
+    public void schedulePublishers(Collection<Publisher> publishers) {
+        if (publishingService != null) {
+            publishingService.addPublishers(publishers);
+        } else {
+            LOG.error("Publishing Service is null. Not reporting results");
+        }
+    }
+    
     public void watchFor(EventMonitor monitor) {
         Collection<Publisher> publishers = monitor.registerPatterns(this);
-        publishingService.addPublishers(publishers);
+        schedulePublishers(publishers);
     }
 
     @VisibleForTesting
