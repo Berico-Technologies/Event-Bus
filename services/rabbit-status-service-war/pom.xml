@@ -47,7 +47,7 @@
 	</dependencies>
 
 	<build>
-		<finalName>rabbit-status-publisher-war</finalName>
+		<finalName>rabbit-status-publisher</finalName>
 	</build>
 
 </project>

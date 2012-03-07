@@ -44,6 +44,6 @@
     </dependency>
   </dependencies>
   <build>
-    <finalName>event-stream-processor-war</finalName>
+    <finalName>event-stream-processor</finalName>
   </build>
 </project>
