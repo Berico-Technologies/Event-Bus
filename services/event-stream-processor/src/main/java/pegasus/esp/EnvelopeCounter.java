@@ -1,6 +1,7 @@
 package pegasus.esp;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +73,10 @@ public class EnvelopeCounter extends EventMonitor {
         for (EnvelopeRetriever counter : counters) {
             String type = counter.key();
             String item = counter.retrieve(env);
-            dc.get(type).addValue(item, env.getTimestamp().getTime(), 1);
+            ValueStreams valueStreams = dc.get(type);
+            Date timestamp = env.getTimestamp();
+            long time = timestamp.getTime();
+            valueStreams.addValue(item, time, 1);
         }
     }
 

@@ -1,6 +1,7 @@
 package pegasus.esp;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -38,6 +39,9 @@ public class EnvelopeUtils {
 	    return id;
 	}
 
+	private static long testTime = 104;
+	private static long timeIncr = 10;
+
 	public static Envelope makeEnvelope(String type, String idsymbol, String correlationIdsymbol,
 	        String topic, String replyTo) {
 	    Envelope e = new Envelope();
@@ -48,6 +52,9 @@ public class EnvelopeUtils {
 	    }
 	    e.setTopic(topic);
 	    e.setReplyTo(replyTo);
+	    Date timestamp = new Date(testTime);
+	    testTime += timeIncr;
+        e.setTimestamp(timestamp);
 	    return e;
 	}
 

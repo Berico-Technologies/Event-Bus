@@ -32,6 +32,7 @@
     <bean id="envLogger" class="pegasus.esp.EnvelopeLogger">
         <property name="logdir" value='/tmp/EventBus-traffic' />
     </bean>
+
     <bean id="envLogRepo" class="pegasus.esp.StorageRepository">
         <constructor-arg ref="envLogger"></constructor-arg>
     </bean>
