@@ -2,6 +2,7 @@ package pegasus.esp;
 
 //import org.apache.commons.logging.Log;
 //import org.apache.commons.logging.LogFactory;
+import java.util.Collection;
 import java.util.Date;
 
 import org.slf4j.Logger;
@@ -32,6 +33,8 @@ public class EventStreamProcessor {
     private static final Logger LOG = LoggerFactory.getLogger(EventStreamProcessor.class);
 
     private EventManager eventManager;
+    
+    private PublishingService publishingService;
 
     private EPServiceProvider epService;
 
@@ -180,9 +183,39 @@ public class EventStreamProcessor {
             eventManager = null;
         }
     }
+    
+    public void setPublishingService(PublishingService publishingService) {
+        try {
+            attachToPublishingService(publishingService);
+        } catch (RuntimeException e) {
+            System.err.println("@@@@ Error attaching to PS:");
+            e.printStackTrace();
+            throw e;
+        }
+    }
+    
+    public void attachToPublishingService(PublishingService publishingService) {
+        if (this.publishingService != null) {
+            detachFromPublishingService();
+        }
+        this.publishingService = publishingService;
+    }
+    
+    public void detachFromPublishingService() {
+        if (publishingService != null) {
+            //@todo - remove the publishers registered by esp
+        }
+    }
+    
+    public void registerPublishers(Collection<Publisher> publishers) {
+        if (publishingService != null) {
+            publishingService.addPublishers(publishers);
+        }
+    }
 
     public void watchFor(EventMonitor monitor) {
-        monitor.registerPatterns(this);
+        Collection<Publisher> publishers = monitor.registerPatterns(this);
+        registerPublishers(publishers);
     }
 
     @VisibleForTesting

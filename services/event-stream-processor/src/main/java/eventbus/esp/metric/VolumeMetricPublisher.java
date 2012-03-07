@@ -6,13 +6,14 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pegasus.esp.AbstractPublisher;
+import pegasus.esp.DataProvider;
+
 import dashboard.server.metric.VolumeMetric;
-import eventbus.esp.metric.AbstractMetricGenerator;
-import eventbus.esp.metric.DataProvider;
 
-public class VolumeMetricGenerator extends AbstractMetricGenerator {
+public class VolumeMetricPublisher extends AbstractPublisher {
 
-    private static final Logger LOG = LoggerFactory.getLogger(VolumeMetricGenerator.class);
+    private static final Logger LOG = LoggerFactory.getLogger(VolumeMetricPublisher.class);
 
     public void run() {
         Map<String, Object> data = dataProvider.getData();

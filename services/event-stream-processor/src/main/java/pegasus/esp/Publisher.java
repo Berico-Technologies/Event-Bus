@@ -1,6 +1,6 @@
-package eventbus.esp.metric;
+package pegasus.esp;
 
-public interface MetricGenerator extends Runnable {
+public interface Publisher extends Runnable {
 
     public void setBroker(Broker broker);
 
