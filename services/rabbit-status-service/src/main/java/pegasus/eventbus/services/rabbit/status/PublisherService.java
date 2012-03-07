@@ -20,10 +20,11 @@ public class PublisherService {
 	public static RabbitManagementApiHelper apiHelper;
 	
 	private ScheduledExecutorService scheduler ;
-
-	public PublisherService(EventManager eventManager, RabbitManagementApiHelper apiHelper) {
+	private int interval;
+	public PublisherService(EventManager eventManager, RabbitManagementApiHelper apiHelper, int interval) {
 		PublisherService.eventManager = eventManager;
 		PublisherService.apiHelper = apiHelper;
+		this.interval = interval;
 	}
 
 	public void start(){
@@ -32,10 +33,10 @@ public class PublisherService {
 		List<Runnable> monitors = getMonitorPublishers();
 		
 		scheduler = Executors.newScheduledThreadPool(monitors.size());
-		int intervalBetweenMonitors = 1000 / monitors.size();
+		int intervalBetweenMonitors = interval / monitors.size();
 		int delay = 0;
 		for(Runnable monitor : monitors){
-			scheduler.scheduleAtFixedRate(monitor, delay, 1000, TimeUnit.MILLISECONDS);
+			scheduler.scheduleAtFixedRate(monitor, delay, interval, TimeUnit.MILLISECONDS);
 			delay += intervalBetweenMonitors;
 		}
 		
