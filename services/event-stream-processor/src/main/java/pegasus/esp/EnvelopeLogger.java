@@ -1,7 +1,9 @@
 package pegasus.esp;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 
 import org.joda.time.DateTime;
 
@@ -84,9 +86,12 @@ public class EnvelopeLogger extends EventMonitor {
     }
 
     @Override
-    public void registerPatterns(EventStreamProcessor esp) {
+    public Collection<Publisher> registerPatterns(EventStreamProcessor esp) {
         esp.monitor(true, getPattern(), this);
         String name = this.getClass().getSimpleName();
+
+        // @todo = this needs to be integrated
+        return new HashSet<Publisher>();
     }
 
     private String getPattern() {

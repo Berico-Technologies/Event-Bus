@@ -1,5 +1,8 @@
 package pegasus.esp;
 
+import java.util.Collection;
+import java.util.HashSet;
+
 import pegasus.eventbus.client.Envelope;
 
 import com.espertech.esper.client.EventBean;
@@ -19,8 +22,11 @@ class EventTypeDetector extends EventMonitor {
     }
 
     @Override
-    public void registerPatterns(EventStreamProcessor esp) {
+    public Collection<Publisher> registerPatterns(EventStreamProcessor esp) {
         esp.monitor(true, "select resp from Envelope as resp where eventType = '" + eventType + "'", this);
+
+        // @todo = this needs to be integrated
+        return new HashSet<Publisher>();
     }
 
     @Override

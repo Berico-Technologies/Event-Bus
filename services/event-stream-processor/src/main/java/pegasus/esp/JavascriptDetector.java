@@ -1,5 +1,8 @@
 package pegasus.esp;
 
+import java.util.Collection;
+import java.util.HashSet;
+
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
@@ -62,8 +65,11 @@ public class JavascriptDetector extends EventMonitor {
 
 
 	@Override
-    public void registerPatterns(EventStreamProcessor esp) {
+    public Collection<Publisher> registerPatterns(EventStreamProcessor esp) {
         esp.monitor(true, "select env from Envelope as env", this);
+
+        // @todo = this needs to be integrated
+        return new HashSet<Publisher>();
     }
 
 	public void setupEngine() throws ScriptException {

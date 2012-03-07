@@ -3,6 +3,7 @@ package pegasus.esp;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -18,7 +19,7 @@ import com.espertech.esper.client.EventBean;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import eventbus.esp.metric.TopNMetricGenerator;
+import eventbus.esp.metric.TopNMetricPublisher;
 
 public class EnvelopeCounter extends EventMonitor {
 
@@ -81,8 +82,8 @@ public class EnvelopeCounter extends EventMonitor {
             for (int per : envelopeRetriever.periods()) {
                 String desc = valueStreams.addPeriod(per);
                 ValueStreamsDataProvider provider = new ValueStreamsDataProvider(valueStreams, desc);
-                TopNMetricGenerator generator = new TopNMetricGenerator();
-                generator.setDataProvider(provider);
+                TopNMetricPublisher publisher = new TopNMetricPublisher();
+                publisher.setDataProvider(provider);
             }
         }
 
@@ -140,8 +141,11 @@ public class EnvelopeCounter extends EventMonitor {
     }
 
     @Override
-    public void registerPatterns(EventStreamProcessor esp) {
+    public Collection<Publisher> registerPatterns(EventStreamProcessor esp) {
         esp.monitor(true, getPattern(), this);
+
+        // @todo = this needs to be integrated
+        return new HashSet<Publisher>();
     }
 
     private String getPattern() {

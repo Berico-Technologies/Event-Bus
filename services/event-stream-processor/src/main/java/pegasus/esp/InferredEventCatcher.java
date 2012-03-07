@@ -1,5 +1,7 @@
 package pegasus.esp;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import com.espertech.esper.client.EventBean;
@@ -20,7 +22,10 @@ public class InferredEventCatcher extends EventMonitor {
     }
 
     @Override
-    public void registerPatterns(EventStreamProcessor esp) {
+    public Collection<Publisher> registerPatterns(EventStreamProcessor esp) {
         esp.monitor(true, "select res from InferredEvent as res", this);
+
+        // @todo = this needs to be integrated
+        return new HashSet<Publisher>();
     }
 }
