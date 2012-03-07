@@ -63,9 +63,24 @@ public class EnvelopeUtils {
 	private final static Gson gson = new Gson();
 
 	public static String toFormattedJson(String line) {
-        HashMap map = gson.fromJson(line, HashMap.class);
-        String mapstr = gson.toJson(map);
+        HashMap map = toMapJson(line);
+        String mapstr = gson_pp.toJson(map);
         return mapstr;
+    }
+
+	public static HashMap toMapJson(String line) {
+        return gson.fromJson(line, HashMap.class);
+    }
+
+	public static String getBodyValue(Envelope env, String key) {
+        try {
+            String bodyJson = new String(env.getBody(), "UTF-8");
+            HashMap map = EnvelopeUtils.toMapJson(bodyJson);
+            Object queryText = map.get(key);
+            return "" + queryText;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
 	public static String toJson(Envelope env) {
