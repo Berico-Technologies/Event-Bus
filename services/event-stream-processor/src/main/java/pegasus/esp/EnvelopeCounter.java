@@ -11,11 +11,14 @@ import org.joda.time.DateTime;
 
 import pegasus.esp.data.ActiveRange;
 import pegasus.esp.data.ValueStreams;
+import pegasus.esp.data.ValueStreamsDataProvider;
 import pegasus.eventbus.client.Envelope;
 
 import com.espertech.esper.client.EventBean;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
+import eventbus.esp.metric.TopNMetricGenerator;
 
 public class EnvelopeCounter extends EventMonitor {
 
@@ -40,7 +43,7 @@ public class EnvelopeCounter extends EventMonitor {
 
         counters.add(new EnvelopeRetriever() {
             public String retrieve(Envelope e) { return e.getEventType(); }
-            public String key() { return "EventType"; }
+            public String key() { return "Event Type"; }
             public int[] periods() { return defaultperiods; }
             public int getValue(String type, Envelope env) { return 1; }
         });
@@ -48,6 +51,14 @@ public class EnvelopeCounter extends EventMonitor {
         counters.add(new EnvelopeRetriever() {
             public String retrieve(Envelope e) { return e.getEventType(); }
             public String key() { return "Total Body Length by Type"; }
+            public int[] periods() { return defaultperiods; }
+            public int getValue(String type, Envelope env) { return env.getBody().length; }
+        });
+
+
+        counters.add(new EnvelopeRetriever() {
+            public String retrieve(Envelope e) { return "BodyLength"; }
+            public String key() { return "Total Body Length"; }
             public int[] periods() { return defaultperiods; }
             public int getValue(String type, Envelope env) { return env.getBody().length; }
         });
@@ -68,36 +79,22 @@ public class EnvelopeCounter extends EventMonitor {
             ValueStreams valueStreams = new ValueStreams(type);
             streamsMap.put(type, valueStreams);
             for (int per : envelopeRetriever.periods()) {
-                valueStreams.addPeriod(per);
+                String desc = valueStreams.addPeriod(per);
+                ValueStreamsDataProvider provider = new ValueStreamsDataProvider(valueStreams, desc);
+                TopNMetricGenerator generator = new TopNMetricGenerator();
+                generator.setDataProvider(provider);
             }
         }
+
+
     }
 
     public void dumpFreqs() {
         for (EnvelopeRetriever counter : counters) {
             String type = counter.key();
-            dumpFreq(type);
+            ValueStreams streams = streamsMap.get(type);
+            streams.display();
         }
-    }
-
-    public void dumpFreq(String type) {
-        System.out.println(type + ":");
-        ValueStreams stream = streamsMap.get(type);
-        for (String category : stream.getActiveRanges()) {
-            System.out.println(String.format("\nTopN Label: %s", category));
-            for (String item : stream.getValues()) {
-                ActiveRange activeRange = stream.getActiveRange(category, item);
-                int total = activeRange.getTotal();
-                int trend = activeRange.getTrend();
-                String desc = activeRange.getTrendDesc();
-                System.out.println(String.format("  Trend Label: %s", item));
-                System.out.println(String.format("  Trend Value: %s", total));
-                System.out.println(String.format("  Trend info: %s", desc));
-                System.out.println(String.format("  Trend change: %s", trend));
-                System.out.println();
-            }
-        }
-        System.out.println();
     }
 
     @Override
@@ -107,6 +104,26 @@ public class EnvelopeCounter extends EventMonitor {
         return null;
     }
 
+    long lastDisplayTime = Long.MIN_VALUE;
+    int displayFrequency = ValueStreams.seconds(10);
+    int envelopesSeen = 0;
+
+    private void gotEnvelopeCheckForDumping() {
+        boolean showFrequencies = false;
+//        showFrequencies = true;
+
+        if (showFrequencies) {
+            envelopesSeen++;
+            long curtime = new Date().getTime();
+            if (curtime > lastDisplayTime + displayFrequency) {
+                System.out.println("EC: After envelope " + envelopesSeen);
+                dumpFreqs();
+                lastDisplayTime = curtime;
+            }
+        }
+    }
+
+
     private void recordValues(Envelope env) {
         for (EnvelopeRetriever counter : counters) {
             String type = counter.key();
@@ -114,9 +131,12 @@ public class EnvelopeCounter extends EventMonitor {
             int value = counter.getValue(type, env);
             ValueStreams valueStreams = streamsMap.get(type);
             Date timestamp = env.getTimestamp();
+            // If the envelope doesn't have a timestamp, use the current time
+            if (timestamp == null) timestamp = new Date();
             long time = timestamp.getTime();
             valueStreams.addValue(item, time, value);
         }
+        gotEnvelopeCheckForDumping();
     }
 
     @Override
