@@ -63,6 +63,18 @@ public class EnvelopeCounter extends EventMonitor {
             public int getValue(String type, Envelope env) { return env.getBody().length; }
         });
 
+        counters.add(new EnvelopeRetriever() {
+            public String retrieve(Envelope e) {
+                if (e.getEventType().equals("pegasus.core.search.event.TextSearchEvent")) {
+                    return EnvelopeUtils.getBodyValue(e, "queryText");
+                }
+                return null;
+            }
+            public String key() { return "Search Query"; }
+            public int[] periods() { return defaultperiods; }
+            public int getValue(String type, Envelope env) { return 1; }
+        });
+
         boolean countTopics = false;
 
         if (countTopics) {
@@ -128,6 +140,7 @@ public class EnvelopeCounter extends EventMonitor {
         for (EnvelopeRetriever counter : counters) {
             String type = counter.key();
             String item = counter.retrieve(env);
+            if (item == null) continue;
             int value = counter.getValue(type, env);
             ValueStreams valueStreams = streamsMap.get(type);
             Date timestamp = env.getTimestamp();
