@@ -2,18 +2,17 @@ package pegasus.esp;
 
 //import org.apache.commons.logging.Log;
 //import org.apache.commons.logging.LogFactory;
+import java.util.Date;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pegasus.eventbus.client.Envelope;
 import pegasus.eventbus.client.EnvelopeHandler;
-import pegasus.eventbus.client.EventHandler;
 import pegasus.eventbus.client.EventManager;
 import pegasus.eventbus.client.EventResult;
 import pegasus.eventbus.client.Subscription;
 import pegasus.eventbus.client.SubscriptionToken;
-
-//import ch.qos.logback.classic.Logger;
 
 import com.espertech.esper.client.Configuration;
 import com.espertech.esper.client.EPAdministrator;
@@ -28,11 +27,19 @@ import com.google.common.annotations.VisibleForTesting;
 
 public class EventStreamProcessor {
 
-    protected static final Logger LOG    = LoggerFactory.getLogger(EventStreamProcessor.class);
+    // TODO: consider making this a constructor parameter to allow for multiple instances
+    public static final String engineURI = "EventStreamProcessor";
+    private static final Logger LOG = LoggerFactory.getLogger(EventStreamProcessor.class);
 
-    private EventManager          eventbus;
+    private EventManager eventManager;
 
-//    private static final Log      logger = LogFactory.getLog(EventStreamProcessor.class);
+    private EPServiceProvider epService;
+
+    private SubscriptionToken token;
+
+    private EventMonitorRepository repository;
+
+    private final String espKey = this.getClass().getCanonicalName();
 
     class EnvelopeListener implements UpdateListener {
 
@@ -78,6 +85,16 @@ public class EventStreamProcessor {
 
     class EventbusListener implements EnvelopeHandler {
 
+
+
+        private void addHeader(Envelope env, String label, String val) {
+            env.getHeaders().put(label, val);
+        }
+
+        private void addHeader(Envelope env, String label, Date now) {
+            addHeader(env, label, now.getTime() + "");
+        }
+
         private EventStreamProcessor eventStreamProcessor;
 
         public EventbusListener(EventStreamProcessor eventStreamProcessor) {
@@ -86,6 +103,7 @@ public class EventStreamProcessor {
 
         @Override
         public EventResult handleEnvelope(Envelope envelope) {
+            addHeader(envelope, espKey + ":" + "TimeReceived", new Date());
             eventStreamProcessor.sendEvent(envelope);
             return EventResult.Handled;
         }
@@ -94,30 +112,22 @@ public class EventStreamProcessor {
         public String getEventSetName() {
             return "All";
         }
-
     }
 
-    // TODO: consider making this a constructor parameter to allow for multiple instances
-    public static final String     engineURI = "EventStreamProcessor";
 
-    private EPServiceProvider      epService;
 
-    private SubscriptionToken      token;
+    public EventStreamProcessor() {
+        epService = createEventProcessor();
+    }
 
-    private EventMonitorRepository repository;
-
-    public EventStreamProcessor(EventMonitorRepository rep) {
+    public EventStreamProcessor(EventMonitorRepository repository) {
         this();
-        setRepository(rep);
+        setRepository(repository);
     }
 
     public void setRepository(EventMonitorRepository repository) {
         this.repository = repository;
         repository.registerWith(this);
-    }
-
-    public EventStreamProcessor() {
-        epService = createEventProcessor();
     }
 
     private EPServiceProvider createEventProcessor() {
@@ -128,36 +138,46 @@ public class EventStreamProcessor {
 
         // set new classloader
         Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
-        
+
         Configuration configuration = new Configuration();
         configuration.addEventType("Envelope", Envelope.class);
         configuration.addEventType("InferredEvent", InferredEvent.class);
         EPServiceProvider epService = EPServiceProviderManager.getProvider(engineURI, configuration);
         epService.initialize();
-        
+
         // reset old classloader
         Thread.currentThread().setContextClassLoader(contextClassloader);
-        
+
         return epService;
     }
 
-    public void attachToEventBus(EventManager eventbus) {
-        if (eventbus != null) {
+    public void setEventManager(EventManager eventManager) {
+        try {
+            attachToEventBus(eventManager);
+        } catch (RuntimeException e) {
+            System.err.println("@@@@ Error attaching to EB:");
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    public void attachToEventBus(EventManager eventManager) {
+        if (this.eventManager != null) {
             detachFromEventBus();
         }
-        this.eventbus = eventbus;
+        this.eventManager = eventManager;
         EnvelopeHandler envelopeHandler = new EventbusListener(this);
         Subscription subscription = new Subscription(envelopeHandler);
         // EventHandler<?> evtmp = null;
         // Subscription subscription = new Subscription(evtmp );
-        token = eventbus.subscribe(subscription);
+        token = eventManager.subscribe(subscription);
     }
 
     public void detachFromEventBus() {
-        if (eventbus != null) {
-            eventbus.unsubscribe(token);
+        if (eventManager != null) {
+            eventManager.unsubscribe(token);
             token = null;
-            eventbus = null;
+            eventManager = null;
         }
     }
 
@@ -199,7 +219,7 @@ public class EventStreamProcessor {
     }
 
     private UpdateListener createIntermediatePrinter(final String pattern) {
-        boolean watchInt = true;
+        boolean watchInt = false;
         if (!watchInt) {
             return null;
         }
