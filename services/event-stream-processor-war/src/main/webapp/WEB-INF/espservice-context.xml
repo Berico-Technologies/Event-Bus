@@ -33,8 +33,12 @@
         <property name="logdir" value='/tmp/EventBus-traffic' />
     </bean>
 
+    <bean id="envCounter" class="pegasus.esp.EnvelopeCounter">
+    </bean>
+
     <bean id="envLogRepo" class="pegasus.esp.StorageRepository">
         <constructor-arg ref="envLogger"></constructor-arg>
+        <constructor-arg ref="envCounter"></constructor-arg>
     </bean>
     <bean id="esp" class="pegasus.esp.EventStreamProcessor">
         <property name="eventManager" ref="eventManager" />
