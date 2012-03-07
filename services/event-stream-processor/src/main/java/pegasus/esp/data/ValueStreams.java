@@ -6,18 +6,22 @@ import java.util.Set;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-    
+
 public class ValueStreams {
+    public String getName() {
+        return name;
+    }
+
     private Map<String, Stream> streams = Maps.newHashMap();
     private Map<String, Integer> periodMap = Maps.newHashMap();
     private String name;
     long lastTick = 0;
-    
+
     public ValueStreams(String name) {
         super();
         this.name = name;
     }
-    
+
     public String addPeriod(int millis) {
         String desc = toEnglish(name, millis);
         periodMap.put(desc, millis);
@@ -27,7 +31,7 @@ public class ValueStreams {
     public Stream getStream(String item) {
         return streams.get(item);
     }
-    
+
     // a stream should only be created if data will immediately be added so streams are
     // guaranteed to have data
     private void createStream(String item, long timestamp, int value) {
@@ -40,13 +44,13 @@ public class ValueStreams {
         stream.addInfo(timestamp, value);
         stream.fixActiveRanges();
     }
-    
+
     /**
      * Add a value with timestamp to a named stream.  Note: due to the way ActiveRanges
      * perform incremental calculation, this requires that timestamp be monotonically
      * increasing (i.e. you can't insert a timestamp after you've inserted a later
-     * stamp.  To avoid losing information if this occurs, 
-     * 
+     * stamp.  To avoid losing information if this occurs,
+     *
      * @param item
      * @param timestamp
      * @param value
@@ -77,7 +81,7 @@ public class ValueStreams {
             getStream(item).dump();
         }
     }
-    
+
 
 
     public void dumpActiveRanges() {
@@ -94,19 +98,19 @@ public class ValueStreams {
     public static int seconds(int amt) {
         return amt * millis(1000);
     }
-    
+
     public static int minutes(int amt) {
         return  amt * seconds(60);
     }
-    
+
     public static int hours(int amt) {
         return  amt * minutes(60);
     }
-    
+
     public static int days(int amt) {
         return  amt * hours(24);
     }
-    
+
     private static String toEnglish(String item, int millis) {
         String units;
         if (millis >= days(1)) units = makePhrase(millis, days(1), "day");
@@ -121,7 +125,7 @@ public class ValueStreams {
         if (amt == unitAmt) { return "one " + unitName; }
         double unitfreq = ((double) amt) / unitAmt;
         int intfreq = (int) unitfreq;
-        if (unitfreq == intfreq) { 
+        if (unitfreq == intfreq) {
             return String.format("%d %ss", intfreq, unitName);
         }
         return String.format("%f %ss", unitfreq, unitName);
@@ -134,5 +138,25 @@ public class ValueStreams {
     public ActiveRange getActiveRange(String range, String item) {
         Stream str = getStream(item);
         return str.getActiveRange(range).adjust(lastTick);
+    }
+
+    public void display() {
+        System.out.println(this.getName() + ":");
+        for (String timecategory : this.getActiveRanges()) {
+            System.out.println(String.format("\nTopN Label: %s", timecategory));
+            for (String item : this.getValues()) {
+                ActiveRange activeRange = this.getActiveRange(timecategory, item);
+                int total = activeRange.getTotal();
+                int trend = activeRange.getTrend();
+                String desc = activeRange.getTrendDesc();
+                System.out.println(String.format("  Trend Label: %s", item));
+                System.out.println(String.format("  Trend Value: %s", total));
+                System.out.println(String.format("  Trend info: %s", desc));
+                System.out.println(String.format("  Trend change: %s", trend));
+                System.out.println();
+            }
+        }
+        System.out.println();
+
     }
 }
