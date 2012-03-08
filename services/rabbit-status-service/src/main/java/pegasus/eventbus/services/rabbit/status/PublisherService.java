@@ -39,6 +39,8 @@ public class PublisherService {
 			scheduler.scheduleAtFixedRate(monitor, delay, interval, TimeUnit.MILLISECONDS);
 			delay += intervalBetweenMonitors;
 		}
+
+		scheduler.scheduleAtFixedRate(new Publisher( new BusiestQueuesMonitor()), delay, 1000, TimeUnit.MILLISECONDS);
 		
 		LOG.info("Rabbit Status Publisher Service started.");
 	}
@@ -54,7 +56,7 @@ public class PublisherService {
 		publishers.add( new Publisher( new ConnectionCountMonitor()));
 		publishers.add( new Publisher( new ChannelCountMonitor()));
 		publishers.add( new Publisher( new QueueCountMonitor()));
-		publishers.add( new Publisher( new BusiestQueuesMonitor()));
+		//publishers.add( new Publisher( new BusiestQueuesMonitor()));
 		return publishers;
 	}
 
