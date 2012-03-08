@@ -1,6 +1,8 @@
 package pegasus.esp.metric;
 
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -33,8 +35,22 @@ public class TopNMetricPublisher extends AbstractPublisher {
             trendMetric.setTime(time);
             metric.getMetrics().add(trendMetric);
         }
+        List<TrendMetric> metrics = metric.getMetrics();
+        
+		Collections.sort(metrics, new Comparator<TrendMetric>(){
+			@Override
+			public int compare(TrendMetric arg0, TrendMetric arg1) {
+				return arg1.getValue() - arg0.getValue();
+			}});
 
-        LOG.debug("Publishing metric '{}'.", metric.getLabel());
+		if(metrics.size() > 10){
+			int leastValueToReturn = metrics.get(10 -1).getValue();
+			for(int i = metrics.size()-1; metrics.get(i).getValue() < leastValueToReturn; i--){
+				metrics.remove(i);
+			}
+		}
+
+		LOG.debug("Publishing metric '{}'.", metric.getLabel());
 
         broker.publish(metric);
     }
