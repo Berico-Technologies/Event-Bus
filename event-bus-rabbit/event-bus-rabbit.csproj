@@ -8,7 +8,7 @@
     <ProjectGuid>{81EACA35-DBDA-431A-BB37-2685A6AA1E1D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>event_bus_rabbit</RootNamespace>
+    <RootNamespace>pegasus.eventbus.rabbit</RootNamespace>
     <AssemblyName>event-bus-rabbit</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -31,6 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="log4net">
+      <HintPath>..\packages\log4net.2.0.0\lib\net40-full\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -40,7 +43,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\main\dotnet\amqp\AmqpEventManager.cs" />
+    <Compile Include="src\main\dotnet\amqp\Exchange.cs" />
+    <Compile Include="src\main\dotnet\amqp\IAmqpMessageBus.cs" />
+    <Compile Include="src\main\dotnet\amqp\IEventSerializer.cs" />
+    <Compile Include="src\main\dotnet\amqp\ITopologyService.cs" />
+    <Compile Include="src\main\dotnet\amqp\RoutingInfo.cs" />
+    <Compile Include="src\main\dotnet\amqp\RoutingInfoException.cs" />
     <Compile Include="src\main\dotnet\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\event-bus-client\event-bus-client.csproj">
+      <Project>{61C42B9F-9CC7-44C5-A345-0E5884BC2EDD}</Project>
+      <Name>event-bus-client</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

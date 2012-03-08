@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace event_bus_rabbit
+namespace pegasus.eventbus.amqp
 {
-    public class Class1
+    public interface IAmqpMessageBus
     {
     }
 }
