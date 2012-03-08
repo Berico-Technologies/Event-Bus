@@ -133,23 +133,33 @@ public class EnvelopeUtils {
         StringBuffer sb = new StringBuffer();
         String sep = "";
         for (String term : searchTerms) {
-            sb.append(sep + term);
-            sep = ",";
+            if (term.length() > 0) {
+                sb.append(sep + term);
+                sep = ",";
+            }
         }
         return sb.toString();
     }
     
 
-    public static Iterable<String> getSearchTerms(String query) {
+    public static Iterable<String> getSearchTerms(String origquery) {
         Predicate<String> filter = new Predicate<String>() {
             @Override
             public boolean apply(String input) {
-                return !EnvelopeUtils.STOPWORDS.contains(input);
+                if (input.length() == 0) return false;
+                if (EnvelopeUtils.STOPWORDS.contains(input)) return false;
+                return true;
             }
         };
 
-        ArrayList<String> allTerms = Lists.newArrayList(query.toLowerCase().split(" "));
+        String query = origquery.toLowerCase();
+        System.out.println("1:"+query);
+        query = query.replaceAll("[^a-z0-9 ]", "");
+        System.out.println("2:"+query);
+        ArrayList<String> allTerms = Lists.newArrayList(query.split(" "));
+        System.out.println("3:"+allTerms);
         Iterable<String> filteredTerms = Iterables.filter(allTerms, filter);
+        System.out.println("4:"+filteredTerms);
         return filteredTerms;
     }
     

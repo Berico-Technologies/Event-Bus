@@ -45,7 +45,7 @@ public class JsonString {
 		return sb.toString();
 	}
 
-	private static String quote(String str) {
+	public static String quote(String str) {
 		return DOUBLE_QUOTE + str + DOUBLE_QUOTE;
 	}
 
