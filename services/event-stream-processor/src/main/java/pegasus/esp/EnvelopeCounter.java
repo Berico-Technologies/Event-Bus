@@ -37,35 +37,56 @@ public class EnvelopeCounter extends EventMonitor {
         public int getValue(String type, Envelope env);
     }
 
-    Collection<EnvelopeRetriever> counters = Lists.newArrayList();
+    Collection<EnvelopeRetriever> metrics = Lists.newArrayList();
     private Map<String, ValueStreams> streamsMap = Maps.newHashMap();
     private Set<Publisher> publishers = new HashSet<Publisher>();
 
     public EnvelopeCounter() {
 
-        counters.add(new EnvelopeRetriever() {
+        setupMetrics();
+        
+        int metricCount = 0;
+
+        for (EnvelopeRetriever envelopeRetriever : metrics) {
+            String type = extractKey(envelopeRetriever);
+            ValueStreams valueStreams = new ValueStreams(type);
+            streamsMap.put(type, valueStreams);
+            for (int per : envelopeRetriever.periods()) {
+                String desc = valueStreams.addPeriod(per);
+                System.out.println(String.format("Metric %d: %s", metricCount++, desc));
+                ValueStreamsDataProvider provider = new ValueStreamsDataProvider(valueStreams, desc);
+                TopNMetricPublisher publisher = new TopNMetricPublisher();
+                publisher.setDataProvider(provider);
+                publishers.add(publisher);
+            }
+        }
+        System.out.println(String.format("%d Total Metrics", metricCount));
+
+    }
+
+    private void setupMetrics() {
+        metrics.add(new EnvelopeRetriever() {
             public String retrieve(Envelope e) { return e.getEventType(); }
             public String key() { return "Event Type"; }
             public int[] periods() { return defaultperiods; }
             public int getValue(String type, Envelope env) { return 1; }
         });
 
-        counters.add(new EnvelopeRetriever() {
-            public String retrieve(Envelope e) { return e.getEventType(); }
-            public String key() { return "Total Body Length by Type"; }
-            public int[] periods() { return defaultperiods; }
-            public int getValue(String type, Envelope env) { return env.getBody().length; }
-        });
-
-
-        counters.add(new EnvelopeRetriever() {
+        metrics.add(new EnvelopeRetriever() {
             public String retrieve(Envelope e) { return "BodyLength"; }
             public String key() { return "Total Body Length"; }
             public int[] periods() { return defaultperiods; }
             public int getValue(String type, Envelope env) { return env.getBody().length; }
         });
 
-        counters.add(new EnvelopeRetriever() {
+        metrics.add(new EnvelopeRetriever() {
+            public String retrieve(Envelope e) { return e.getEventType(); }
+            public String key() { return "Total Body Length by Type"; }
+            public int[] periods() { return defaultperiods; }
+            public int getValue(String type, Envelope env) { return env.getBody().length; }
+        });
+
+        metrics.add(new EnvelopeRetriever() {
             public String retrieve(Envelope e) {
                 if (e.getEventType().equals("pegasus.core.search.event.TextSearchEvent")) {
                     return EnvelopeUtils.getBodyValue(e, "queryText");
@@ -76,37 +97,26 @@ public class EnvelopeCounter extends EventMonitor {
             public int[] periods() { return defaultperiods; }
             public int getValue(String type, Envelope env) { return 1; }
         });
-
-        boolean countTopics = false;
-
-        if (countTopics) {
-            counters.add(new EnvelopeRetriever() {
-                public String retrieve(Envelope e) { return e.getTopic(); }
-                public String key() { return "Topic"; }
-                public int[] periods() { return defaultperiods; }
-                public int getValue(String type, Envelope env) { return 1; }
-            });
-        }
-
-        for (EnvelopeRetriever envelopeRetriever : counters) {
-            String type = envelopeRetriever.key();
-            ValueStreams valueStreams = new ValueStreams(type);
-            streamsMap.put(type, valueStreams);
-            for (int per : envelopeRetriever.periods()) {
-                String desc = valueStreams.addPeriod(per);
-                ValueStreamsDataProvider provider = new ValueStreamsDataProvider(valueStreams, desc);
-                TopNMetricPublisher publisher = new TopNMetricPublisher();
-                publisher.setDataProvider(provider);
-                publishers.add(publisher);
+        
+        metrics.add(new EnvelopeRetriever() {
+            public String retrieve(Envelope e) {
+                if (e.getEventType().equals("pegasus.core.search.event.TextSearchEvent")) {
+                    String query = EnvelopeUtils.getBodyValue(e, "queryText");
+                    String terms = EnvelopeUtils.makeSearchTermList(query);
+                    return terms;
+                }
+                return null;
             }
-        }
-
+            public String key() { return "*Individual Search Terms"; }
+            public int[] periods() { return defaultperiods; }
+            public int getValue(String type, Envelope env) { return 1; }
+        });
     }
 
     public void dumpFreqs() {
-        for (EnvelopeRetriever counter : counters) {
-            String type = counter.key();
-            ValueStreams streams = streamsMap.get(type);
+        for (EnvelopeRetriever counter : metrics) {
+            String type = extractKey(counter);
+           ValueStreams streams = streamsMap.get(type);
             streams.display();
         }
     }
@@ -124,7 +134,7 @@ public class EnvelopeCounter extends EventMonitor {
 
     private void gotEnvelopeCheckForDumping() {
         boolean showFrequencies = false;
-//        showFrequencies = true;
+        showFrequencies = true;
 
         if (showFrequencies) {
             envelopesSeen++;
@@ -139,19 +149,40 @@ public class EnvelopeCounter extends EventMonitor {
 
 
     private void recordValues(Envelope env) {
-        for (EnvelopeRetriever counter : counters) {
-            String type = counter.key();
-            String item = counter.retrieve(env);
+        Date timestamp = env.getTimestamp();
+        // If the envelope doesn't have a timestamp, use the current time
+        if (timestamp == null) timestamp = new Date();
+        long time = timestamp.getTime();
+        for (EnvelopeRetriever metric : metrics) {
+            String item = metric.retrieve(env);
             if (item == null) continue;
-            int value = counter.getValue(type, env);
-            ValueStreams valueStreams = streamsMap.get(type);
-            Date timestamp = env.getTimestamp();
-            // If the envelope doesn't have a timestamp, use the current time
-            if (timestamp == null) timestamp = new Date();
-            long time = timestamp.getTime();
-            valueStreams.addValue(item, time, value);
+            String inittype = metric.key();
+            String type = extractKey(metric);
+            int value = metric.getValue(type, env);
+            // handle multiples (HACK,HACK, HACK!!!)
+            // Multiples are denoted by the type starting with a "*", and the
+            // string will be comma-separated concatenation of the items to
+            // be processed.
+            if (inittype.startsWith("*")) {
+                ValueStreams valueStreams = streamsMap.get(type);
+                String[] items = item.split(",");
+                for (String realItem : items) {
+                    valueStreams.addValue(realItem, time, value);
+                }
+            } else {
+                ValueStreams valueStreams = streamsMap.get(type);
+                valueStreams.addValue(item, time, value);
+            }
         }
         gotEnvelopeCheckForDumping();
+    }
+
+    private String extractKey(EnvelopeRetriever metric) {
+        String key = metric.key();
+        if (key.startsWith("*")) {
+            key = key.substring(1);  // remove the "*"
+        }
+        return key;
     }
 
     @Override
