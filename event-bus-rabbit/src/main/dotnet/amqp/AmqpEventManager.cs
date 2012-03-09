@@ -130,7 +130,7 @@ namespace pegasus.eventbus.amqp
             }
             else
             {
-                IGrouping 
+                
             }
         }
     }
