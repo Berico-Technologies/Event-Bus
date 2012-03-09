@@ -5,6 +5,7 @@ import pegasus.eventbus.client.EventResult;
 
 public class AuditEventHandler implements EventHandler<String> {
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Class<? extends String>[] getHandledEventTypes() {
 		

@@ -15,15 +15,17 @@
  */
 package com.berico.tweetstream;
 
+import com.berico.tweetstream.handlers.MentionedUserCounterTweetHandler;
+import com.berico.tweetstream.handlers.UserCounterTweetHandler;
+import com.berico.tweetstream.handlers.WordCounterTweetHandler;
 import com.berico.tweetstream.wordcount.ConcurrentMapWordCountRepository;
 import com.berico.tweetstream.wordcount.StopFilterWordSplitter;
 import com.berico.tweetstream.wordcount.WordCountPublisher;
 import com.berico.tweetstream.wordcount.WordCountRepository;
-import com.berico.tweetstream.wordcount.WordCounterTweetHandler;
 
 import pegasus.eventbus.amqp.AmqpConfiguration;
 import pegasus.eventbus.amqp.AmqpEventManager;
-import pegasus.eventbus.amqp.ConnectionParameters;
+import pegasus.eventbus.amqp.AmqpConnectionParameters;
 import pegasus.eventbus.client.EventManager;
 import twitter4j.FilterQuery;
 import twitter4j.Status;
@@ -44,7 +46,7 @@ public class TweetStreamApp
     	//Manually configure the EventManager
     	AmqpConfiguration config = AmqpConfiguration.getDefault(
 				"tweetstream", 
-				new ConnectionParameters(
+				new AmqpConnectionParameters(
 					"amqp://guest:guest@localhost:5672/"));
     	
     	//Initialize the EventManager
@@ -67,13 +69,18 @@ public class TweetStreamApp
         //Tweets on the bus from this console.
         //em.subscribe(new ConsoleOutTweetHandler());
         
-        WordCountRepository wcr = new ConcurrentMapWordCountRepository();
+        WordCountRepository tweetWordsCount = new ConcurrentMapWordCountRepository();
+        em.subscribe(new WordCounterTweetHandler(tweetWordsCount, new StopFilterWordSplitter()));
+        new WordCountPublisher(em, tweetWordsCount, "tweet.words").start();
         
         
+        WordCountRepository userCount = new ConcurrentMapWordCountRepository();
+        em.subscribe(new UserCounterTweetHandler(userCount));
+        new WordCountPublisher(em, userCount, "tweet.users").start();
         
-        em.subscribe(new WordCounterTweetHandler(wcr, new StopFilterWordSplitter()));
-        
-        new WordCountPublisher(em, wcr).start();
+        WordCountRepository mentionedCount = new ConcurrentMapWordCountRepository();
+        em.subscribe(new MentionedUserCounterTweetHandler(mentionedCount));
+        new WordCountPublisher(em, mentionedCount, "tweet.mentioned").start();
         
         //Initialize the stream, supplying the filter
         twitterStream.filter(

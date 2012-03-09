@@ -35,16 +35,20 @@ public class WordCountPublisher implements Runnable {
 	
 	private final WordCountRepository wordCountRepo;
 	
-	public WordCountPublisher(EventManager em, WordCountRepository wordCountRepo) {
-
+	private final String wordCountTopic;
+	
+	public WordCountPublisher(EventManager em, WordCountRepository wordCountRepo, String wordCountTopic) {
+		
 		this.em = em;
 		this.wordCountRepo = wordCountRepo;
+		this.wordCountTopic = wordCountTopic;
 	}
 	
-	public WordCountPublisher(EventManager em, WordCountRepository wordCountRepo, int wordCount, long sleepInterval) {
+	public WordCountPublisher(EventManager em, WordCountRepository wordCountRepo, String wordCountTopic, int wordCount, long sleepInterval) {
 
 		this.em = em;
 		this.wordCountRepo = wordCountRepo;
+		this.wordCountTopic = wordCountTopic;
 		this.wordCount = wordCount;
 		this.sleepInterval = sleepInterval;
 	}
@@ -79,7 +83,7 @@ public class WordCountPublisher implements Runnable {
 				
 				LOG.trace("Publishing top {} words onto bus.", wordCount);
 				
-				em.publish(new TopNWords(topN, "Twitter Stream"));
+				em.publish(new TopNWords(topN, this.wordCountTopic));
 				
 			} catch (InterruptedException e) {
 				e.printStackTrace();

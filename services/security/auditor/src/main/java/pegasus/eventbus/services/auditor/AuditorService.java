@@ -3,9 +3,9 @@ package pegasus.eventbus.services.auditor;
 import java.util.HashMap;
 import java.util.Map;
 
-import pegasus.eventbus.amqp.AmqpEventManager;
 import pegasus.eventbus.amqp.AmqpConfiguration;
-import pegasus.eventbus.amqp.ConnectionParameters;
+import pegasus.eventbus.amqp.AmqpConnectionParameters;
+import pegasus.eventbus.amqp.AmqpEventManager;
 import pegasus.eventbus.client.EventManager;
 import pegasus.eventbus.client.SubscriptionToken;
 
@@ -90,7 +90,7 @@ public class AuditorService
     	
     	AmqpConfiguration config = AmqpConfiguration.getDefault(
     			"AuditorService", 
-    			new ConnectionParameters("amqp://guest:guest@localhost:5672/"));
+    			new AmqpConnectionParameters("amqp://guest:guest@localhost:5672/"));
     	
     	EventManager em = new AmqpEventManager(config);
     	
