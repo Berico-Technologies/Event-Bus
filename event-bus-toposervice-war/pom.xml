@@ -21,11 +21,6 @@
 		<artifactId>spring-web</artifactId>
 		<version>3.1.0.RELEASE</version>
 	</dependency>
-	<dependency>
-	    <groupId>com.vaadin</groupId>
-	    <artifactId>vaadin</artifactId>
-	    <version>6.7.5</version>
-	</dependency>
   </dependencies>
   <build>
     <finalName>event-bus-toposervice-war</finalName>
