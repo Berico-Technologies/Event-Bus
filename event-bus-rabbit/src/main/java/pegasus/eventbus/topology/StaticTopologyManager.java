@@ -51,10 +51,6 @@ public class StaticTopologyManager implements TopologyManager {
       	registerType(TopologyUpdate.class);
      	registerType(GetEventTypeRoute.class);
       	registerType(EventTypeRoutingInfo.class);
- 
-        //TODO: This should not be here.  All named routes need to be configured.  At the very least this one would need to be "all-topology."
-        RoutingInfo[] allRoutes = { new RoutingInfo(topologyExchange, RoutingInfo.ExchangeType.Topic, true, "#") };
-        topologyEventSetRegistry.put("ALL", allRoutes);
     }
 
     private void registerType(Class<?> eventType){

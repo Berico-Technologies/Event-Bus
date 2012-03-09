@@ -95,9 +95,11 @@ public class AmqpEventManager implements EventManager, UnexpectedConnectionClose
 
         LOG.trace("Deactivating all subscriptions.");
 
-        deactivateSubscriptions(activeSubscriptions.values(), false);
-
-        activeSubscriptions.clear();
+        synchronized (activeSubscriptions) {
+        	deactivateSubscriptions(activeSubscriptions.values(), false);
+        	
+        	activeSubscriptions.clear();
+		}
 
         LOG.trace("Closing the connection to the broker.");
 
@@ -349,15 +351,17 @@ public class AmqpEventManager implements EventManager, UnexpectedConnectionClose
 
         QueueListener queueListener = new QueueListener(messageBus, queueName, subscription.getIsDurable(), routes, handler);
 
-        LOG.trace("Starting the queue listener.");
-
-        queueListener.beginListening();
-
         SubscriptionToken token = new SubscriptionToken();
-
-        LOG.trace("Adding new active subscription with token to the 'active subscriptions' list.");
-
-        activeSubscriptions.put(token, new ActiveSubscription(queueName, subscription.getIsDurable(), queueListener));
+        
+        synchronized (activeSubscriptions) {
+        	LOG.trace("Starting the queue listener.");
+        	
+        	queueListener.beginListening();
+        	
+        	LOG.trace("Adding new active subscription with token to the 'active subscriptions' list.");
+        	
+        	activeSubscriptions.put(token, new ActiveSubscription(queueName, subscription.getIsDurable(), queueListener));
+		}
 
         notifySubscribeListeners(token);
 
@@ -369,9 +373,11 @@ public class AmqpEventManager implements EventManager, UnexpectedConnectionClose
     private void resubscribeAllActiveSubscriptions() {
         LOG.info("Attempting to re-subscribe all active subscriptions.");
 
-        for (ActiveSubscription subscription : activeSubscriptions.values()) {
-            subscription.getListener().beginListening();
-        }
+        synchronized (activeSubscriptions) {
+        	for (ActiveSubscription subscription : activeSubscriptions.values()) {
+        		subscription.getListener().beginListening();
+        	}
+		}
     }
 
     /**
@@ -654,28 +660,30 @@ public class AmqpEventManager implements EventManager, UnexpectedConnectionClose
     @Override
     public void unsubscribe(SubscriptionToken token, boolean deleteQueue) {
 
-        LOG.debug("Unsubscribing handlers corresponding to this token: {}", token);
-
-        ActiveSubscription subscription = activeSubscriptions.get(token);
-
-        if (subscription == null) {
-
-            LOG.error("The provided token does not refer to an active subscription of this event manager.");
-
-            throw new IllegalStateException("The provided token does not refer to an active subscription of this event manager.");
-        }
-
-        ArrayList<ActiveSubscription> subscriptions = new ArrayList<ActiveSubscription>();
-
-        subscriptions.add(subscription);
-
-        LOG.trace("Deactivating the handlers corresponding to the subscription (delete queue? = {})", deleteQueue);
-
-        deactivateSubscriptions(subscriptions, deleteQueue);
-
-        LOG.trace("Removing token from the 'active subscriptions' list.");
-
-        activeSubscriptions.remove(token);
+    	LOG.debug("Unsubscribing handlers corresponding to this token: {}", token);
+    	
+    	synchronized (activeSubscriptions) {
+    		ActiveSubscription subscription = activeSubscriptions.get(token);
+    		
+    		if (subscription == null) {
+    			
+    			LOG.error("The provided token does not refer to an active subscription of this event manager.");
+    			
+    			throw new IllegalStateException("The provided token does not refer to an active subscription of this event manager.");
+    		}
+    		
+    		ArrayList<ActiveSubscription> subscriptions = new ArrayList<ActiveSubscription>();
+    		
+    		subscriptions.add(subscription);
+    		
+    		LOG.trace("Deactivating the handlers corresponding to the subscription (delete queue? = {})", deleteQueue);
+    		
+    		deactivateSubscriptions(subscriptions, deleteQueue);
+    		
+    		LOG.trace("Removing token from the 'active subscriptions' list.");
+    		
+    		activeSubscriptions.remove(token);
+		}
 
         notifyUnsubscribeListeners(token);
     }

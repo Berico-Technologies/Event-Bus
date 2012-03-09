@@ -1,5 +1,8 @@
 package pegasus.esp;
 
+import java.util.Collection;
+import java.util.HashSet;
+
 import pegasus.eventbus.client.Envelope;
 
 import com.espertech.esper.client.EventBean;
@@ -18,7 +21,7 @@ class DocumentCollectionWithHitFrequencySearchResultsDetector extends EventMonit
     }
 
     @Override
-    public void registerPatterns(EventStreamProcessor esp) {
+    public Collection<Publisher> registerPatterns(EventStreamProcessor esp) {
 
         String pattern = "every docs=Envelope(eventType='DocumentCollectionSearchResult')" +
                 " -> freq=Envelope(eventType='HitFrequencySearchResult' and " +
@@ -30,6 +33,8 @@ class DocumentCollectionWithHitFrequencySearchResultsDetector extends EventMonit
                 "correlationId=freq.correlationId)";
         esp.monitor(false, pattern2, this);
 
+        // @todo = this needs to be integrated
+        return new HashSet<Publisher>();
     }
 
     @Override

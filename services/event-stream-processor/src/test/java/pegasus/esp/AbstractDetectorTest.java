@@ -80,6 +80,10 @@ public abstract class AbstractDetectorTest {
         // log a separator for each event in the unit tests
         logger.info("============================================================================================");
         logger.info(" --> Event: " + e);
+        send(e);
+    }
+
+    protected void send(Envelope e) {
         esp.sendEvent(e);
     }
 

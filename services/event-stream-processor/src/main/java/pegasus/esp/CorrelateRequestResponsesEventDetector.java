@@ -1,5 +1,8 @@
 package pegasus.esp;
 
+import java.util.Collection;
+import java.util.HashSet;
+
 import pegasus.eventbus.client.Envelope;
 
 import com.espertech.esper.client.EventBean;
@@ -16,12 +19,15 @@ class CorrelateRequestResponsesEventDetector extends EventMonitor {
     }
 
     @Override
-    public void registerPatterns(EventStreamProcessor esp) {
+    public Collection<Publisher> registerPatterns(EventStreamProcessor esp) {
 
         String pattern = "every request=Envelope(eventType='Request')" +
                 " -> response=Envelope(eventType='Response' and " +
                 "correlationId=request.id)";
         esp.monitor(false, pattern, this);
+
+        // @todo = this needs to be integrated
+        return new HashSet<Publisher>();
     }
 
     @Override
