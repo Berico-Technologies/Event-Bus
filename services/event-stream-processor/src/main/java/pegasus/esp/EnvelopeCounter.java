@@ -20,7 +20,6 @@ import com.espertech.esper.client.EventBean;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-
 public class EnvelopeCounter extends EventMonitor {
 
     int[] defaultperiods = {
@@ -44,7 +43,7 @@ public class EnvelopeCounter extends EventMonitor {
     public EnvelopeCounter() {
 
         setupMetrics();
-        
+
         int metricCount = 0;
 
         for (EnvelopeRetriever envelopeRetriever : metrics) {
@@ -53,15 +52,14 @@ public class EnvelopeCounter extends EventMonitor {
             streamsMap.put(type, valueStreams);
             for (int per : envelopeRetriever.periods()) {
                 String desc = valueStreams.addPeriod(per);
-                System.out.println(String.format("Metric %d: %s", metricCount++, desc));
+//                 System.out.println(String.format("Metric %d: %s", metricCount++, desc));
                 ValueStreamsDataProvider provider = new ValueStreamsDataProvider(valueStreams, desc);
                 TopNMetricPublisher publisher = new TopNMetricPublisher();
                 publisher.setDataProvider(provider);
                 publishers.add(publisher);
             }
         }
-        System.out.println(String.format("%d Total Metrics", metricCount));
-
+//         System.out.println(String.format("%d Total Metrics", metricCount));
     }
 
     private void setupMetrics() {
@@ -97,7 +95,7 @@ public class EnvelopeCounter extends EventMonitor {
             public int[] periods() { return defaultperiods; }
             public int getValue(String type, Envelope env) { return 1; }
         });
-        
+
         metrics.add(new EnvelopeRetriever() {
             public String retrieve(Envelope e) {
                 if (e.getEventType().equals("pegasus.core.search.event.TextSearchEvent")) {
@@ -113,13 +111,13 @@ public class EnvelopeCounter extends EventMonitor {
         });
     }
 
-    public void dumpFreqs() {
-        for (EnvelopeRetriever counter : metrics) {
-            String type = extractKey(counter);
-           ValueStreams streams = streamsMap.get(type);
-            streams.display();
-        }
-    }
+//    public void dumpFreqs() {
+//        for (EnvelopeRetriever counter : metrics) {
+//            String type = extractKey(counter);
+//           ValueStreams streams = streamsMap.get(type);
+//            streams.display();
+//        }
+//    }
 
     @Override
     public InferredEvent receive(EventBean eventBean) {
@@ -132,21 +130,20 @@ public class EnvelopeCounter extends EventMonitor {
     int displayFrequency = ValueStreams.seconds(10);
     int envelopesSeen = 0;
 
-    private void gotEnvelopeCheckForDumping() {
-        boolean showFrequencies = false;
-        showFrequencies = true;
-
-        if (showFrequencies) {
-            envelopesSeen++;
-            long curtime = new Date().getTime();
-            if (curtime > lastDisplayTime + displayFrequency) {
-                System.out.println("EC: After envelope " + envelopesSeen);
-                dumpFreqs();
-                lastDisplayTime = curtime;
-            }
-        }
-    }
-
+//    private void gotEnvelopeCheckForDumping() {
+//        boolean showFrequencies = false;
+//         showFrequencies = true;
+//
+//        if (showFrequencies) {
+//            envelopesSeen++;
+//            long curtime = new Date().getTime();
+//            if (curtime > lastDisplayTime + displayFrequency) {
+//                System.out.println("EC: After envelope " + envelopesSeen);
+//                dumpFreqs();
+//                lastDisplayTime = curtime;
+//            }
+//        }
+//    }
 
     private void recordValues(Envelope env) {
         Date timestamp = env.getTimestamp();
@@ -174,7 +171,7 @@ public class EnvelopeCounter extends EventMonitor {
                 valueStreams.addValue(item, time, value);
             }
         }
-        gotEnvelopeCheckForDumping();
+//         gotEnvelopeCheckForDumping();
     }
 
     private String extractKey(EnvelopeRetriever metric) {

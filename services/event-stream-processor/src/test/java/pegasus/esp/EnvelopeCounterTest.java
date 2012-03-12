@@ -51,7 +51,7 @@ public class EnvelopeCounterTest extends AbstractDetectorTest {
         send(TestUtils.createDocumentCollection("green"));
         send(TestUtils.createDocumentCollection("red"));
 
-        ec.dumpFreqs();
+//        ec.dumpFreqs();
     }
 
 }

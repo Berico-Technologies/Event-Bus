@@ -27,8 +27,6 @@ public class StreamTest {
 		assertStreamItemMatches(st.get(itmno++), 10, 8);
 		assertStreamItemMatches(st.get(itmno++), 100, 3);
 		assertStreamItemMatches(st.get(itmno++), 5700, 42);
-
-		st.dump();
 	}
 
 	@Test
@@ -57,8 +55,6 @@ public class StreamTest {
 		assertStreamItemMatches(st.get(itmno++), 5700, 8);
 		// timestamp changed to latest (5700) to keep it sequential
 		assertStreamItemMatches(st.get(itmno++), 5700, 97);
-
-		st.dump();
 	}
 
 	@Test
@@ -94,9 +90,6 @@ public class StreamTest {
 		assertStreamItemMatches(st.get(itmno++), 5432, 8);
 		// timestamp changed to latest (5700) to keep it sequential
 		assertStreamItemMatches(st.get(itmno++), 5432, 97);
-
-
-		st.dump();
 	}
 
 	private void assertStreamItemMatches(TimeEntry timeEntry, long expectedtimestamp, int expectedvalue) {

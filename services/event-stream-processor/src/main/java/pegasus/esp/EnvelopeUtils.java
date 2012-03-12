@@ -21,65 +21,65 @@ import com.google.gson.GsonBuilder;
 
 public class EnvelopeUtils {
 
-	public static Map<String, UUID> idMappings = Maps.newHashMap();
+    public static Map<String, UUID> idMappings = Maps.newHashMap();
 
-	/**
-	 * Translate between human readable IDs and internal UUIDs.  This method finds the UUID
-	 * that corresponds to the specified string and returns it.  If there isn't a UUID for
-	 * that string already, then a new UUID is allocated and returned, caching the correspondence
-	 * for future references of that string.
-	 *
-	 * @param idsymbol a string representing a unique ID, or null to create a new unique UUID
-	 * @return the UUID that permanently corresponds to the string
-	 */
-	public static UUID symIdToRealId(String idsymbol) {
-	    UUID id = null;
+    /**
+     * Translate between human readable IDs and internal UUIDs.  This method finds the UUID
+     * that corresponds to the specified string and returns it.  If there isn't a UUID for
+     * that string already, then a new UUID is allocated and returned, caching the correspondence
+     * for future references of that string.
+     *
+     * @param idsymbol a string representing a unique ID, or null to create a new unique UUID
+     * @return the UUID that permanently corresponds to the string
+     */
+    public static UUID symIdToRealId(String idsymbol) {
+        UUID id = null;
 
-	    if (idsymbol != null) {
-	        id = idMappings.get(idsymbol);
-	    }
+        if (idsymbol != null) {
+            id = idMappings.get(idsymbol);
+        }
 
-	    if (id == null) {
-	        id = UUID.randomUUID();
-	        idMappings.put(idsymbol, id);
-	    }
-	    return id;
-	}
+        if (id == null) {
+            id = UUID.randomUUID();
+            idMappings.put(idsymbol, id);
+        }
+        return id;
+    }
 
-	private static long testTime = 12104;
-	private static long timeIncr = 2000;
+    private static long testTime = 12104;
+    private static long timeIncr = 2000;
 
-	public static Envelope makeEnvelope(String type, String idsymbol, String correlationIdsymbol,
-	        String topic, String replyTo) {
-	    Envelope e = new Envelope();
-	    e.setEventType(type);
-	    e.setId(symIdToRealId(idsymbol));
-	    if (correlationIdsymbol != null) {
-	        e.setCorrelationId(symIdToRealId(correlationIdsymbol));
-	    }
-	    e.setTopic(topic);
-	    e.setReplyTo(replyTo);
-	    Date timestamp = new Date(testTime);
-	    testTime += timeIncr;
+    public static Envelope makeEnvelope(String type, String idsymbol, String correlationIdsymbol,
+            String topic, String replyTo) {
+        Envelope e = new Envelope();
+        e.setEventType(type);
+        e.setId(symIdToRealId(idsymbol));
+        if (correlationIdsymbol != null) {
+            e.setCorrelationId(symIdToRealId(correlationIdsymbol));
+        }
+        e.setTopic(topic);
+        e.setReplyTo(replyTo);
+        Date timestamp = new Date(testTime);
+        testTime += timeIncr;
         e.setTimestamp(timestamp);
         e.setBody((type + topic).getBytes());
-	    return e;
-	}
+        return e;
+    }
 
-	private final static Gson gson_pp = new GsonBuilder().setPrettyPrinting().create();
-	private final static Gson gson = new Gson();
+    private final static Gson gson_pp = new GsonBuilder().setPrettyPrinting().create();
+    private final static Gson gson = new Gson();
 
-	public static String toFormattedJson(String line) {
+    public static String toFormattedJson(String line) {
         HashMap map = toMapJson(line);
         String mapstr = gson_pp.toJson(map);
         return mapstr;
     }
 
-	public static HashMap toMapJson(String line) {
+    public static HashMap toMapJson(String line) {
         return gson.fromJson(line, HashMap.class);
     }
 
-	public static String getBodyValue(Envelope env, String key) {
+    public static String getBodyValue(Envelope env, String key) {
         try {
             String bodyJson = new String(env.getBody(), "UTF-8");
             HashMap map = EnvelopeUtils.toMapJson(bodyJson);
@@ -90,17 +90,17 @@ public class EnvelopeUtils {
         }
     }
 
-	public static String toJson(Envelope env) {
-	    return gson.toJson(env, Envelope.class);
-	}
+    public static String toJson(Envelope env) {
+        return gson.toJson(env, Envelope.class);
+    }
 
-	public static String toPrettyJson(Envelope env) {
-	    return gson_pp.toJson(env, Envelope.class);
-	}
+    public static String toPrettyJson(Envelope env) {
+        return gson_pp.toJson(env, Envelope.class);
+    }
 
-	public static String envelopeToReadableJson(Envelope env) {
-		byte[] body = env.getBody();
-		String bodyJson = "";
+    public static String envelopeToReadableJson(Envelope env) {
+        byte[] body = env.getBody();
+        String bodyJson = "";
         try {
             bodyJson = new String(body, "UTF-8");
         } catch (UnsupportedEncodingException e) {
@@ -108,20 +108,20 @@ public class EnvelopeUtils {
         }
         String bodyformatted = toFormattedJson(bodyJson);
         JsonString json = new JsonString().start()
-				.add("EVENT_TYPE", env.getEventType())
-				.add("REPLYTO", env.getReplyTo())
-				.add("TOPIC", env.getTopic())
-				.add("ID", env.getId())
-				.add("CORRELATION_ID", env.getCorrelationId())
-				.add("TIMESTAMP", env.getTimestamp())
-				.add("HEADERS", env.getHeaders())
-				.add("BODY_SIZE", body.length)
-				.add("BODY_SRC", body)
-				.add("BODY_JSON", bodyJson)
-				.add("BODY", bodyformatted)
-				;
-		return json.end().toString();
-	}
+                .add("EVENT_TYPE", env.getEventType())
+                .add("REPLYTO", env.getReplyTo())
+                .add("TOPIC", env.getTopic())
+                .add("ID", env.getId())
+                .add("CORRELATION_ID", env.getCorrelationId())
+                .add("TIMESTAMP", env.getTimestamp())
+                .add("HEADERS", env.getHeaders())
+                .add("BODY_SIZE", body.length)
+                .add("BODY_SRC", body)
+                .add("BODY_JSON", bodyJson)
+                .add("BODY", bodyformatted)
+                ;
+        return json.end().toString();
+    }
 
     public static Envelope fromJson(String line) {
         Envelope envelope = gson.fromJson(line, Envelope.class);
@@ -140,9 +140,8 @@ public class EnvelopeUtils {
         }
         return sb.toString();
     }
-    
 
-    public static Iterable<String> getSearchTerms(String origquery) {
+    public static Iterable<String> getSearchTerms(String initquery) {
         Predicate<String> filter = new Predicate<String>() {
             @Override
             public boolean apply(String input) {
@@ -152,17 +151,14 @@ public class EnvelopeUtils {
             }
         };
 
-        String query = origquery.toLowerCase();
-        System.out.println("1:"+query);
+	// normalize to lower case and remove all punctuation
+        String query = initquery.toLowerCase();
         query = query.replaceAll("[^a-z0-9 ]", "");
-        System.out.println("2:"+query);
         ArrayList<String> allTerms = Lists.newArrayList(query.split(" "));
-        System.out.println("3:"+allTerms);
         Iterable<String> filteredTerms = Iterables.filter(allTerms, filter);
-        System.out.println("4:"+filteredTerms);
         return filteredTerms;
     }
-    
+
     public final static Set<String> STOPWORDS = makeStopWordSet();
 
     private static HashSet<String> makeStopWordSet() {

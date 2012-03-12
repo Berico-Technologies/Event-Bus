@@ -35,7 +35,6 @@ public class ValueStreamsDataProvider implements DataProvider {
 //        System.out.println();
 //    }
 
-
     @Override
     public Map<String, Object> getData() {
 
