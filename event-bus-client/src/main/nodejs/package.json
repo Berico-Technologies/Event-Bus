@@ -1,0 +1,17 @@
+{
+  "author": "Richard Clayton <rclayton@bericotechnologies.com> (www.gettingcirrius.com)",
+  "name": "event-bus-client",
+  "description": "NodeJs Event Bus Client",
+  "version": "0.0.1",
+  "homepage": "http://www.bericotechnologies.com/eb/nodejs",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Berico-Technologies/Event-Bus.git"
+  },
+  "engines": {
+    "node": "~0.6.10"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "optionalDependencies": {}
+}

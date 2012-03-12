@@ -1,11 +1,14 @@
 
-class EventManager
+root = exports ? this
+
+class root.EventManager
 
   ###
      Instantiate the Event Manager
   ###
   constructor: (@config) ->
-    @amqp = @config.amqp ? require 'amqp'
+    console.info "Instantiating the Event Manager"
+    @bus = config.bus
     @startListeners = @config.onStart ? []
     @closeListeners = @config.onClose ? []
     @subListeners = @config.onSubscribe ? []
@@ -15,8 +18,8 @@ class EventManager
      Start the Event Bus
   ###
   start: () ->
-    # Open the Connection to the Event Bus
-    @conn = @amqp.createConnection(@config)
+    # Start the underlying bus implementation
+    @bus.start()
     # Loop through the start listeners, notifying
     # each one that the Event Manager has started
     notify() for notify in @startListeners
@@ -29,10 +32,10 @@ class EventManager
     # them that the bus is shutting down
     notify() for notify in @closeListeners
     # Close the connection
-    @conn.end
+    @bus.stop
 
   publish: (event) ->
-
+    @bus.publish(event)
 
   onEvent: (eventType, eventHandler, queueName) ->
 
@@ -53,19 +56,23 @@ class EventManager
 
 
   onStart: (startHandler) ->
-
+    @startListeners.push(startHandler)
 
   onClose: (closeHandler) ->
-
+    @closeListeners.push(closeHandler)
 
   onSubscribe: (onSubHandler) ->
-
+    @subListeners.push(onSubHandler)
 
   onUnsubscribe: (onUnsubHandler) ->
-
+    @unsubListeners.push(onUnsubHandler)
 
   attach: (lifecycleEvent, handler) ->
-
+    switch lifecycleEvent
+      when "start" then onStart(handler)
+      when "close" then onClose(handler)
+      when "subscribe" then onSubscribe(handler)
+      when "unsubscribe" then onUnsubscribe(handler)
 
   detach: (handler) ->
 
@@ -76,23 +83,3 @@ class EventManager
   Method Aliases
   ###
 
-  ###
-    Same as 'onEvent'
-    @param eventType Type of event to subscribe to.
-    @param eventHandler Function that will handle the event.
-    @param queueName [optional] specify the named queue to bind
-                                the handler to.
-  ###
-  subscribeToEvent: (eventType, eventHandler, queueName) ->
-    onEvent(eventType, eventHandler, queueName)
-
-  ###
-    Same as 'onEnvelope'
-    @param eventSet Named set of events to subscribe to.
-    @param envelopeHandler Function that will handle the message
-                           envelope when it is received.
-    @param queueName [optional] specify the named queue to bind
-                                the handler to.
-  ###
-  subscribeToEnvelope: (eventSet, envelopeHandler, queueName) ->
-    onEnvelope(eventSet, envelopeHandler, queueName)
