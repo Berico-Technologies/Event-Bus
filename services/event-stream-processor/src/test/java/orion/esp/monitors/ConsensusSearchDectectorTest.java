@@ -1,7 +1,11 @@
-package pegasus.esp;
+package orion.esp.monitors;
 
 import org.junit.Test;
 
+import orion.esp.monitors.ConsensusSearchDetector;
+
+import pegasus.esp.AbstractDetectorTest;
+import pegasus.esp.TestUtils;
 import pegasus.eventbus.client.Envelope;
 
 public class ConsensusSearchDectectorTest extends AbstractDetectorTest {
