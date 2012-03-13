@@ -1,10 +1,16 @@
-package pegasus.esp;
+package orion.esp.monitors;
 
 import javax.script.ScriptException;
 
 import org.junit.Assert;
 import org.junit.Test;
 
+import orion.esp.monitors.JsEnvelopeCounter;
+
+import pegasus.esp.AbstractDetectorTest;
+import pegasus.esp.EnvelopeUtils;
+import pegasus.esp.InferredEvent;
+import pegasus.esp.TestUtils;
 import pegasus.eventbus.client.Envelope;
 
 public class JsEnvelopeCounterTest extends AbstractDetectorTest {

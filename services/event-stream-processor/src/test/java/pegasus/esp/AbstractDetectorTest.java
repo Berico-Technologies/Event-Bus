@@ -10,6 +10,9 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
 
+import orion.esp.monitors.InferredEventCatcher;
+import orion.esp.monitors.StorageRepository;
+
 import pegasus.eventbus.client.Envelope;
 
 import com.google.common.collect.Lists;

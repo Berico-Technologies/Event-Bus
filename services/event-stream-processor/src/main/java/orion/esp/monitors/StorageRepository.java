@@ -1,6 +1,10 @@
-package pegasus.esp;
+package orion.esp.monitors;
 
 import java.util.List;
+
+import pegasus.esp.EventMonitor;
+import pegasus.esp.EventMonitorRepository;
+import pegasus.esp.EventStreamProcessor;
 
 import com.google.common.collect.Lists;
 

@@ -1,7 +1,12 @@
-package pegasus.esp;
+package orion.esp.monitors;
 
 import org.junit.Test;
 
+import orion.esp.monitors.EventTypeDetector;
+
+import pegasus.esp.AbstractDetectorTest;
+import pegasus.esp.InferredEvent;
+import pegasus.esp.TestUtils;
 import pegasus.eventbus.client.Envelope;
 
 public class EventTypeDetectorTest extends AbstractDetectorTest {

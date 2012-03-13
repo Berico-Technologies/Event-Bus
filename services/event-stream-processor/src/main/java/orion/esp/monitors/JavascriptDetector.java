@@ -1,4 +1,4 @@
-package pegasus.esp;
+package orion.esp.monitors;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -14,6 +14,10 @@ import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.Undefined;
 
+import pegasus.esp.EventMonitor;
+import pegasus.esp.EventStreamProcessor;
+import pegasus.esp.InferredEvent;
+import pegasus.esp.Publisher;
 import pegasus.eventbus.client.Envelope;
 
 import com.espertech.esper.client.EventBean;

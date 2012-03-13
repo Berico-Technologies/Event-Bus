@@ -1,8 +1,13 @@
-package pegasus.esp;
+package orion.esp.monitors;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+
+import orion.esp.monitors.EnvelopeCounter;
+import pegasus.esp.AbstractDetectorTest;
+import pegasus.esp.EnvelopeUtils;
+import pegasus.esp.TestUtils;
 
 public class EnvelopeCounterTest extends AbstractDetectorTest {
 
