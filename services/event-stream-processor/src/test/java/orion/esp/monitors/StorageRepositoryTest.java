@@ -44,7 +44,7 @@ public class StorageRepositoryTest extends AbstractDetectorTest {
 
         // Send a signoff notification, since we have no event monitors that match on  that,
         // no inferred events will occur
-        Envelope signoff = EnvelopeUtils.makeEnvelope(signoffString, null, null,
+        Envelope signoff = TestUtils.makeEnvelope(signoffString, null, null,
                 "Say goodnight Gracie", "George Burns");
         clearAndSend(signoff);
         assertNoDetectedEvents(UnauthorizedAccessAttemptsDetector.INFERRED_TYPE);
@@ -63,7 +63,7 @@ public class StorageRepositoryTest extends AbstractDetectorTest {
 
         // Send a second signoff notification after adding a monitor for it; we should detect
         // the second event, but not the first
-        Envelope signoff2 = EnvelopeUtils.makeEnvelope(signoffString, null, null,
+        Envelope signoff2 = TestUtils.makeEnvelope(signoffString, null, null,
                 "And that's the way it is.", "Walter Cronkite");
         clearAndSend(signoff2);
         assertNoDetectedEvents(UnauthorizedAccessAttemptsDetector.INFERRED_TYPE);
@@ -87,7 +87,7 @@ public class StorageRepositoryTest extends AbstractDetectorTest {
         //**********************************************************************
         // Send a signoff notification, since we have no event monitors that match on  that,
         // no inferred events will occur
-        Envelope signoff = EnvelopeUtils.makeEnvelope("Signoff", null, null,
+        Envelope signoff = TestUtils.makeEnvelope("Signoff", null, null,
                 "Say goodnight Gracie", "Gracie Allen");
         clearAndSend(signoff);
         assertNoDetectedEvents(UnauthorizedAccessAttemptsDetector.INFERRED_TYPE);

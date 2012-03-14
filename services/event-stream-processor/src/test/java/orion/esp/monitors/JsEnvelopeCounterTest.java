@@ -24,8 +24,7 @@ public class JsEnvelopeCounterTest extends AbstractDetectorTest {
 
 		int envCount = 1;
 
-		Envelope signoff = EnvelopeUtils.makeEnvelope("Signoff", null, null,
-				"Say goodnight Gracie", "Gracie Allen");
+		Envelope signoff = TestUtils.makeEnvelope("Signoff", null, null, "Say goodnight Gracie", "Gracie Allen");
 		sendAndCheckCount(signoff, envCount ++);
 
 		Envelope reqMS1 = TestUtils.makeAuthRequest("Maxwell Smart", "Shoe Phone", "MS1");

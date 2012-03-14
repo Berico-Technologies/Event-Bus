@@ -16,7 +16,7 @@ public class EnvelopeCounterTest extends AbstractDetectorTest {
         EnvelopeCounter ec = new EnvelopeCounter();
         testRepository.addMonitor(ec);
 
-        send(EnvelopeUtils.makeEnvelope("Signoff", null, null, "Say goodnight Gracie", "Gracie Allen"));
+        send(TestUtils.makeEnvelope("Signoff", null, null, "Say goodnight Gracie", "Gracie Allen"));
         send(TestUtils.makeAuthRequest("Maxwell Smart", "Shoe Phone", "MS1"));
         send(TestUtils.makeSearchRequest("Maxwell Smart", "Shoe Phone with cam", "MS1"));
         send(TestUtils.makeAuthRequest("Peewee Herman", "sat 1 imagery", "PW1"));
