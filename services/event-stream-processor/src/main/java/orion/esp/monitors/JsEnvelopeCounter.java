@@ -22,7 +22,7 @@ public class JsEnvelopeCounter extends JavascriptDetector {
 					"    this.count++;" +
 					"    var elapsed = clock.getElapsed(this.start);" +
 					"    this.curRate = (1000 * this.count) / elapsed;" +
-					"    var ie = new Packages.pegasus.esp.InferredEvent('BusEvents','JsEnvelopeCounter');" +
+					"    var ie = new Packages.orion.esp.InferredEvent('BusEvents','JsEnvelopeCounter');" +
 					"    ie.putData('Count', '' + this.count);" +
 					"    ie.putData('Elapsed', '' + elapsed);" +
 					"    ie.putData('Rate', '' + this.curRate);" +

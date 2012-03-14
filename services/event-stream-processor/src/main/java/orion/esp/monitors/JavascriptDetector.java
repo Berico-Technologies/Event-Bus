@@ -14,10 +14,11 @@ import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.Undefined;
 
-import pegasus.esp.EventMonitor;
-import pegasus.esp.EventStreamProcessor;
-import pegasus.esp.InferredEvent;
-import pegasus.esp.Publisher;
+import orion.esp.EventMonitor;
+import orion.esp.EventStreamProcessor;
+import orion.esp.InferredEvent;
+import orion.esp.publish.Publisher;
+
 import pegasus.eventbus.client.Envelope;
 
 import com.espertech.esper.client.EventBean;

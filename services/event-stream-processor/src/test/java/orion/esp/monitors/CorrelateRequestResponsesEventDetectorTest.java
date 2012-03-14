@@ -2,11 +2,10 @@ package orion.esp.monitors;
 
 import org.junit.Test;
 
+import orion.esp.InferredEvent;
+import orion.esp.TestUtils;
 import orion.esp.monitors.CorrelateRequestResponsesEventDetector;
 
-import pegasus.esp.AbstractDetectorTest;
-import pegasus.esp.InferredEvent;
-import pegasus.esp.TestUtils;
 import pegasus.eventbus.client.Envelope;
 
 public class CorrelateRequestResponsesEventDetectorTest extends AbstractDetectorTest {

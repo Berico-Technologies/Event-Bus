@@ -4,10 +4,9 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import orion.esp.EnvelopeUtils;
+import orion.esp.TestUtils;
 import orion.esp.monitors.EnvelopeCounter;
-import pegasus.esp.AbstractDetectorTest;
-import pegasus.esp.EnvelopeUtils;
-import pegasus.esp.TestUtils;
 
 public class EnvelopeCounterTest extends AbstractDetectorTest {
 

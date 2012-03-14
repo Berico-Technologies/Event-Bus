@@ -5,16 +5,15 @@ import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
 
+import orion.esp.EnvelopeUtils;
+import orion.esp.InferredEvent;
+import orion.esp.TestUtils;
 import orion.esp.monitors.ConsensusSearchDetector;
 import orion.esp.monitors.CorrelateRequestResponsesEventDetector;
 import orion.esp.monitors.DocumentCollectionWithHitFrequencySearchResultsDetector;
 import orion.esp.monitors.EventTypeDetector;
 import orion.esp.monitors.UnauthorizedAccessAttemptsDetector;
 
-import pegasus.esp.AbstractDetectorTest;
-import pegasus.esp.EnvelopeUtils;
-import pegasus.esp.InferredEvent;
-import pegasus.esp.TestUtils;
 import pegasus.eventbus.client.Envelope;
 
 public class StorageRepositoryTest extends AbstractDetectorTest {

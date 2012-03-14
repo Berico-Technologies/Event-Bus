@@ -4,10 +4,11 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-import pegasus.esp.EventMonitor;
-import pegasus.esp.EventStreamProcessor;
-import pegasus.esp.InferredEvent;
-import pegasus.esp.Publisher;
+import orion.esp.EventMonitor;
+import orion.esp.EventStreamProcessor;
+import orion.esp.InferredEvent;
+import orion.esp.publish.Publisher;
+
 
 import com.espertech.esper.client.EventBean;
 

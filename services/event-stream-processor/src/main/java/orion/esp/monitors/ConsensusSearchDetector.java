@@ -5,12 +5,13 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import pegasus.esp.EnvelopeUtils;
-import pegasus.esp.EventMonitor;
-import pegasus.esp.EventStreamProcessor;
-import pegasus.esp.InferredEvent;
-import pegasus.esp.InferredEventList;
-import pegasus.esp.Publisher;
+import orion.esp.EnvelopeUtils;
+import orion.esp.EventMonitor;
+import orion.esp.EventStreamProcessor;
+import orion.esp.InferredEvent;
+import orion.esp.InferredEventList;
+import orion.esp.publish.Publisher;
+
 import pegasus.eventbus.client.Envelope;
 
 import com.espertech.esper.client.EventBean;
