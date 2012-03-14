@@ -9,6 +9,7 @@ target
 *.tar.gz
 *.jar
 *.class
+.gpush.settings
 
 #Visual Studio files
 *.[Oo]bj
