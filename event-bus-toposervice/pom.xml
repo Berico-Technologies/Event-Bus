@@ -4,7 +4,7 @@
     <parent>
         <artifactId>event-bus</artifactId>
         <groupId>pegasus.cip</groupId>
-        <version>0.0.2-SNAPSHOT</version>
+        <version>0.0.3-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
     <artifactId>event-bus-toposervice</artifactId>
@@ -15,12 +15,12 @@
         <dependency>
             <groupId>pegasus.cip</groupId>
             <artifactId>event-bus-client</artifactId>
-            <version>0.0.2-SNAPSHOT</version>
+            <version>0.0.3-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>pegasus.cip</groupId>
             <artifactId>event-bus-rabbit</artifactId>
-            <version>0.0.2-SNAPSHOT</version>
+            <version>0.0.3-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>

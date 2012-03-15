@@ -20,12 +20,12 @@
     <dependency>
             <groupId>pegasus.cip</groupId>
             <artifactId>event-bus-client</artifactId>
-            <version>0.0.2-SNAPSHOT</version>
+            <version>0.0.3-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>pegasus.cip</groupId>
             <artifactId>event-bus-rabbit</artifactId>
-            <version>0.0.2-SNAPSHOT</version>
+            <version>0.0.3-SNAPSHOT</version>
         </dependency>
         <dependency>
 			<groupId>org.slf4j</groupId>
