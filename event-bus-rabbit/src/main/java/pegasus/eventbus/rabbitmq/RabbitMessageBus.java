@@ -76,20 +76,24 @@ public class RabbitMessageBus implements AmqpMessageBus, UnexpectedCloseListener
             throw new RuntimeException("Failed to open connection to RabbitMq: " + e.getMessage() + "See inner exception for details", e);
         }
 
-        try {
+        openCommandChannel();
+    }
 
-            LOG.debug("Creating channel to AMQP broker.");
+	private void openCommandChannel() {
+		try {
+
+            LOG.debug("Creating channel to AMQP broker for command use.");
 
             // TODO: Need to replace this with a channel per thread model.
             this.commandChannel = connection.createChannel();
 
         } catch (IOException e) {
 
-            LOG.error("Could not open an AMQP channel.", e);
+            LOG.error("Could not open an AMQP channel for command use.", e);
 
             throw new RuntimeException("Failed to open AMQP channel: " + e.getMessage() + "See inner exception for details", e);
         }
-    }
+	}
 
     /**
      * Close the active AMQP connection.
@@ -143,8 +147,13 @@ public class RabbitMessageBus implements AmqpMessageBus, UnexpectedCloseListener
     @Override
     public void onUnexpectedClose(boolean successfullyReopened) {
 
-        LOG.debug("Unexpected connection close notice received.  successfullyReopened=" + successfullyReopened + " Notifying listeners.");
+        LOG.debug("Unexpected connection close notice received.  successfullyReopened=" + successfullyReopened);
 
+        if(successfullyReopened){
+        	LOG.trace("Reopening command channel");
+        	openCommandChannel();
+        }
+        
         notifyUnexpectedConnectionCloseListeners(successfullyReopened);
     }
 
@@ -286,10 +295,12 @@ public class RabbitMessageBus implements AmqpMessageBus, UnexpectedCloseListener
                 .timestamp(message.getTimestamp())
                 .build();
 
-            LOG.trace("Publishing the message on the bus.");
+            LOG.trace("Publishing the message onto the bus.");
 
             commandChannel.basicPublish(route.getExchange().getName(), route.getRoutingKey(), props, message.getBody());
 
+            LOG.trace("Message successfully published onto the bus.");
+            
         } catch (IOException e) {
 
             LOG.error("Could not publish message on bus.", e);
