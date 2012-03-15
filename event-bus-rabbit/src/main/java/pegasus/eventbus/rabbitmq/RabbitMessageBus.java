@@ -143,7 +143,7 @@ public class RabbitMessageBus implements AmqpMessageBus, UnexpectedCloseListener
     @Override
     public void onUnexpectedClose(boolean successfullyReopened) {
 
-        LOG.error("Connection shutdown unexpectedly.");
+        LOG.debug("Unexpected connection close notice received.  successfullyReopened=" + successfullyReopened + " Notifying listeners.");
 
         notifyUnexpectedConnectionCloseListeners(successfullyReopened);
     }
