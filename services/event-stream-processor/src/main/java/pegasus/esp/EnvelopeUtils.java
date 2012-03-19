@@ -153,13 +153,13 @@ public class EnvelopeUtils {
         };
 
         String query = origquery.toLowerCase();
-        System.out.println("1:"+query);
+//        System.out.println("1:"+query);
         query = query.replaceAll("[^a-z0-9 ]", "");
-        System.out.println("2:"+query);
+//        System.out.println("2:"+query);
         ArrayList<String> allTerms = Lists.newArrayList(query.split(" "));
-        System.out.println("3:"+allTerms);
+//        System.out.println("3:"+allTerms);
         Iterable<String> filteredTerms = Iterables.filter(allTerms, filter);
-        System.out.println("4:"+filteredTerms);
+//        System.out.println("4:"+filteredTerms);
         return filteredTerms;
     }
     

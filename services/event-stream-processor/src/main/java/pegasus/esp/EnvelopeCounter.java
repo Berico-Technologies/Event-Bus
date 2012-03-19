@@ -53,14 +53,14 @@ public class EnvelopeCounter extends EventMonitor {
             streamsMap.put(type, valueStreams);
             for (int per : envelopeRetriever.periods()) {
                 String desc = valueStreams.addPeriod(per);
-                System.out.println(String.format("Metric %d: %s", metricCount++, desc));
+//                System.out.println(String.format("Metric %d: %s", metricCount++, desc));
                 ValueStreamsDataProvider provider = new ValueStreamsDataProvider(valueStreams, desc);
                 TopNMetricPublisher publisher = new TopNMetricPublisher();
                 publisher.setDataProvider(provider);
                 publishers.add(publisher);
             }
         }
-        System.out.println(String.format("%d Total Metrics", metricCount));
+//        System.out.println(String.format("%d Total Metrics", metricCount));
 
     }
 
@@ -140,7 +140,7 @@ public class EnvelopeCounter extends EventMonitor {
             envelopesSeen++;
             long curtime = new Date().getTime();
             if (curtime > lastDisplayTime + displayFrequency) {
-                System.out.println("EC: After envelope " + envelopesSeen);
+//                System.out.println("EC: After envelope " + envelopesSeen);
                 dumpFreqs();
                 lastDisplayTime = curtime;
             }

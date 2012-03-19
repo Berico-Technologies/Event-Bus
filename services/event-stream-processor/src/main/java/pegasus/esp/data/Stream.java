@@ -66,18 +66,18 @@ public class Stream {
 
 	public void dump() {
 		TimeValFunc<Object> dumper = new TimeValFunc<Object>() {
-			int ct = 0;
+//			int ct = 0;
 			@Override
 			public Object apply(long time, int value, boolean last) {
-				System.out.println("  " + (last ? "* " : "  ") + (ct++) + ": " +
-				        value + " @ " + time);
+//				System.out.println("  " + (last ? "* " : "  ") + (ct++) + ": " +
+//				        value + " @ " + time);
 				return null;
 			}
 		};
 
-		System.out.println("  " + name + ":");
+//		System.out.println("  " + name + ":");
 		streamref.applyTo(dumper);
-		System.out.println();
+//		System.out.println();
 	}
 
 	public void dbgdump() {
@@ -89,11 +89,11 @@ public class Stream {
 			ct++;
 			showItem(ct, itm);
 		}
-		System.out.println();
+//		System.out.println();
 	}
 
 	private void showItem(int i, TimeEntry itm) {
-		System.out.println(i + ": " + itm);
+//		System.out.println(i + ": " + itm);
 	}
 
     public List<ActiveRange> getActiveRanges() {

@@ -76,7 +76,7 @@ public class ValueStreams {
     }
 
     public void dump() {
-        System.out.println(name + ":");
+//        System.out.println(name + ":");
         for (String item : getValues()) {
             getStream(item).dump();
         }
@@ -85,7 +85,7 @@ public class ValueStreams {
 
 
     public void dumpActiveRanges() {
-        System.out.println(name + ":");
+//        System.out.println(name + ":");
         for (String item : getValues()) {
             getStream(item).dumpActiveRanges(name);
         }
@@ -141,22 +141,22 @@ public class ValueStreams {
     }
 
     public void display() {
-        System.out.println(this.getName() + ":");
+//        System.out.println(this.getName() + ":");
         for (String timecategory : this.getActiveRanges()) {
-            System.out.println(String.format("\nTopN Label: %s", timecategory));
+//            System.out.println(String.format("\nTopN Label: %s", timecategory));
             for (String item : this.getValues()) {
                 ActiveRange activeRange = this.getActiveRange(timecategory, item);
                 int total = activeRange.getTotal();
                 int trend = activeRange.getTrend();
                 String desc = activeRange.getTrendDesc();
-                System.out.println(String.format("  Trend Label: %s", item));
-                System.out.println(String.format("  Trend Value: %s", total));
-                System.out.println(String.format("  Trend info: %s", desc));
-                System.out.println(String.format("  Trend change: %s", trend));
-                System.out.println();
+//                System.out.println(String.format("  Trend Label: %s", item));
+//                System.out.println(String.format("  Trend Value: %s", total));
+//                System.out.println(String.format("  Trend info: %s", desc));
+//                System.out.println(String.format("  Trend change: %s", trend));
+//                System.out.println();
             }
         }
-        System.out.println();
+//        System.out.println();
 
     }
 }

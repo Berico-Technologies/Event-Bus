@@ -128,8 +128,8 @@ public class ActiveRange extends StreamRange {
     }
 
     public void dumpActiveRanges(String vsname, String name, String indent) {
-        System.out.println(String.format(indent + "/%s/%s[%d] %s = %s",
-                vsname, name, periodInMillis, category, this));
+//        System.out.println(String.format(indent + "/%s/%s[%d] %s = %s",
+//                vsname, name, periodInMillis, category, this));
         if (prev != null) {
             prev.dumpActiveRanges(vsname, name, "  " + indent);
         }
