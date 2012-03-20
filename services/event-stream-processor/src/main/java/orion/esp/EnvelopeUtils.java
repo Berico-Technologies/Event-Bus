@@ -102,7 +102,7 @@ public class EnvelopeUtils {
             @Override
             public boolean apply(String input) {
                 if (input.length() == 0) return false;
-                if (EnvelopeUtils.STOPWORDS.contains(input)) return false;
+                if (STOPWORDS.contains(input)) return false;
                 return true;
             }
         };
@@ -115,7 +115,7 @@ public class EnvelopeUtils {
         return filteredTerms;
     }
 
-    public final static Set<String> STOPWORDS = makeStopWordSet();
+    private final static Set<String> STOPWORDS = makeStopWordSet();
 
     private static HashSet<String> makeStopWordSet() {
         HashSet<String> words = Sets.newHashSet();
