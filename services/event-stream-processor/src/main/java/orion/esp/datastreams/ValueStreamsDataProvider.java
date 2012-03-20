@@ -19,23 +19,6 @@ public class ValueStreamsDataProvider implements DataProvider {
         this.timecategory = timecategory;
     }
 
-//    public static void displayOneTimeCategory(ValueStreams streams, String timecategory) {
-//        System.out.println(streams.getName() + ":");
-//        System.out.println(String.format("\nTopN Label: %s", timecategory));
-//        for (String item : streams.getValues()) {
-//            ActiveRange activeRange = streams.getActiveRange(timecategory, item);
-//            int total = activeRange.getTotal();
-//            int trend = activeRange.getTrend();
-//            String desc = activeRange.getTrendDesc();
-//            System.out.println(String.format("  Trend Label: %s", item));
-//            System.out.println(String.format("  Trend Value: %s", total));
-//            System.out.println(String.format("  Trend info: %s", desc));
-//            System.out.println(String.format("  Trend change: %s", trend));
-//            System.out.println();
-//        }
-//        System.out.println();
-//    }
-
     @Override
     public Map<String, Object> getData() {
 

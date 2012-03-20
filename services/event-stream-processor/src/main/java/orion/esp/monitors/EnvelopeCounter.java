@@ -50,22 +50,18 @@ public class EnvelopeCounter extends EventMonitor {
 
         setupMetrics();
 
-        int metricCount = 0;
-
         for (EnvelopeRetriever envelopeRetriever : metrics) {
             String type = extractKey(envelopeRetriever);
             ValueStreams valueStreams = new ValueStreams(type);
             streamsMap.put(type, valueStreams);
             for (int per : envelopeRetriever.periods()) {
                 String desc = valueStreams.addPeriod(per);
-//                 System.out.println(String.format("Metric %d: %s", metricCount++, desc));
                 ValueStreamsDataProvider provider = new ValueStreamsDataProvider(valueStreams, desc);
                 TopNMetricPublisher publisher = new TopNMetricPublisher();
                 publisher.setDataProvider(provider);
                 publishers.add(publisher);
             }
         }
-//         System.out.println(String.format("%d Total Metrics", metricCount));
     }
 
     private void setupMetrics() {
@@ -117,39 +113,12 @@ public class EnvelopeCounter extends EventMonitor {
         });
     }
 
-//    public void dumpFreqs() {
-//        for (EnvelopeRetriever counter : metrics) {
-//            String type = extractKey(counter);
-//           ValueStreams streams = streamsMap.get(type);
-//            streams.display();
-//        }
-//    }
-
     @Override
     public InferredEvent receive(EventBean eventBean) {
         Envelope env = (Envelope) eventBean.get("env");
         recordValues(env);
         return null;
     }
-
-    long lastDisplayTime = Long.MIN_VALUE;
-    int displayFrequency = ValueStreams.seconds(10);
-    int envelopesSeen = 0;
-
-//    private void gotEnvelopeCheckForDumping() {
-//        boolean showFrequencies = false;
-//         showFrequencies = true;
-//
-//        if (showFrequencies) {
-//            envelopesSeen++;
-//            long curtime = new Date().getTime();
-//            if (curtime > lastDisplayTime + displayFrequency) {
-//                System.out.println("EC: After envelope " + envelopesSeen);
-//                dumpFreqs();
-//                lastDisplayTime = curtime;
-//            }
-//        }
-//    }
 
     private void recordValues(Envelope env) {
         Date timestamp = env.getTimestamp();
@@ -177,7 +146,6 @@ public class EnvelopeCounter extends EventMonitor {
                 valueStreams.addValue(item, time, value);
             }
         }
-//         gotEnvelopeCheckForDumping();
     }
 
     private String extractKey(EnvelopeRetriever metric) {
@@ -191,7 +159,6 @@ public class EnvelopeCounter extends EventMonitor {
     @Override
     public Collection<Publisher> registerPatterns(EventStreamProcessor esp) {
         esp.monitor(true, getPattern(), this);
-
         return publishers;
     }
 

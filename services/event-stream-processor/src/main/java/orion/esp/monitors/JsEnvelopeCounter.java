@@ -18,6 +18,8 @@ public class JsEnvelopeCounter extends JavascriptDetector {
 					"  start : clock.getTime()," +
 					"  curRate : 0," +
 					"  receive : function(env) {" +
+// The following statement can be put in the Javascript to target certain
+// envelope types or conditions
 //					"    if (env.getEventType() != 'Search') return null;" +
 					"    this.count++;" +
 					"    var elapsed = clock.getElapsed(this.start);" +

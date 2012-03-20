@@ -64,8 +64,6 @@ public class StreamTest {
 	@Test
 	public void testUnorderedStreamWithActiveRanges() {
 		Stream st = new Stream("Test Data");
-//		if (true) return;
-
 
 		st.addActiveRange(ValueStreams.minutes(1), "category", "item");
 		st.addActiveRange(ValueStreams.minutes(5), "category", "item");

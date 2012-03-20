@@ -23,7 +23,6 @@ public class ValueStreamsTest {
     @Test
     public void testUnorderedStreamWithActiveRanges() {
         ValueStreams sts = new ValueStreams(CATEGORY);
-//        if (true) return;
 
         sts.addPeriod(ValueStreams.seconds(2));
         sts.addPeriod(ValueStreams.minutes(1));

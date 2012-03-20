@@ -123,18 +123,6 @@ public class ActiveRange extends StreamRange {
         lastEnd = getLast();
     }
 
-//     public void dumpActiveRanges(String vsname, String name) {
-//         dumpActiveRanges(vsname, name, "");
-//     }
-
-//     public void dumpActiveRanges(String vsname, String name, String indent) {
-//         System.out.println(String.format(indent + "/%s/%s[%d] %s = %s",
-//                 vsname, name, periodInMillis, category, this));
-//         if (prev != null) {
-//             prev.dumpActiveRanges(vsname, name, "  " + indent);
-//         }
-//     }
-
     @Override
     public String toString() {
 

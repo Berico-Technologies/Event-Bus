@@ -44,8 +44,6 @@ public class Stream {
         for (ActiveRange ar : activeRanges) {
             ar.initialize();
         }
-        // TODO Auto-generated method stub
-
     }
 
     public int size() {
@@ -55,44 +53,6 @@ public class Stream {
     public TimeEntry get(int i) {
         return streamref.get(i);
     }
-
-//     public void dumpActiveRanges(String vsname) {
-//         for (ActiveRange ar : activeRanges) {
-//             ar.adjust(lastTick).dumpActiveRanges(vsname, name);
-//         }
-//     }
-
-//     public void dump() {
-//         TimeValFunc<Object> dumper = new TimeValFunc<Object>() {
-//             int ct = 0;
-//             @Override
-//             public Object apply(long time, int value, boolean last) {
-//                 System.out.println("  " + (last ? "* " : "  ") + (ct++) + ": " +
-//                         value + " @ " + time);
-//                 return null;
-//             }
-//         };
-
-//         System.out.println("  " + name + ":");
-//         streamref.applyTo(dumper);
-//         System.out.println();
-//     }
-
-//     public void dbgdump() {
-//         int ct = 0;
-//         TimeEntry itm = get(0);
-//         showItem(ct, itm);
-//         while (itm.getNext() != itm) {
-//             itm = itm.getNext();
-//             ct++;
-//             showItem(ct, itm);
-//         }
-//         System.out.println();
-//     }
-
-//     private void showItem(int i, TimeEntry itm) {
-//         System.out.println(i + ": " + itm);
-//     }
 
     public List<ActiveRange> getActiveRanges() {
         return activeRanges;
