@@ -210,7 +210,7 @@ public class EventStreamProcessor {
         }
     }
     
-    public void schedulePublishers(Collection<Publisher> publishers) {
+    private void schedulePublishers(Collection<Publisher> publishers) {
         if (publishingService != null) {
             publishingService.addPublishers(publishers);
         } else {
@@ -220,7 +220,7 @@ public class EventStreamProcessor {
     
     public void watchFor(EventMonitor monitor) {
         Collection<Publisher> publishers = monitor.registerPatterns(this);
-        schedulePublishers(publishers);
+        if (publishers != null) schedulePublishers(publishers);
     }
 
     @VisibleForTesting
