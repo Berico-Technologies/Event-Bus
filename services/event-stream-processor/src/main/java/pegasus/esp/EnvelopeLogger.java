@@ -36,7 +36,7 @@ public class EnvelopeLogger extends EventMonitor {
             this.logFile = logdir + "/" + base + ".log";
             this.jsonFile = logdir + "/" + base + ".json";
             String msg = "Logging started into " + logFile + " at " + new Date() + "\n";
-            System.out.println(msg);
+//            System.out.println(msg);
         } else {
             System.err.println("Logging could not start into " +
                     logdir + " at " + new Date() + "\n");
