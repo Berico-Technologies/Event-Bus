@@ -737,6 +737,8 @@ public class AmqpEventManager implements EventManager, UnexpectedConnectionClose
                 messageBus.deleteQueue(subscription.getQueueName());
             }
         }
+        
+        // TODO: PEGA-730 BUG! We are not closing the subscription-specific amqp channel!
     }
 
     @Override
