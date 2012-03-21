@@ -34,73 +34,78 @@ class EnvelopeHandlerBasedConsumer extends DefaultConsumer {
 			byte[] body)
 			throws IOException {
 		
-		super.handleDelivery(consumerTag, amqpEnvelope, properties, body);
-		
-		Channel channel = this.getChannel();
-		
-		LOG.trace("Handling delivery for ConsumerTag [{}].", consumerTag);
-		
-		long deliveryTag  = amqpEnvelope.getDeliveryTag();
-        
-		LOG.trace("DeliveryTag is [{}] for message on ConsumerTag [{}]", deliveryTag, consumerTag);
-		
-		Envelope envelope = RabbitMessageBus.createEnvelope(properties, body);
-		
-		LOG.trace("Envelope create for DeliveryTag [{}].", deliveryTag);
-
-		EventResult result;
 		try {
+			super.handleDelivery(consumerTag, amqpEnvelope, properties, body);
+			
+			Channel channel = this.getChannel();
+			
+			LOG.trace("Handling delivery for ConsumerTag [{}].", consumerTag);
+			
+			long deliveryTag  = amqpEnvelope.getDeliveryTag();
+			
+			LOG.trace("DeliveryTag is [{}] for message on ConsumerTag [{}]", deliveryTag, consumerTag);
+			
+			Envelope envelope = RabbitMessageBus.createEnvelope(properties, body);
+			
+			LOG.trace("Envelope create for DeliveryTag [{}].", deliveryTag);
+			
+			EventResult result;
+			try {
+				
+				LOG.trace("Handling envelope for DeliveryTag [{}].", deliveryTag);
+				
+				//TODO: what if handler incorrectly returns null? I think we should assume Failed to be safe.
+				result = consumer.handleEnvelope(envelope);
+				
+			} catch (Exception e) {
+				
+				result = EventResult.Failed;
+				
+				String id;
+				
+				try {
+					
+					id = envelope.getId().toString();
+					
+				} catch (Exception ee) {
+					
+					id = "<message id not available>";
+				}
+				
+				LOG.error("Envelope handler of type " + consumer.getClass().getCanonicalName() + " on queue " + queueName + " threw exception of type " + e.getClass().getCanonicalName()
+						+ " handling message " + id + ", DeliveryTag: " + deliveryTag, e);
+				
+			}
+			
+			LOG.trace("Determining how to handle EventResult [{}]", result);
+			
+			switch (result) {
+			case Handled:
+				
+				LOG.trace("Accepting DeliveryTag [{}]", deliveryTag);
+				
+				channel.basicAck(deliveryTag, false);
+				
+				break;
+			case Failed:
+				
+				LOG.trace("Rejecting DeliveryTag [{}]", deliveryTag);
+				
+				channel.basicReject(deliveryTag, false);
+				
+				break;
+			case Retry:
+				
+				LOG.trace("Retrying DeliveryTag [{}]", deliveryTag);
+				
+				channel.basicReject(deliveryTag, true);
+				
+				break;
+			}
+		} catch (Exception e) {
+			LOG.error("handleDelivery failed on queue " + queueName + ".", e);
+		}
 
-			LOG.trace("Handling envelope for DeliveryTag [{}].", deliveryTag);
-
-			//TODO: what if handler incorrectly returns null? I think we should assume Failed to be safe.
-            result = consumer.handleEnvelope(envelope);
-            
-        } catch (Exception e) {
-
-        	result = EventResult.Failed;
-
-            String id;
-
-            try {
-
-                id = envelope.getId().toString();
-
-            } catch (Exception ee) {
-
-                id = "<message id not available>";
-            }
-
-            LOG.error("Envelope handler of type " + consumer.getClass().getCanonicalName() + " on queue " + queueName + " threw exception of type " + e.getClass().getCanonicalName()
-                    + " handling message " + id + ", DeliveryTag: " + deliveryTag, e);
-            
-        }
-
-        LOG.trace("Determining how to handle EventResult [{}]", result);
-
-        switch (result) {
-            case Handled:
-
-                LOG.trace("Accepting DeliveryTag [{}]", deliveryTag);
-
-                channel.basicAck(deliveryTag, false);
-
-                break;
-            case Failed:
-
-                LOG.trace("Rejecting DeliveryTag [{}]", deliveryTag);
-
-                channel.basicReject(deliveryTag, false);
-
-                break;
-            case Retry:
-
-                LOG.trace("Retrying DeliveryTag [{}]", deliveryTag);
-
-                channel.basicReject(deliveryTag, true);
-
-                break;
-        }
 	}
 	
 }
