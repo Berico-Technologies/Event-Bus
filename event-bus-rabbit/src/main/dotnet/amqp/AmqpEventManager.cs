@@ -126,7 +126,7 @@ namespace pegasus.eventbus.amqp
             {
                 LOG.Debug("Creating routing info for the replyTo queue");
 
-                route.AddReplyToQueue(replyToQueue, AmqpEventManager.AMQP_ROUTE_SEGMENT_DELIMITER);
+                //route.AddReplyToQueue(replyToQueue, AmqpEventManager.AMQP_ROUTE_SEGMENT_DELIMITER);
             }
             else
             {
