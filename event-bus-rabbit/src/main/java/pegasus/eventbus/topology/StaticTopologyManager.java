@@ -12,7 +12,7 @@ import pegasus.eventbus.topology.event.*;
 
 import pegasus.eventbus.client.EventManager;
 
-//TODO: This class need test coverage.
+//TODO: PEGA-722 This class need test coverage.
 public class StaticTopologyManager implements TopologyManager {
 
     protected static final Logger      LOG                       = LoggerFactory.getLogger(StaticTopologyManager.class);

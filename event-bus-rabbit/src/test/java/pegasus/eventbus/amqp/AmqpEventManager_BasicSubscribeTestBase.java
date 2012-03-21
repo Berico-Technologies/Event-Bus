@@ -110,7 +110,7 @@ public abstract class AmqpEventManager_BasicSubscribeTestBase extends AmqpEventM
 	}
 	
 	protected RoutingInfo[] getExpectedRoutes() {
-		// TODO: Make expected route list based on handler.getHandledTypes();
+		// TODO: PEGA-729 Make expected route list based on handler.getHandledTypes();
 		RoutingInfo[] expectedRoutes = {routingInfo, routingInfo2, returnRoutingInfo};
 		for(int i = 0; i < expectedRoutes.length; i++){
 			

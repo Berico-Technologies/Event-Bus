@@ -53,7 +53,7 @@ class EnvelopeHandlerBasedConsumer extends DefaultConsumer {
 
 			LOG.trace("Handling envelope for DeliveryTag [{}].", deliveryTag);
 
-			//TODO: what if handler incorrectly returns null? I think we should assume Failed to be safe.
+			//TODO: PEGA-726 what if handler incorrectly returns null? I think we should assume Failed to be safe.
             result = consumer.handleEnvelope(envelope);
             
         } catch (Exception e) {

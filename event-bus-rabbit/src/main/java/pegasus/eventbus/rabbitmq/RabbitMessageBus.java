@@ -84,7 +84,7 @@ public class RabbitMessageBus implements AmqpMessageBus, UnexpectedCloseListener
 
             LOG.debug("Creating channel to AMQP broker for command use.");
 
-            // TODO: Need to replace this with a channel per thread model.
+            // TODO: PEGA-725 Need to replace this with a channel per thread model.
             this.commandChannel = connection.createChannel();
 
         } catch (IOException e) {
@@ -197,7 +197,7 @@ public class RabbitMessageBus implements AmqpMessageBus, UnexpectedCloseListener
 
         	Map<String, Object> params = new HashMap<String,Object>();
         	if(!durable){
-        		//TODO: make this expiration configurable
+        		//TODO: PEGA-724 make this expiration configurable
         		//We are using expiration vs auto-delete as this will allow for connection drops over bad comms and not loose messages due to a deleted queue.
         		params.put("x-expires", 1000*60*30); //30-min timout in mills
         	}

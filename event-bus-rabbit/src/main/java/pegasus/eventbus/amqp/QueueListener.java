@@ -34,7 +34,7 @@ class QueueListener  {
      * @param envelopeHandler
      *            EnvelopeHandler that deals with new messages.
      * @param amqpEventManager
-     *            TODO
+     *            The EventManager that is managing the subscription.
      */
     public QueueListener(
 			AmqpMessageBus messageBus, 
@@ -49,7 +49,7 @@ class QueueListener  {
 		this.envelopeHandler = envelopeHandler;
 
         // Custom Logger for Each Queue Listener.
-        //TODO: Need to add tests to assert that this logger name is always valid (i.e. queue names with . and any other illegal chars are correctly mangled.)
+        //TODO: PEGA-727 Need to add tests to assert that this logger name is always valid (i.e. queue names with . and any other illegal chars are correctly mangled.)
         LOG = LoggerFactory.getLogger(String.format("%s$>%s", this.getClass().getName(), queueName.replace('.', '_')));
     }
 
@@ -88,7 +88,7 @@ class QueueListener  {
      * 
      * @return true is it is monitoring queue.
      */
-    //TODO: This method is no longer needed.  We presume that StopListening now blocks untill stopped.
+    //TODO: PEGA-729 This method is no longer needed.  We presume that StopListening now blocks untill stopped.
     public boolean isCurrentlyListening() {
         return currentlyListening;
     }

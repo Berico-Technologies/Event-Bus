@@ -121,7 +121,6 @@ public class AmqpEventManager_TestBase {
 
         @Override
         public EventResult handleEnvelope(Envelope envelope) {
-            // TODO Auto-generated method stub
             return null;
         }
 
