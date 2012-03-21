@@ -97,19 +97,23 @@ public class EnvelopeCounter extends EventMonitor {
             public int[] periods() { return defaultperiods; }
             public int getValue(String type, Envelope env) { return 1; }
         });
-        
+
         metrics.add(new EnvelopeRetriever() {
-            public String retrieve(Envelope e) {
-                if (e.getEventType().equals("pegasus.core.search.event.TextSearchEvent")) {
-                    String query = EnvelopeUtils.getBodyValue(e, "queryText");
-                    String terms = EnvelopeUtils.makeSearchTermList(query);
-                    return terms;
-                }
-                return null;
-            }
-            public String key() { return "*Individual Search Terms"; }
-            public int[] periods() { return defaultperiods; }
-            public int getValue(String type, Envelope env) { return 1; }
+        	public String retrieve(Envelope e) {
+        		if (e.getEventType().equals("pegasus.core.search.event.TextSearchEvent")) {
+        			String query = EnvelopeUtils.getBodyValue(e, "queryText");
+        			if (query == null) {
+        				System.err.println("No query found in envelope " + e);
+        				return null;
+        			}
+        			String terms = EnvelopeUtils.makeSearchTermList(query);
+        			return terms;
+        		}
+        		return null;
+        	}
+        	public String key() { return "*Individual Search Terms"; }
+        	public int[] periods() { return defaultperiods; }
+        	public int getValue(String type, Envelope env) { return 1; }
         });
     }
 
