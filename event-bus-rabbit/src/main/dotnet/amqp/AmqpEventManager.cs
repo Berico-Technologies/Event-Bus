@@ -14,12 +14,20 @@ namespace pegasus.eventbus.amqp
         private static readonly ILog LOG = LogManager.GetLogger(typeof(AmqpEventManager));
         private static readonly string AMQP_ROUTE_SEGMENT_DELIMITER = ".";
         private static readonly string AMQP_ROUTE_SEGMENT_WILDCARD = "#";
-
+		
+		private string _clientName;
+		private IAmqpMessageBus _messageBus;
         private ITopologyService _topologySvc;
-        private IAmqpMessageBus _messageBus;
         private IEventSerializer _serializer;
 
-
+		private IDictionary<SubscriptionToken, ActiveSubscription> _activeSubscriptions;
+		private IDictionary<object, Envelope> _envelopesBeingHandled;
+		private IList<StartListener> _startListeners;
+		private IList<CloseListener> _closeListeners;
+		private IList<SubscribeListener> _subscribeListeners;
+		private IList<UnsubscribeListener> _unsubscribeListeners;
+		
+		
         public AmqpEventManager(
             ITopologyService topologyService,
             IAmqpMessageBus messageBus,
@@ -28,6 +36,9 @@ namespace pegasus.eventbus.amqp
             _topologySvc = topologyService;
             _messageBus = messageBus;
             _serializer = serializer;
+			
+			_activeSubscriptions = new Dictionary<SubscriptionToken, ActiveSubscription>();
+			_envelopesBeingHandled = new Dictionary<object, Envelope>();
         }
 
 

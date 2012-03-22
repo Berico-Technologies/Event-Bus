@@ -50,6 +50,9 @@
     <Compile Include="src\main\dotnet\amqp\RoutingInfo.cs" />
     <Compile Include="src\main\dotnet\amqp\RoutingInfoException.cs" />
     <Compile Include="src\main\dotnet\AssemblyInfo.cs" />
+    <Compile Include="src\main\dotnet\amqp\ActiveSubscription.cs" />
+    <Compile Include="src\main\dotnet\amqp\QueueListener.cs" />
+    <Compile Include="src\main\dotnet\amqp\Listeners.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\event-bus-client\event-bus-client.csproj">

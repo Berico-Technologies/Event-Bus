@@ -9,7 +9,6 @@
     <OutputType>Library</OutputType>
     <RootNamespace>pegasus.eventbus.client</RootNamespace>
     <AssemblyName>event-bus-client</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>3.5</OldToolsVersion>
