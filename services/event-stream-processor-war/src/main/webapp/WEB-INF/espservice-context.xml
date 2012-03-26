@@ -33,7 +33,6 @@
     <bean id="envLogger" class="orion.esp.monitors.EnvelopeLogger">
         <property name="logdir" value='/tmp/EventBus-traffic' />
     </bean>
- -->
 
     <bean id="publishingService"
         class="orion.esp.publish.EspPublishingService"
