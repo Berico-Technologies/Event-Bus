@@ -717,7 +717,7 @@ public class AmqpEventManager implements EventManager, UnexpectedConnectionClose
 
                         Thread.sleep(50);
                     } catch (InterruptedException e) {
-                        LOG.debug("Thread [" + Thread.currentThread().getName() + "] interrupted in method AmqpEventManager.deactivateSubscriptions().");
+                        LOG.debug("Thread interrupted in method AmqpEventManager.deactivateSubscriptions().");
                     }
                     break;
                 }
