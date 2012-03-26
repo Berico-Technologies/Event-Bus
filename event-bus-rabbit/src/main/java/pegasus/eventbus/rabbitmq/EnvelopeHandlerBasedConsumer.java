@@ -11,6 +11,7 @@ import pegasus.eventbus.client.EventResult;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
+import com.rabbitmq.client.ShutdownSignalException;
 import com.rabbitmq.client.AMQP.BasicProperties;
 
 class EnvelopeHandlerBasedConsumer extends DefaultConsumer {
@@ -26,7 +27,38 @@ class EnvelopeHandlerBasedConsumer extends DefaultConsumer {
 	
 		LOG = LoggerFactory.getLogger(String.format("%s$>%s", this.getClass().getName(), queueName.replace('.', '_')));
 	}
+	
+	@Override
+	public void handleConsumeOk(String consumerTag) {
+		LOG.debug("ConsumeOk received for ConsumerTag [{}].", consumerTag);
+		super.handleConsumeOk(consumerTag);
+	}
 
+	@Override
+	public void handleCancel(String consumerTag) throws IOException {
+		LOG.debug("Subscription Cancel received for ConsumerTag [{}].", consumerTag);
+		super.handleCancel(consumerTag);
+	}
+	
+	@Override
+	public void handleCancelOk(String consumerTag) {
+		LOG.debug("Subscription CancelOk received for ConsumerTag [{}].", consumerTag);
+		super.handleCancelOk(consumerTag);
+	}
+	
+	@Override
+	public void handleRecoverOk(String consumerTag) {
+		LOG.debug("Subscription RecoverOk received for ConsumerTag [{}].", consumerTag);
+		super.handleRecoverOk(consumerTag);
+	}
+
+	@Override
+	public void handleShutdownSignal(String consumerTag,
+			ShutdownSignalException sig) {
+		LOG.debug("Subscription ShutdownSignal received for ConsumerTag [{}].", consumerTag);
+		super.handleShutdownSignal(consumerTag, sig);
+	}
+	
 	@Override
 	public void handleDelivery(String consumerTag,
 			com.rabbitmq.client.Envelope amqpEnvelope,
