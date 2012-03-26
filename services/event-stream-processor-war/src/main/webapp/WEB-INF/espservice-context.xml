@@ -29,25 +29,27 @@
         <constructor-arg ref="defaultConfiguration" />
     </bean>
 
-<!-- 
-    <bean id="envLogger" class="pegasus.esp.EnvelopeLogger">
+<!-- ++++++++ EnvelopeLogger is only for debugging
+    <bean id="envLogger" class="orion.esp.monitors.EnvelopeLogger">
         <property name="logdir" value='/tmp/EventBus-traffic' />
     </bean>
  -->
 
     <bean id="publishingService"
-        class="pegasus.esp.EspPublishingService"
+        class="orion.esp.publish.EspPublishingService"
         init-method="start" destroy-method="stop">
         <property name="eventManager" ref="eventManager" />
     </bean>
     
-    <bean id="envCounter" class="pegasus.esp.EnvelopeCounter"/>
+    <bean id="envCounter" class="orion.esp.monitors.EnvelopeCounter"/>
 
-    <bean id="envLogRepo" class="pegasus.esp.StorageRepository">
-        <!-- <constructor-arg ref="envLogger"></constructor-arg> -->
+    <bean id="envLogRepo" class="orion.esp.monitors.StorageRepository">
+<!-- ++++++++ EnvelopeLogger is only for debugging
+        <constructor-arg ref="envLogger"></constructor-arg>
+ -->
         <constructor-arg ref="envCounter"></constructor-arg>
     </bean>
-    <bean id="esp" class="pegasus.esp.EventStreamProcessor">
+    <bean id="esp" class="orion.esp.EventStreamProcessor">
         <property name="eventManager" ref="eventManager" />
         <property name="publishingService" ref="publishingService" />
         <property name="repository" ref="envLogRepo" />
