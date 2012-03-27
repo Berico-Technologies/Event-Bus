@@ -5,11 +5,13 @@ public abstract class AbstractPublisher implements Publisher {
     protected Broker broker;
     protected DataProvider dataProvider;
 
-    public void setBroker(Broker broker) {
+    public Publisher setBroker(Broker broker) {
         this.broker = broker;
+        return this;
     }
 
-    public void setDataProvider(DataProvider dataProvider) {
+    public Publisher setDataProvider(DataProvider dataProvider) {
         this.dataProvider = dataProvider;
+        return this;
     }
 }

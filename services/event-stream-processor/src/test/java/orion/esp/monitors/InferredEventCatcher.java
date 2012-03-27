@@ -12,6 +12,14 @@ import orion.esp.publish.Publisher;
 
 import com.espertech.esper.client.EventBean;
 
+/**
+ * Support class for testing monitors that generate Inferred Events.
+ * This takes a List for storing InferredEvent objects, and catches and stores
+ * all generated InferredEvents into it.
+ * 
+ * @author israel
+ *
+ */
 public class InferredEventCatcher extends EventMonitor {
 
     private final List<InferredEvent> detected;

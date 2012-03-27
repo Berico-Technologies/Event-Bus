@@ -95,16 +95,14 @@ public class EnvelopeLogger extends EventMonitor {
     @Override
     public Collection<Publisher> registerPatterns(EventStreamProcessor esp) {
         esp.monitor(true, getPattern(), this);
-        String name = this.getClass().getSimpleName();
 
-        // @todo = this needs to be integrated
-        return new HashSet<Publisher>();
+        return null;
     }
 
     private String getPattern() {
         String where = "";
         if (cond != null && cond.length() > 0) {
-            where = " where %s".format(cond);
+            where = String.format(" where %s", cond);
         }
         return "select resp from Envelope as resp" + where;
     }

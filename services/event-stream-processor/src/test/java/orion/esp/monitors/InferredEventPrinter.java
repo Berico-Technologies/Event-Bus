@@ -11,6 +11,12 @@ import orion.esp.publish.Publisher;
 
 import com.espertech.esper.client.EventBean;
 
+/**
+ * Monitor for testing that catches all inferred events and logs them.
+ * 
+ * @author israel
+ *
+ */
 class InferredEventPrinter extends EventMonitor {
 
     @Override

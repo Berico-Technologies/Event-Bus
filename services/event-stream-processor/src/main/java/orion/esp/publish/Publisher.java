@@ -2,7 +2,7 @@ package orion.esp.publish;
 
 public interface Publisher extends Runnable {
 
-    public void setBroker(Broker broker);
+    public Publisher setBroker(Broker broker);
 
-    public void setDataProvider(DataProvider dataProvider);
+    public Publisher setDataProvider(DataProvider dataProvider);
 }
