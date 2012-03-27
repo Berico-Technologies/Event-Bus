@@ -31,7 +31,7 @@ class EventEnvelopeHandler implements EnvelopeHandler {
 
         this.amqpEventManager = amqpEventManager;
 
-        LOG = LoggerFactory.getLogger(String.format("{}", EventEnvelopeHandler.class));
+        LOG = LoggerFactory.getLogger(String.format("%s$>%s", this.getClass().getCanonicalName(), eventHandler.getClass().getName().replace('.', '_')));
 
         LOG.trace("EventEnvelopeHandler instantiated for EventHandler of type {}", eventHandler.getClass().getName());
 
