@@ -31,6 +31,7 @@ class EventEnvelopeHandler implements EnvelopeHandler {
 
         this.amqpEventManager = amqpEventManager;
 
+        //TODO: PEGA-727 Need to add tests to assert that this logger name is always valid (i.e. queue names with . and any other illegal chars are correctly mangled.)
         LOG = LoggerFactory.getLogger(String.format("%s$>%s", this.getClass().getCanonicalName(), eventHandler.getClass().getName().replace('.', '_')));
 
         LOG.trace("EventEnvelopeHandler instantiated for EventHandler of type {}", eventHandler.getClass().getName());
