@@ -74,12 +74,12 @@ class EventEnvelopeHandler implements EnvelopeHandler {
     @Override
     public EventResult handleEnvelope(Envelope envelope) {
 
-        LOG.debug("Handling envelope of type [{}]", envelope.getEventType());
-
         EventResult result = EventResult.Failed;
 
         try {
-            Object event = null;
+        	LOG.debug("Handling envelope of type [{}]", envelope.getEventType());
+
+        	Object event = null;
 
             try {
                 String className = envelope.getEventType();
@@ -160,7 +160,12 @@ class EventEnvelopeHandler implements EnvelopeHandler {
             }
         } catch (Exception e) {
 
-            LOG.error("Unable to handle message: {}", envelope, e);
+        	try {
+        		LOG.error("Unable to handle message: {}", envelope, e);
+			} catch (Exception e2) {
+				System.err.println("Unable to handle message!");
+				e.printStackTrace();
+			}
 
         }
 

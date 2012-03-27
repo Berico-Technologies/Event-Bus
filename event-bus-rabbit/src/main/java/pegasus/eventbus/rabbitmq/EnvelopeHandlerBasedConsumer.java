@@ -135,7 +135,15 @@ class EnvelopeHandlerBasedConsumer extends DefaultConsumer {
 				break;
 			}
 		} catch (Exception e) {
-			LOG.error("handleDelivery failed on queue " + queueName + ".", e);
+			try {
+				LOG.error("handleDelivery failed on queue " + queueName + ".", e);
+	        } catch (Exception e2) {
+				System.err.println("LOGGING ERROR!");
+				e.printStackTrace();
+			} finally {
+				System.err.println("handleDelivery failed on queue " + queueName + "!");
+				e.printStackTrace();
+			}
 		}
 
 	}
