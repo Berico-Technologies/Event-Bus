@@ -1,6 +1,5 @@
 package pegasus.eventbus.rabbitmq;
 
-import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
@@ -12,6 +11,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import pegasus.eventbus.amqp.AmqpMessageBus.UnexpectedConnectionCloseListener;
 import pegasus.eventbus.amqp.RoutingInfo;
 import pegasus.eventbus.client.Envelope;
 import pegasus.eventbus.rabbitmq.RabbitConnection.UnexpectedCloseListener;
@@ -23,17 +23,18 @@ public class RabbitMessageBusTest {
 
 	@Mock
 	private RabbitConnection connection;
-	
 	@Mock
 	private Channel channel1;
 	@Mock
 	private Channel channel2;
+	@Mock
+	private UnexpectedConnectionCloseListener busCloseListener;
 	
 	private RabbitMessageBus messageBus;
 	
 	private RoutingInfo route = new RoutingInfo("TestExchange", "route1");
 	
-	private UnexpectedCloseListener closeListener;
+	private UnexpectedCloseListener conectionCloseListener;
 	
 	@Before
 	public void beforeEachTest() throws IOException {
@@ -43,7 +44,7 @@ public class RabbitMessageBusTest {
 		doAnswer(new Answer<Object>(){
 			@Override
 			public Object answer(InvocationOnMock invocation) throws Throwable {
-				closeListener = (UnexpectedCloseListener) invocation.getArguments()[0];
+				conectionCloseListener = (UnexpectedCloseListener) invocation.getArguments()[0];
 				return null;
 			}}).when(connection).attachUnexpectedCloseListener(any(UnexpectedCloseListener.class));
 
@@ -53,6 +54,9 @@ public class RabbitMessageBusTest {
 			.thenThrow(new RuntimeException("Too many channels opened!"));
 		
 		messageBus = new RabbitMessageBus(connection);
+		
+		messageBus.attachUnexpectedConnectionCloseListener(busCloseListener);
+		
 		messageBus.start();
         
 	}
@@ -70,16 +74,22 @@ public class RabbitMessageBusTest {
 
 	@Test
 	public void afterAConnectionResetANewCommandChannelShouldBeUsed() throws IOException{
-		closeListener.onUnexpectedClose(true);
+		conectionCloseListener.onUnexpectedClose(true);
 		messageBus.publish(route, new Envelope());
 		verify(channel2, times(1)).basicPublish(eq(route.getExchange().getName()), eq(route.getRoutingKey()), any(BasicProperties.class), eq(new byte[0]));
 	}
 
 	@Test
 	public void afterAConnectionResetThePreviousCommandChannelShouldNoLongerBeUsed(){
-		closeListener.onUnexpectedClose(true);
+		conectionCloseListener.onUnexpectedClose(true);
 		messageBus.publish(route, new Envelope());
 		verifyNoMoreInteractions(channel1);
 	}
 
+	@Test
+	public void afterAconnectionResetTheXShouldBeCalled(){
+		conectionCloseListener.onUnexpectedClose(true);
+		verify(busCloseListener).onUnexpectedConnectionClose(true);
+	}
+	
 }
