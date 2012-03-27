@@ -50,7 +50,7 @@ class QueueListener  {
 
         // Custom Logger for Each Queue Listener.
         //TODO: PEGA-727 Need to add tests to assert that this logger name is always valid (i.e. queue names with . and any other illegal chars are correctly mangled.)
-        LOG = LoggerFactory.getLogger(String.format("%s$>%s", this.getClass().getName(), queueName.replace('.', '_')));
+        LOG = LoggerFactory.getLogger(String.format("%s$>%s", this.getClass().getCanonicalName(), queueName.replace('.', '_')));
     }
 
     /**

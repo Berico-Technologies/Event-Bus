@@ -25,7 +25,8 @@ class EnvelopeHandlerBasedConsumer extends DefaultConsumer {
 		this.queueName = queueName;
 		this.consumer = handler;
 	
-		LOG = LoggerFactory.getLogger(String.format("%s$>%s", this.getClass().getName(), queueName.replace('.', '_')));
+        //TODO: PEGA-727 Need to add tests to assert that this logger name is always valid (i.e. queue names with . and any other illegal chars are correctly mangled.)
+		LOG = LoggerFactory.getLogger(String.format("%s$>%s", this.getClass().getCanonicalName(), queueName.replace('.', '_')));
 	}
 	
 	@Override

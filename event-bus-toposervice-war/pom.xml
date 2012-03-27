@@ -27,6 +27,12 @@
       <version>1.5.11</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.16</version>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
   <build>
     <finalName>event-bus-toposervice</finalName>
