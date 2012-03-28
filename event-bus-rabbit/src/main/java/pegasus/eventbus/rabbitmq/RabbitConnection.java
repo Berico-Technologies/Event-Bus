@@ -111,7 +111,7 @@ public class RabbitConnection implements ShutdownListener {
 
                     isInConnectionErrorState = false;
                     break;
-                } catch (Exception e) {
+                } catch (Throwable e) {
 
                     LOG.error("Attempt to reopen connection failed with error: " + e.getMessage(), e);
 
