@@ -1,6 +1,7 @@
 package com.berico.tweetstream.app;
 
-import com.berico.tweetstream.TweetStreamApp.TweetPublisher;
+import com.berico.tweetstream.TwitterStreamMode;
+import com.berico.tweetstream.publishers.TwitterStreamModePublisher;
 
 import pegasus.eventbus.amqp.AmqpConfiguration;
 import pegasus.eventbus.amqp.AmqpConnectionParameters;
@@ -58,6 +59,9 @@ public abstract class BaseDemo {
     	//Register our listener with the Twitter Stream API
         twitterStream.addListener(publishOnBusListener);
         
+        //Start publishing the TwitterStreamMode
+        new TwitterStreamModePublisher(this.getTwitterStreamMode(), this.eventManager).start();
+        
         wireUpBus(this.eventManager);
         
         startUpTwitter(twitterStream);
@@ -68,6 +72,8 @@ public abstract class BaseDemo {
 	protected abstract void wireUpBus(EventManager eventManager);
 	
 	protected abstract void startUpTwitter(TwitterStream twitterStream);
+	
+	protected abstract TwitterStreamMode getTwitterStreamMode();
 	
 	public static void main(String[] args){
 		
