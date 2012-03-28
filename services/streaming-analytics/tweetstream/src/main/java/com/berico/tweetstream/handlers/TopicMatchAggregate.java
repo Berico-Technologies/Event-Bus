@@ -36,7 +36,31 @@ public class TopicMatchAggregate {
 		return ((double)this.numberOfTopicMatches) / ((double)this.numberOfItemsSeen);
 	}
 	
-	public void observe(String[] words){
+	public void setKeywords(String[] keywords) {
+		assert this.keywords == null;
+		this.keywords = keywords;
+	}
+
+	public void setMatchThreshold(int matchThreshold) {
+		assert this.matchThreshold == -1;
+		this.matchThreshold = matchThreshold;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public void setNumberOfItemsSeen(long numberOfItemsSeen) {
+		assert this.numberOfItemsSeen == 0;
+		this.numberOfItemsSeen = numberOfItemsSeen;
+	}
+
+	public void setNumberOfTopicMatches(long numberOfTopicMatches) {
+		assert this.numberOfTopicMatches == 0;
+		this.numberOfTopicMatches = numberOfTopicMatches;
+	}
+
+	public boolean isTopicMatch(String[] words){
 		
 		numberOfItemsSeen++;
 		
@@ -52,10 +76,14 @@ public class TopicMatchAggregate {
 			}
 		}
 		
-		if(numMatches >= matchThreshold){
+		boolean isMatch = numMatches >= matchThreshold;
+		
+		if(isMatch){
 			
 			numberOfTopicMatches++;
 		}
+		
+		return isMatch;
 	}
 	
 	
