@@ -24,6 +24,11 @@ public class EnvelopeTest {
 	}
 
 	@Test
+	public void noOpSucceed(){
+	    // Noop should succeed
+	}
+	
+	@Test
 	public void getHeadersShouldNotInitializeToNull(){
 		assertNotNull(new Envelope().getHeaders());
 	}

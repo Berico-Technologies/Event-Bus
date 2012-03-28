@@ -77,7 +77,7 @@ public abstract class AmqpEventManager_PublishEnvelopeTestBase extends AmqpEvent
 
     @Test
     public void theTimeStampOfThePublishedEnvelopeShouldBeTheCurrentTime() {
-    	//TODO: need to insert an abstraction for Calendar into AmqpEventManager so that we don't need this fuzzy match.
+    	//TODO: PEGA-729 need to insert an abstraction for Calendar into AmqpEventManager so that we don't need this fuzzy match.
         long delta = Calendar.getInstance().getTimeInMillis() - publishedEnvelope.getTimestamp().getTime();
 		assertTrue("Time delta was " + delta, delta < 1000);
     }

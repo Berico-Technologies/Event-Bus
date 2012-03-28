@@ -14,7 +14,7 @@ import pegasus.eventbus.client.EventManager;
 import pegasus.eventbus.client.EventResult;
 import pegasus.eventbus.client.SubscriptionToken;
 
-//TODO: This class need test coverage.
+//TODO: PEGA-721 This class need test coverage.
 public class GlobalTopologyServiceManager implements TopologyManager {
 
     protected static final Logger LOG              = LoggerFactory.getLogger(GlobalTopologyServiceManager.class);
@@ -55,7 +55,7 @@ public class GlobalTopologyServiceManager implements TopologyManager {
             // unable to connect with the topo service.
             // this is expected behavior if this is the topo service itself
             // @todo - review
-            LOG.error("Error starting Global Topology Service.");
+            LOG.error("Error starting Global Topology Service.", e);
 
         }
     }

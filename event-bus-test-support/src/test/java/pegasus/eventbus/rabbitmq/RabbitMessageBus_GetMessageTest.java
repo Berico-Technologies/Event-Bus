@@ -23,7 +23,7 @@ import pegasus.eventbus.client.EventResult;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.AMQP.BasicProperties;
 
-//TODO: These tests need to be converted from testing getGetMessage to testing Consume
+//TODO: PEGA-718 These tests need to be converted from testing getGetMessage to testing Consume
 @RunWith(value = Parameterized.class)
 public class RabbitMessageBus_GetMessageTest extends RabbitMessageBus_TestBase {
 

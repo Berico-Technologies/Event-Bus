@@ -10,7 +10,7 @@ import pegasus.eventbus.amqp.TopologyManager;
 
 import pegasus.eventbus.client.EventManager;
 
-//TODO: This class need test coverage.
+//TODO: PEGA-719 This class need test coverage.
 public class CompositeTopologyManager implements TopologyManager {
 
     protected static final Logger      LOG              = LoggerFactory.getLogger(CompositeTopologyManager.class);

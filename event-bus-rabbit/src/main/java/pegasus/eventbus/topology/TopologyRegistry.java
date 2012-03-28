@@ -5,7 +5,7 @@ import java.util.Map;
 
 import pegasus.eventbus.amqp.RoutingInfo;
 
-//TODO: This class need test coverage.
+//TODO: PEGA-723 This class need test coverage.
 public class TopologyRegistry {
 
     private static final String        Version     = "1.0";
