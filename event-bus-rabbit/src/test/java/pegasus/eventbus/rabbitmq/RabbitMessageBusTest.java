@@ -82,6 +82,7 @@ public class RabbitMessageBusTest {
 	@Test
 	public void afterAConnectionResetThePreviousCommandChannelShouldNoLongerBeUsed(){
 		conectionCloseListener.onUnexpectedClose(true);
+		reset(channel1);
 		messageBus.publish(route, new Envelope());
 		verifyNoMoreInteractions(channel1);
 	}
