@@ -89,7 +89,7 @@ class EnvelopeHandlerBasedConsumer extends DefaultConsumer {
 				//TODO: what if handler incorrectly returns null? I think we should assume Failed to be safe.
 				result = consumer.handleEnvelope(envelope);
 				
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				
 				result = EventResult.Failed;
 				
@@ -99,7 +99,7 @@ class EnvelopeHandlerBasedConsumer extends DefaultConsumer {
 					
 					id = envelope.getId().toString();
 					
-				} catch (Exception ee) {
+				} catch (Throwable ee) {
 					
 					id = "<message id not available>";
 				}
@@ -134,10 +134,10 @@ class EnvelopeHandlerBasedConsumer extends DefaultConsumer {
 				
 				break;
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			try {
 				LOG.error("handleDelivery failed on queue " + queueName + ".", e);
-	        } catch (Exception e2) {
+	        } catch (Throwable e2) {
 				System.err.println("LOGGING ERROR!");
 				e.printStackTrace();
 			} finally {

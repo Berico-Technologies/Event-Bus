@@ -108,7 +108,7 @@ class EventEnvelopeHandler implements EnvelopeHandler {
                 	return EventResult.Failed;
                 }
              
-            } catch (Exception e) {
+            } catch (Throwable e) {
 
                 LOG.error("Could not handle event type with the supplied EventHandler (deserialization or forname exception).", e);
 
@@ -148,7 +148,7 @@ class EventEnvelopeHandler implements EnvelopeHandler {
                     LOG.debug("EventHandler [{}] successfully handled the Event [{}].", eventHandler.getClass().getName(), event.getClass().getName());
 
                 }
-            } catch (Exception e) {
+            } catch (Throwable e) {
 
                 LOG.error("EventHandler failed to handle event (exception thrown in handler).", e);
 
@@ -158,11 +158,11 @@ class EventEnvelopeHandler implements EnvelopeHandler {
 
                 this.amqpEventManager.getEnvelopesBeingHandled().remove(event);
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
 
         	try {
         		LOG.error("Unable to handle message: {}", envelope, e);
-			} catch (Exception e2) {
+			} catch (Throwable e2) {
 				System.err.println("Unable to handle message!");
 				e.printStackTrace();
 			}
