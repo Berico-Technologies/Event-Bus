@@ -11,8 +11,8 @@ public class UserCounterTweetHandler extends BaseTweetCounterHandler {
 
 	@Override
 	public String[] provideWordsToCount(Tweet tweet) {
-		
-		return new String[]{ tweet.getUser().getAccountName() };
+		// Yes, using the long would be more ideal, but I don't want to redesign the word counter at the moment.
+		return new String[]{ Long.toString(tweet.getUser().getUserId()) };
 	}
 
 }

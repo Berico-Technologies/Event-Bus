@@ -72,6 +72,30 @@
   
   <build>
     <plugins>
+    <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.2.1</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>java</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <mainClass>com.berico.tweetstream.TweetWriter</mainClass>
+          <arguments>
+          <!--
+            <argument>/Users/rclayton/Data/TWEETS/sample_2012-03-23.utf8.txt sample</argument>
+             
+            <argument>/Users/rclayton/Data/TWEETS/keyword_2012-03-23.utf8.txt keyword China,Xilai,Lashkar-e-Tayyibba,Lashkar-e-Taibba,Lashkar,Tayyibba,Taibba,LeT,Kashmir,Bhartiya,Janata,Iran,Pakistan,ISS,Taliban</argument>
+             -->
+             <argument>/Users/rclayton/Data/TWEETS/location_2012-03-23.utf8.txt location 36.0,70.0;5.0,91.0</argument>
+             
+          </arguments>
+        </configuration>
+      </plugin>
 		<plugin> 
 		  <groupId>org.apache.felix</groupId>
 		  <artifactId>maven-bundle-plugin</artifactId>
