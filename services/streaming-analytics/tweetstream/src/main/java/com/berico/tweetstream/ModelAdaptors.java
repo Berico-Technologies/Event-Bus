@@ -14,6 +14,7 @@ public class ModelAdaptors {
 		
 		user.setUserId(tuser.getId());
 		user.setFollowers(tuser.getFollowersCount());
+		user.setLocation(tuser.getLocation());
 		
 		return user;
 	}
@@ -98,6 +99,9 @@ public class ModelAdaptors {
 			tweet.setLocation(fromPlace(status.getPlace()));
 		}
 		
+		tweet.setTimeOfTweet(status.getCreatedAt().toString());
+		tweet.setRetweetCount(status.getRetweetCount());
+		
 		ArrayList<User> lusers = new ArrayList<User>();
 		
 		String statusText = status.getText();
@@ -118,11 +122,11 @@ public class ModelAdaptors {
 	
 	
 	public static String stripMentionedUserFromStatus(String status, UserMentionEntity mention){
+		String newStatus = status.replace(mention.getScreenName(), Long.toString(mention.getId())); 
 		
-		return status.replace(
-			status.subSequence(
-				mention.getStart(), mention.getEnd()), 
-				"#" + Long.toString(mention.getId()));
+		System.out.println(newStatus);
+		
+		return newStatus;
 	}
 
 	public static Tweet fromStatusComplete(Status status){
@@ -130,6 +134,8 @@ public class ModelAdaptors {
 		Tweet tweet = new Tweet();
 		tweet.setMessage(status.getText());
 		tweet.setUser(fromUserComplete(status.getUser()));
+		tweet.setTimeOfTweet(status.getCreatedAt().toString());
+		tweet.setRetweetCount(status.getRetweetCount());
 		
 		if(status.getPlace() != null){
 		

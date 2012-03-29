@@ -28,6 +28,7 @@ public class User {
 	private String userUrl = "ommited";
 	private long userId = -1;
 	private int followers = 0;
+	private String location = "";
 
 	public String getUser() {
 		return user;
@@ -75,6 +76,14 @@ public class User {
 
 	public void setFollowers(int followers) {
 		this.followers = followers;
+	}
+
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
 	}
 	
 }

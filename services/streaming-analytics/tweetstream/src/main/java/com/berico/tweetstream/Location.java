@@ -15,7 +15,6 @@
  */
 package com.berico.tweetstream;
 
-import twitter4j.GeoLocation;
 
 /**
  * Location that a Twitter user has sent a Tweet from.

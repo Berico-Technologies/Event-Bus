@@ -15,10 +15,6 @@
  */
 package com.berico.tweetstream;
 
-import java.util.ArrayList;
-
-import twitter4j.Status;
-import twitter4j.UserMentionEntity;
 
 /**
  * This is a wrapper around the twitter4j Status interface
@@ -31,6 +27,8 @@ public class Tweet {
 	private String message = null;
 	private Location location = null;
 	private User[] mentioned = null;
+	private String timeOfTweet = null;
+	private long retweetCount = 0;
 	
 	public Tweet(){}
 	
@@ -65,5 +63,21 @@ public class Tweet {
 	public void setMentioned(User[] mentioned) {
 		this.mentioned = mentioned;
 	}
-	
+
+	public String getTimeOfTweet() {
+		return timeOfTweet;
+	}
+
+	public void setTimeOfTweet(String timeOfTweet) {
+		this.timeOfTweet = timeOfTweet;
+	}
+
+	public long getRetweetCount() {
+		return retweetCount;
+	}
+
+	public void setRetweetCount(long retweetCount) {
+		this.retweetCount = retweetCount;
+	}
+
 }
