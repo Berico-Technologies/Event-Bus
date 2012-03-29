@@ -38,6 +38,8 @@ public class NaiveTopicCounterTweetHandler implements EventHandler<Tweet> {
 			
 			if(aggregate.isTopicMatch(words)){
 				
+				System.out.println("Aggregate Match on " + aggregate.getDescription());
+				
 				eventManager.publish(aggregate);
 			}
 		}

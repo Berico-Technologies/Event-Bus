@@ -28,11 +28,11 @@ public abstract class BaseDemo {
 		
 		String connectionString =  "amqp://guest:guest@localhost:5672/";
 		
-		if(args[0] != null && args[0].startsWith("amqp://")){
+		if(args.length > 0 && args[0].startsWith("amqp://")){
 			
 			connectionString = args[0];
 			
-			System.arraycopy(args, 1, this.cmdlineArgs, 0, args.length - 1);
+			this.cmdlineArgs = pruneFirst(args);
 		}
 		else {
 			
@@ -76,15 +76,12 @@ public abstract class BaseDemo {
 	protected abstract TwitterStreamMode getTwitterStreamMode();
 	
 	public static void main(String[] args){
-		
-		StackTraceElement[] stack = Thread.currentThread ().getStackTrace();
-	    StackTraceElement main = stack[stack.length - 1];
 	
     	try {
 			
-    		BaseDemo demo = (BaseDemo)(Class.forName(main.getClassName()).newInstance());
+    		BaseDemo demo = (BaseDemo)(Class.forName(args[0]).newInstance());
     		
-			demo.initialize(args);
+			demo.initialize(pruneFirst(args));
 			
 		} catch (Exception e) {
 
@@ -114,6 +111,12 @@ public abstract class BaseDemo {
         public void onScrubGeo(long userId, long upToStatusId) {}
 
         public void onException(Exception ex) { ex.printStackTrace(); }
+    }
+    
+    public static String[] pruneFirst(String[] args){
+    	String[] newArgs = new String[args.length - 1];
+    	System.arraycopy(args, 1, newArgs, 0, args.length - 1);
+    	return newArgs;
     }
 	
 }

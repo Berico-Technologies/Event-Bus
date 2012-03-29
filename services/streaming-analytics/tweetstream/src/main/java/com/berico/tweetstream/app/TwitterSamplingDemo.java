@@ -33,7 +33,7 @@ public class TwitterSamplingDemo extends BaseDemo {
 		
 		//Subscribe one of our own EventHandlers to display
         //Tweets on the bus from this console.
-        this.eventManager.subscribe(new ConsoleOutTweetHandler());
+        //this.eventManager.subscribe(new ConsoleOutTweetHandler());
         
         WordCountRepository tweetWordsCount = new ConcurrentMapWordCountRepository();
         this.eventManager.subscribe(new WordCounterTweetHandler(tweetWordsCount, new StopFilterWordSplitter()));
