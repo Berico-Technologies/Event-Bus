@@ -42,6 +42,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\main\dotnet\amqp\AmqpConfiguration.cs" />
     <Compile Include="src\main\dotnet\amqp\AmqpEventManager.cs" />
     <Compile Include="src\main\dotnet\amqp\Exchange.cs" />
     <Compile Include="src\main\dotnet\amqp\IAmqpMessageBus.cs" />
