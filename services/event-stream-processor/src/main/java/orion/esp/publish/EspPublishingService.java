@@ -26,7 +26,6 @@ public class EspPublishingService implements PublishingService, Broker {
     private boolean started = false;
 
     public EspPublishingService() {
-
     }
 
     @Override

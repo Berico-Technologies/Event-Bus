@@ -717,7 +717,7 @@ public class AmqpEventManager implements EventManager, UnexpectedConnectionClose
 
                         Thread.sleep(50);
                     } catch (InterruptedException e) {
-                        LOG.debug("Thread [" + Thread.currentThread().getName() + "] interrupted in method AmqpEventManager.deactivateSubscriptions().");
+                        LOG.debug("Thread interrupted in method AmqpEventManager.deactivateSubscriptions().");
                     }
                     break;
                 }
@@ -737,6 +737,8 @@ public class AmqpEventManager implements EventManager, UnexpectedConnectionClose
                 messageBus.deleteQueue(subscription.getQueueName());
             }
         }
+        
+        // TODO: PEGA-730 BUG! We are not closing the subscription-specific amqp channel!
     }
 
     @Override

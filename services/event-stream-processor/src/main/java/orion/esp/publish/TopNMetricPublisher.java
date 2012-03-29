@@ -16,6 +16,7 @@ import dashboard.server.metric.TrendMetric;
 
 public class TopNMetricPublisher extends AbstractPublisher {
 
+    private static final int TOTAL_METRICS = 10;
     private static final Logger LOG = LoggerFactory.getLogger(TopNMetricPublisher.class);
 
     @SuppressWarnings("unchecked")
@@ -42,7 +43,7 @@ public class TopNMetricPublisher extends AbstractPublisher {
 				return arg1.getValue() - arg0.getValue();
 			}});
 
-		if(metrics.size() > 10){
+		if(metrics.size() > TOTAL_METRICS){
 			int leastValueToReturn = metrics.get(10 -1).getValue();
 			for(int i = metrics.size()-1; metrics.get(i).getValue() < leastValueToReturn; i--){
 				metrics.remove(i);

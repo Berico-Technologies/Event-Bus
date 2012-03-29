@@ -16,6 +16,8 @@ import pegasus.eventbus.amqp.RoutingInfo;
 
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.ShutdownListener;
+import com.rabbitmq.client.ShutdownSignalException;
 
 import pegasus.eventbus.client.Envelope;
 import pegasus.eventbus.client.EnvelopeHandler;
@@ -37,7 +39,7 @@ public class RabbitMessageBus implements AmqpMessageBus, UnexpectedCloseListener
     private Channel                                commandChannel;
     private Map<String, Channel>                   consumerChannels                   = new HashMap<String, Channel>();
     private Set<UnexpectedConnectionCloseListener> unexpectedConnectionCloseListeners = new HashSet<UnexpectedConnectionCloseListener>();
-
+    private boolean                                isClosing                          = false;
     /**
      * Initialize Rabbit with the given connection parameters,
      * 
@@ -57,6 +59,8 @@ public class RabbitMessageBus implements AmqpMessageBus, UnexpectedCloseListener
 
         LOG.info("Starting the RabbitMQ Message Bus.");
 
+        isClosing = false;
+        
         openConnectionToBroker();
 
     }
@@ -84,8 +88,16 @@ public class RabbitMessageBus implements AmqpMessageBus, UnexpectedCloseListener
 
             LOG.debug("Creating channel to AMQP broker for command use.");
 
-            // TODO: Need to replace this with a channel per thread model.
+            // TODO: PEGA-725 Need to replace this with a channel per thread model.
             this.commandChannel = connection.createChannel();
+            
+            this.commandChannel.addShutdownListener(new ShutdownListener(){
+				@Override
+				public void shutdownCompleted(ShutdownSignalException cause) {
+					if(!isClosing){
+						LOG.error("Command channel shutdown signal received", cause);
+					}
+				}});
 
         } catch (IOException e) {
 
@@ -103,6 +115,8 @@ public class RabbitMessageBus implements AmqpMessageBus, UnexpectedCloseListener
         LOG.info("Closing connection to the AMQP broker.");
 
         try {
+        	
+        	isClosing = true;
 
             if (commandChannel.isOpen()) {
 
@@ -197,7 +211,7 @@ public class RabbitMessageBus implements AmqpMessageBus, UnexpectedCloseListener
 
         	Map<String, Object> params = new HashMap<String,Object>();
         	if(!durable){
-        		//TODO: make this expiration configurable
+        		//TODO: PEGA-724 make this expiration configurable
         		//We are using expiration vs auto-delete as this will allow for connection drops over bad comms and not loose messages due to a deleted queue.
         		params.put("x-expires", 1000*60*30); //30-min timout in mills
         	}
@@ -350,7 +364,7 @@ public class RabbitMessageBus implements AmqpMessageBus, UnexpectedCloseListener
 
         LOG.trace("Begin consuming messages for queue [{}] with an EnvelopeHandler of type [{}].", queueName, consumer.getClass().getCanonicalName());
 
-        String consumerTag = queueName + ":" + UUID.randomUUID().toString();
+        final String consumerTag = queueName + ":" + UUID.randomUUID().toString();
 
         LOG.trace("ConsumerTag set to [{}].", consumerTag);
 
@@ -360,6 +374,14 @@ public class RabbitMessageBus implements AmqpMessageBus, UnexpectedCloseListener
             LOG.trace("Opening dedicated channel for ConsumerTag [{}].", consumerTag);
 
             consumerChannel = connection.createChannel();
+
+            consumerChannel.addShutdownListener(new ShutdownListener(){
+				@Override
+				public void shutdownCompleted(ShutdownSignalException cause) {
+					if(!isClosing){
+						LOG.error("Consumer channel shutdown signal received for consumer tag " + consumerTag, cause);
+					}
+				}});
 
             LOG.trace("Successfully opened dedicated channel for ConsumerTag [{}].", consumerTag);
 

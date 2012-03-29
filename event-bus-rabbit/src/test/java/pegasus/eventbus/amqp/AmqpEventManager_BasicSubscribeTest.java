@@ -226,7 +226,7 @@ public class AmqpEventManager_BasicSubscribeTest extends AmqpEventManager_BasicS
 
     @Override
     protected RoutingInfo[] getExpectedRoutes() {
-        // TODO: Make expected route list based on handler.getHandledTypes();
+        // TODO: PEGA-729 Make expected route list based on handler.getHandledTypes();
 
         // In order to support wiretaps on queue topic X where topic X may also be used for RPC
         // we must subscribe to topic X and topic X.# as the latter does not include the former.

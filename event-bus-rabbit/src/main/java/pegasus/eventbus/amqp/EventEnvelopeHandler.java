@@ -31,7 +31,8 @@ class EventEnvelopeHandler implements EnvelopeHandler {
 
         this.amqpEventManager = amqpEventManager;
 
-        LOG = LoggerFactory.getLogger(String.format("{}", EventEnvelopeHandler.class));
+        //TODO: PEGA-727 Need to add tests to assert that this logger name is always valid (i.e. queue names with . and any other illegal chars are correctly mangled.)
+        LOG = LoggerFactory.getLogger(String.format("%s$>%s", this.getClass().getCanonicalName(), eventHandler.getClass().getName().replace('.', '_')));
 
         LOG.trace("EventEnvelopeHandler instantiated for EventHandler of type {}", eventHandler.getClass().getName());
 
@@ -108,7 +109,7 @@ class EventEnvelopeHandler implements EnvelopeHandler {
                 	return EventResult.Failed;
                 }
              
-            } catch (Exception e) {
+            } catch (Throwable e) {
 
                 LOG.error("Could not handle event type with the supplied EventHandler (deserialization or forname exception).", e);
 
@@ -148,7 +149,7 @@ class EventEnvelopeHandler implements EnvelopeHandler {
                     LOG.debug("EventHandler [{}] successfully handled the Event [{}].", eventHandler.getClass().getName(), event.getClass().getName());
 
                 }
-            } catch (Exception e) {
+            } catch (Throwable e) {
 
                 LOG.error("EventHandler failed to handle event (exception thrown in handler).", e);
 
@@ -158,10 +159,10 @@ class EventEnvelopeHandler implements EnvelopeHandler {
 
                 this.amqpEventManager.getEnvelopesBeingHandled().remove(event);
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
 
-            LOG.error("Unable to handle message: {}", envelope, e);
-
+        	LOG.error("Unable to handle message: {}", envelope, e);
+        
         }
 
         return result;

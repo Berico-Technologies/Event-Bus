@@ -57,8 +57,7 @@ public class EnvelopeCounter extends EventMonitor {
             for (int per : envelopeRetriever.periods()) {
                 String desc = valueStreams.addPeriod(per);
                 ValueStreamsDataProvider provider = new ValueStreamsDataProvider(valueStreams, desc);
-                TopNMetricPublisher publisher = new TopNMetricPublisher();
-                publisher.setDataProvider(provider);
+                Publisher publisher = new TopNMetricPublisher().setDataProvider(provider);
                 publishers.add(publisher);
             }
         }

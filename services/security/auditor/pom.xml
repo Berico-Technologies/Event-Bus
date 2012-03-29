@@ -1,5 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>pegasus.eventbus.services</groupId>
@@ -10,67 +10,67 @@
   <name>auditor</name>
   <url>http://maven.apache.org</url>
 
-	<properties>
-    	<bundle.symbolicName>pegasus.eventbus</bundle.symbolicName>
-    	<bundle.namespace>pegasus.eventbus</bundle.namespace>
-    	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  	</properties>
+  <properties>
+    <bundle.symbolicName>pegasus.eventbus</bundle.symbolicName>
+    <bundle.namespace>pegasus.eventbus</bundle.namespace>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
 
   <dependencies>
-    	<dependency>
-            <groupId>pegasus.cip</groupId>
-            <artifactId>event-bus-client</artifactId>
-            <version>0.0.3-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>pegasus.cip</groupId>
-            <artifactId>event-bus-rabbit</artifactId>
-            <version>0.0.3-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.6.4</version>
-		</dependency>
-		<dependency>
-    		<groupId>ch.qos.logback</groupId>
-    		<artifactId>logback-core</artifactId>
-    		<version>1.0.0</version>
-		</dependency>
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<version>1.0.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.felix</groupId>
-			<artifactId>org.apache.felix.configadmin</artifactId>
-			<version>1.2.8</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.felix</groupId>
-			<artifactId>org.apache.felix.gogo.runtime</artifactId>
-			<version>0.10.0</version>
-		</dependency>
+    <dependency>
+      <groupId>pegasus.cip</groupId>
+      <artifactId>event-bus-client</artifactId>
+      <version>0.0.3-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>pegasus.cip</groupId>
+      <artifactId>event-bus-rabbit</artifactId>
+      <version>0.0.3-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.5.11</version>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-core</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.felix</groupId>
+      <artifactId>org.apache.felix.configadmin</artifactId>
+      <version>1.2.8</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.felix</groupId>
+      <artifactId>org.apache.felix.gogo.runtime</artifactId>
+      <version>0.10.0</version>
+    </dependency>
   </dependencies>
-  
+
   <build>
     <plugins>
-		<plugin> 
-		  <groupId>org.apache.felix</groupId>
-		  <artifactId>maven-bundle-plugin</artifactId>
-		  <version>2.3.6</version>
-		  <extensions>true</extensions>
-		  <configuration>
-		    <instructions>
-		    <!-- 
-		      <Export-Package>pegasus.eventbus.*</Export-Package>
-		      
-		      <Bundle-Activator>com.berico.timeprovider.internal.Activator</Bundle-Activator>
-		       -->
-		    </instructions>
-		  </configuration>
-		</plugin> 
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <version>2.3.6</version>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <!--
+                <Export-Package>pegasus.eventbus.*</Export-Package>
+
+                <Bundle-Activator>com.berico.timeprovider.internal.Activator</Bundle-Activator>
+                -->
+          </instructions>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 </project>

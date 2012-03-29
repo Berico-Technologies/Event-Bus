@@ -18,9 +18,9 @@ package com.berico.tweetstream;
 import com.berico.tweetstream.handlers.MentionedUserCounterTweetHandler;
 import com.berico.tweetstream.handlers.UserCounterTweetHandler;
 import com.berico.tweetstream.handlers.WordCounterTweetHandler;
+import com.berico.tweetstream.publishers.WordCountPublisher;
 import com.berico.tweetstream.wordcount.ConcurrentMapWordCountRepository;
 import com.berico.tweetstream.wordcount.StopFilterWordSplitter;
-import com.berico.tweetstream.wordcount.WordCountPublisher;
 import com.berico.tweetstream.wordcount.WordCountRepository;
 
 import pegasus.eventbus.amqp.AmqpConfiguration;
@@ -43,6 +43,15 @@ public class TweetStreamApp
 {
     public static void main( String[] args )
     {	
+    	//Keywords to Filter on
+    	String[] filters = "China,Xilai,Lashkar-e-Tayyibba,Lashkar-e-Taibba,Lashkar,Tayyibba,Taibba,LeT,Kashmir,Bhartiya,Janata,Iran,Pakistan,ISS,Taliban".split(",");
+    	
+    	//Locations to Filter on
+    	double[][] locations = new double[][]{ 
+    			new double[]{ 67.236328, 7.71099 }, 
+    			new double[]{ 92.548828, 32.990236 }
+    	};
+    	
     	//Manually configure the EventManager
     	AmqpConfiguration config = AmqpConfiguration.getDefault(
 				"tweetstream", 
@@ -67,12 +76,11 @@ public class TweetStreamApp
         
         //Subscribe one of our own EventHandlers to display
         //Tweets on the bus from this console.
-        //em.subscribe(new ConsoleOutTweetHandler());
+        em.subscribe(new ConsoleOutTweetHandler());
         
         WordCountRepository tweetWordsCount = new ConcurrentMapWordCountRepository();
         em.subscribe(new WordCounterTweetHandler(tweetWordsCount, new StopFilterWordSplitter()));
         new WordCountPublisher(em, tweetWordsCount, "tweet.words").start();
-        
         
         WordCountRepository userCount = new ConcurrentMapWordCountRepository();
         em.subscribe(new UserCounterTweetHandler(userCount));
@@ -84,8 +92,7 @@ public class TweetStreamApp
         
         //Initialize the stream, supplying the filter
         twitterStream.filter(
-        	new FilterQuery(0, new long[]{}, 
-        		new String[]{ "Al Shabaab", "Somolia", "Bin Laden", "Al Qaeda", "Africa", "Iraq", "Afghanistan", "Iran" }));
+        	new FilterQuery(0, new long[]{}, filters));
     }
     
     /**
@@ -115,7 +122,7 @@ public class TweetStreamApp
             em.publish(
             	//We adapt the Twitter4j Status object
             	//to our own Model.
-            	Tweet.fromStatus(status));
+            	ModelAdaptors.fromStatus(status));
         }
 
         public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {}
