@@ -18,9 +18,9 @@ package com.berico.tweetstream;
 import com.berico.tweetstream.handlers.MentionedUserCounterTweetHandler;
 import com.berico.tweetstream.handlers.UserCounterTweetHandler;
 import com.berico.tweetstream.handlers.WordCounterTweetHandler;
+import com.berico.tweetstream.publishers.WordCountPublisher;
 import com.berico.tweetstream.wordcount.ConcurrentMapWordCountRepository;
 import com.berico.tweetstream.wordcount.StopFilterWordSplitter;
-import com.berico.tweetstream.wordcount.WordCountPublisher;
 import com.berico.tweetstream.wordcount.WordCountRepository;
 
 import pegasus.eventbus.amqp.AmqpConfiguration;
