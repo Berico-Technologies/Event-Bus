@@ -66,13 +66,13 @@ public class TweetStreamApp
     	
     	//Create a new instance of our Twitter listener that will
     	//publish incoming Tweets onto the bus.
-    	TweetPublisher publishOnBusListener = new TweetPublisher(em);
+    	//TweetPublisher publishOnBusListener = new TweetPublisher(em);
     	
     	//Create a Twitter Stream instance (3rd Party API)
-    	TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
+    	//TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
     	
     	//Register our listener with the Twitter Stream API
-        twitterStream.addListener(publishOnBusListener);
+        //twitterStream.addListener(publishOnBusListener);
         
         //Subscribe one of our own EventHandlers to display
         //Tweets on the bus from this console.
@@ -91,8 +91,8 @@ public class TweetStreamApp
         new WordCountPublisher(em, mentionedCount, "tweet.mentioned").start();
         
         //Initialize the stream, supplying the filter
-        twitterStream.filter(
-        	new FilterQuery(0, new long[]{}, filters));
+        //twitterStream.filter(
+        //	new FilterQuery(0, new long[]{}, filters));
     }
     
     /**
@@ -117,7 +117,7 @@ public class TweetStreamApp
     	 * @param status Context of the Tweet
     	 */
         public void onStatus(Status status) {
-        	
+
         	//Publish the adapted Tweet on the bus
             em.publish(
             	//We adapt the Twitter4j Status object

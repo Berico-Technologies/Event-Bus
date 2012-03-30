@@ -19,6 +19,7 @@ public class TweetMapper implements FieldSetMapper<Tweet> {
 		u.setUserId(fs.readLong(0));
 		u.setUser(fs.readString(1));
 		u.setAccountName(fs.readString(1));
+		u.setLocation(fs.readString(5));
 		tweet.setUser(u);
 
 		
