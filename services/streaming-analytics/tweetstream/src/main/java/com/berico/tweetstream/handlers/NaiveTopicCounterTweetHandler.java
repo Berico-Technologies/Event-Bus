@@ -23,7 +23,7 @@ public class NaiveTopicCounterTweetHandler implements EventHandler<Tweet> {
 		
 		this.wordSplitter = splitter;
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	public Class<? extends Tweet>[] getHandledEventTypes() {
 		
@@ -40,7 +40,7 @@ public class NaiveTopicCounterTweetHandler implements EventHandler<Tweet> {
 				
 				System.out.println("Aggregate Match on " + aggregate.getDescription());
 				
-				eventManager.publish(aggregate);
+				eventManager.publish(new TopicMatchAggregateSet(this.topicMatchAggregates, aggregate));
 			}
 		}
 		
