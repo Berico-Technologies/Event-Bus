@@ -20,28 +20,29 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.berico.tweetstream.Location;
+
 
 public class ConcurrentMapCountryCountRepository implements CountryCountRepository {
 
-	ConcurrentHashMap<String, WordCount> countryMap = new ConcurrentHashMap<String, WordCount>();
+	ConcurrentHashMap<String, LocationCount> countryMap = new ConcurrentHashMap<String, LocationCount>();
 
-	public void increment(String word) {
-		
-		countryMap.putIfAbsent(word, new WordCount(word));
-		countryMap.get(word).count++;
+	public void increment(LocationMention mention) {
+		countryMap.putIfAbsent(mention.getLoc().getCountryCode(), new LocationCount(mention.getLoc().getCountryCode()));
+		countryMap.get(mention.getLoc().getCountryCode()).incrementCount(mention.getSource());
 	}
 
 	public Map<String, Long> getTopNCountries(int N) {
-		
+		System.out.println("Getting Top "+N);
 		Map<String, Long> topNCountries = new HashMap<String, Long>();
 		
-		for(Entry<String, WordCount> wordCountEntry : countryMap.entrySet()){
+		for(Entry<String, LocationCount> locationCountEntry : countryMap.entrySet()){
 			
-			WordCount current = wordCountEntry.getValue();
+			LocationCount current = locationCountEntry.getValue();
 			
 			if(topNCountries.size() < N){
 				
-				topNCountries.put(current.word, current.count);
+				topNCountries.put(current.countryCode, current.getCount());
 			}
 			else {
 				
@@ -50,7 +51,7 @@ public class ConcurrentMapCountryCountRepository implements CountryCountReposito
 				
 				for(Entry<String, Long> topNCountriesEntry : topNCountries.entrySet()){
 					
-					if(current.count > topNCountriesEntry.getValue()){
+					if(current.getCount() > topNCountriesEntry.getValue()){
 					
 						if(countryToReplaceCount > topNCountriesEntry.getValue()){
 							
@@ -64,7 +65,7 @@ public class ConcurrentMapCountryCountRepository implements CountryCountReposito
 					
 					topNCountries.remove(countryToReplace);
 					
-					topNCountries.put(current.word, current.count);
+					topNCountries.put(current.countryCode, current.getCount());
 				}
 			}  
 		}
@@ -72,18 +73,94 @@ public class ConcurrentMapCountryCountRepository implements CountryCountReposito
 		return topNCountries;
 	}
 	
-	public long getCount(String word) {
+	public long getCount(String countryCode) {
 		
-		WordCount wc = countryMap.get(word);
+		LocationCount wc = countryMap.get(countryCode);
 		
-		return (wc == null)? 0 : wc.count;
+		return (wc == null)? 0 : wc.getCount();
 	}
 	
-	protected class WordCount {
-		WordCount(String word){
-			this.word = word;
-		}
-		String word = null;
-		long count = 0;
+	@Override
+	public long getCountWithSourceField(String countryCode, String sourceField) {
+		LocationCount wc = countryMap.get(countryCode);
+		
+		return (wc == null)? 0 : wc.getCountForSource(sourceField);
 	}
+
+	@Override
+	public Map<String, Long> getTopNCountriesForSource(int N, String source) {
+		Map<String, Long> topNCountries = new HashMap<String, Long>();
+		System.out.println("Getting Top "+N+" for " + source);
+		for(Entry<String, LocationCount> locationCountEntry : countryMap.entrySet()){
+			
+			LocationCount current = locationCountEntry.getValue();
+			
+			if(topNCountries.size() < N){
+				
+				topNCountries.put(current.countryCode, current.getCountForSource(source));
+			}
+			else {
+				
+				String countryToReplace = null;
+				long countryToReplaceCount = Long.MAX_VALUE;
+				
+				for(Entry<String, Long> topNCountriesEntry : topNCountries.entrySet()){
+					
+					if(current.getCountForSource(source) > topNCountriesEntry.getValue()){
+					
+						if(countryToReplaceCount > topNCountriesEntry.getValue()){
+							
+							countryToReplace = topNCountriesEntry.getKey();
+							countryToReplaceCount = topNCountriesEntry.getValue();
+						}
+					}
+				}
+				
+				if(countryToReplace != null){
+					
+					topNCountries.remove(countryToReplace);
+					
+					topNCountries.put(current.countryCode, current.getCountForSource(source));
+				}
+			}  
+		}
+		
+		return topNCountries;
+	}
+	
+	protected class LocationCount {
+		
+		String countryCode = null;
+		ConcurrentHashMap<String, Long> countBySource;
+		
+		
+		LocationCount(String countryCode){
+			this.countryCode = countryCode;
+			this.countBySource = new ConcurrentHashMap<String, Long>();
+		}
+		
+		
+		
+		void incrementCount(String source){
+			this.countBySource.putIfAbsent(source, 0L);
+			long value = this.countBySource.get(source);
+			this.countBySource.put(source, ++value);
+		}
+		
+		public long getCount(){
+			long returnVal = 0;
+			for(Long l : this.countBySource.values()){
+				returnVal += l;
+			}
+			return returnVal;
+		}
+		
+		public long getCountForSource(String source){
+			this.countBySource.putIfAbsent(source, 0L);
+			return this.countBySource.get(source);
+		}
+	}
+
+
+
 }

@@ -22,6 +22,8 @@ public class GeoTaggerApp {
     	
     	CountryCountRepository repo = new ConcurrentMapCountryCountRepository();
     	em.subscribe(new GeoTaggingHandler(repo));
-    	new CountryCountPublisher(em, repo, "TopNCountries").start();
+    	new CountryCountPublisher(em, repo).start();
+    	new UserCountryCountPublisher(em, repo).start();
+    	new MessageCountryCountPublisher(em, repo).start();
 	}
 }

@@ -17,6 +17,8 @@ package com.berico.tweetstream.geo;
 
 import java.util.Map;
 
+import com.berico.tweetstream.Location;
+
 public class TopNCountries {
 
 	private Map<String, Long> topCountries;
