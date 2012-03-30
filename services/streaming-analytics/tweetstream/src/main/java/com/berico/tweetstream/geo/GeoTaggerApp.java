@@ -20,10 +20,11 @@ public class GeoTaggerApp {
     	//Start the EventManager
     	em.start();
     	
-    	CountryCountRepository repo = new ConcurrentMapCountryCountRepository();
+    	LocationRepository repo = new LocationRepositoryImpl();
     	em.subscribe(new GeoTaggingHandler(repo));
-    	new CountryCountPublisher(em, repo).start();
     	new UserCountryCountPublisher(em, repo).start();
-    	new MessageCountryCountPublisher(em, repo).start();
+    	new MentionedCountryCountPublisher(em, repo).start();
+    	new UserLocationsByCountryPublisher(em, repo).start();
+    	new MentionedLocationsByCountryPublisher(em, repo).start();
 	}
 }

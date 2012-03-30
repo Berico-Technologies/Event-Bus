@@ -15,36 +15,43 @@
  */
 package com.berico.tweetstream.geo;
 
+import java.util.List;
 import java.util.Map;
 
+import com.berico.tweetstream.Location;
 
-public class TopNCountries {
 
-	private Map<String, Long> topCountries;
+public class LocationsByCountry {
+
+	private Map<String, List<Location>> locations;
 	
 	private String source = null;
 	
-	private long timestamp = System.currentTimeMillis();
+	private Long timestamp = System.currentTimeMillis();
 
-	public TopNCountries(Map<String, Long> topCountries, String source) {
+	public LocationsByCountry(Map<String, List<Location>> locations, String source) {
 
-		this.topCountries = topCountries;
+		this.locations = locations;
 		this.source = source;
 	}
 
-	public TopNCountries(Map<String, Long> topWords, String source, long timestamp) {
+	public LocationsByCountry(Map<String, List<Location>> locations, String source, Long timestamp) {
 		
-		this.topCountries = topWords;
+		this.locations = locations;
 		this.source = source;
 		this.timestamp = timestamp;
 	}
-
-	public Map<String, Long> getTopCountriess() {
-		return topCountries;
+	
+	public List<Location> getLocationsForCountry(String countryCode){
+		return this.locations.get(countryCode);
 	}
 
-	public void setTopCountries(Map<String, Long> topCountries) {
-		this.topCountries = topCountries;
+	public Map<String, List<Location>> getLocations() {
+		return locations;
+	}
+
+	public void setLocations(Map<String, List<Location>> locations) {
+		this.locations = locations;
 	}
 
 	public String getSource() {
@@ -55,11 +62,11 @@ public class TopNCountries {
 		this.source = source;
 	}
 
-	public long getTimestamp() {
+	public Long getTimestamp() {
 		return timestamp;
 	}
 
-	public void setTimestamp(long timestamp) {
+	public void setTimestamp(Long timestamp) {
 		this.timestamp = timestamp;
 	}
 	

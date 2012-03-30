@@ -14,13 +14,13 @@ import com.berico.tweetstream.Tweet;
 public class GeoTaggingHandler implements EventHandler<Tweet> {
 
 	TwitterResolver resolver;
-	CountryCountRepository countryCountRepository;
+	LocationRepository locationRepository;
 	
 
 	
-	public GeoTaggingHandler(CountryCountRepository counter){
+	public GeoTaggingHandler(LocationRepository locationRepository){
 		resolver = new TwitterResolver();
-		this.countryCountRepository = counter;
+		this.locationRepository = locationRepository;
 	}
 	
 
@@ -40,13 +40,13 @@ public class GeoTaggingHandler implements EventHandler<Tweet> {
 		
 		for(ResolvedGeoLocation location : resolver.resolveTweetLocations(tweet.getMessage())){
 			Location loc = buildLocation(location);
-			this.countryCountRepository.increment(new LocationMention(loc, "message"));
+			this.locationRepository.addLocation(new LocationMention(loc, "message"));
 		}
 		
 		ResolvedGeoLocation location = resolver.resolveUserLocation(tweet.getMessage());
 		if(location != null){
 			Location loc = buildLocation(location);
-			this.countryCountRepository.increment(new LocationMention(loc, "user"));
+			this.locationRepository.addLocation(new LocationMention(loc, "user"));
 		}
 		
 		

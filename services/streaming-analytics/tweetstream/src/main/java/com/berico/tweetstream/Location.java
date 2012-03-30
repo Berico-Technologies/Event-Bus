@@ -86,4 +86,11 @@ public class Location {
 		this.longitude = longitude;
 	}
 	
+	@Override
+	public String toString(){
+		StringBuilder buff = new StringBuilder();
+		buff.append(String.format("%s {lat=%f,lon=%f}", this.countryCode, this.latitude, this.longitude));
+		return buff.toString();
+	}
+	
 }

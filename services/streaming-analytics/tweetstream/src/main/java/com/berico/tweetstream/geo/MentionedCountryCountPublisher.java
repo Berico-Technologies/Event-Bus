@@ -7,21 +7,21 @@ import pegasus.eventbus.client.EventManager;
 import com.berico.tweetstream.publishers.IntervalPublisher;
 
 
-public class UserCountryCountPublisher extends IntervalPublisher<TopNCountries> {
+public class MentionedCountryCountPublisher extends IntervalPublisher<TopNCountries> {
 	
 	public int countryCount = 25;
 	
 	private final LocationRepository locationRepository;
 	
 	
-	public UserCountryCountPublisher(EventManager em, LocationRepository countryCountRepo) {
+	public MentionedCountryCountPublisher(EventManager em, LocationRepository countryCountRepo) {
 		
 		super(em);
 		
 		this.locationRepository = countryCountRepo;
 	}
 	
-	public UserCountryCountPublisher(EventManager em, LocationRepository countryCountRepo, int countryCount, long sleepInterval) {
+	public MentionedCountryCountPublisher(EventManager em, LocationRepository countryCountRepo, int countryCount, long sleepInterval) {
 
 		super(em, sleepInterval);
 		
@@ -36,9 +36,9 @@ public class UserCountryCountPublisher extends IntervalPublisher<TopNCountries> 
 	@Override
 	protected TopNCountries nextEvent() {
 		
-		Map<String, Long> topN = this.locationRepository.getTopNUserCountryCodes(countryCount);
+		Map<String, Long> topN = this.locationRepository.getTopNMentionedCountryCodes(countryCount);
 
-		System.out.println(String.format("Top %d User Countries\n%s", this.countryCount, topN));
+		System.out.println(String.format("Top %d Mentioned Countries\n%s", this.countryCount, topN));
 		
 		return new TopNCountries(topN, "All");
 	}
