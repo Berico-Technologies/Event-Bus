@@ -118,24 +118,33 @@ public class RabbitMessageBus implements AmqpMessageBus, UnexpectedCloseListener
         	
         	isClosing = true;
 
-            if (commandChannel.isOpen()) {
+            if (commandChannel != null && commandChannel.isOpen()) {
 
                 LOG.trace("Closing command channel.");
 
                 commandChannel.close();
+            }else if(commandChannel == null){
+            	
+            	LOG.warn("Trying to close with null commandChannel");
             }
 
-            if (connection.isOpen()) {
+            if (connection != null && connection.isOpen()) {
 
                 LOG.trace("Closing connection.");
 
                 connection.close();
+            }else if( connection == null){
+            	LOG.warn("Trying to close with null connection");
             }
 
         } catch (IOException e) {
 
             LOG.error("Error occurred when trying to close connection to AMQP broker.", e);
-        }
+        }catch (RuntimeException e) {
+        	 // TODO: Determine if this Exception should be caught or thrown
+        	LOG.error("Caught runtime exception trying to close.  Re-Throwing it.  Might need to change behavior", e);        	
+        	throw e;            
+		}
     }
 
     @Override

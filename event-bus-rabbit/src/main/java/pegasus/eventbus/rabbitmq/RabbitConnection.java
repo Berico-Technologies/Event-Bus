@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.ShutdownListener;
 import com.rabbitmq.client.ShutdownSignalException;
 
@@ -21,7 +20,7 @@ public class RabbitConnection implements ShutdownListener {
     private static final Logger          LOG                      = LoggerFactory.getLogger(RabbitConnection.class);
     private static final long            DEFAULT_RETRY_TIMEOUT    = 30000;
 
-    private ConnectionFactory            connectionFactory        = new ConnectionFactory();
+    private BericoConnectionFactory            connectionFactory        = new BericoConnectionFactory();
     protected Connection                   connection;
     private long                         retryTimeout             = DEFAULT_RETRY_TIMEOUT;
     private Set<UnexpectedCloseListener> unexpectedCloseListeners = new HashSet<UnexpectedCloseListener>();
