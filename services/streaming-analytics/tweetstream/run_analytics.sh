@@ -1,0 +1,1 @@
+mvn exec:java -Dexec.mainClass="com.berico.tweetstream.app.AnalyticServices"
