@@ -12,7 +12,7 @@ import pegasus.eventbus.client.Envelope;
 
 import com.espertech.esper.client.EventBean;
 
-class CorrelateRequestResponsesEventDetector extends EventMonitor {
+public class CorrelateRequestResponsesEventDetector extends EventMonitor {
 
     public static final String INFERRED_TYPE = "RequestResponse";
 

@@ -46,6 +46,10 @@ public class EnvelopeCounter extends EventMonitor {
     private Map<String, ValueStreams> streamsMap = Maps.newHashMap();
     private Set<Publisher> publishers = new HashSet<Publisher>();
 
+    public Map<String, ValueStreams> getStreamsMap() {
+        return streamsMap;
+    }
+
     public EnvelopeCounter() {
 
         setupMetrics();
@@ -163,5 +167,24 @@ public class EnvelopeCounter extends EventMonitor {
 
     private String getPattern() {
         return "select env from Envelope as env";
+    }
+
+    // TODO: generalize the publishing code to replace this to return stats for testing
+    public void displayStats() {
+        Map<String, ValueStreams> streamsMap = getStreamsMap();
+        for (ValueStreams vs : streamsMap.values()) {
+            String name = vs.getName();
+            for (String range : vs.getActiveRanges()) {
+                System.out.println("Stats for " + range + ":");
+                for (String val : vs.getValues()) {
+                    ActiveRange activeRange = vs.getActiveRange(range, val);
+                    int total = activeRange.getTotal();
+                    int trend = activeRange.getTrend();
+
+                    System.out.println(String.format("  %s = [ %d , %d ]",
+                            val, total, trend));
+                }
+            }
+        }
     }
 }

@@ -11,4 +11,6 @@ public interface PublishingService extends Broker {
     public void start();
 
     public void stop();
+
+    public void removePublishers(Collection<Publisher> publishers);
 }
