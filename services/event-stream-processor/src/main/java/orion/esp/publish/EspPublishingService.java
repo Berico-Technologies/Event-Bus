@@ -3,14 +3,18 @@ package orion.esp.publish;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pegasus.eventbus.client.EventManager;
+
+import com.google.common.collect.Maps;
 
 public class EspPublishingService implements PublishingService, Broker {
 
@@ -50,26 +54,41 @@ public class EspPublishingService implements PublishingService, Broker {
         LOG.info("EspPublishingService starting...");
 
         started = true;
-        
+
         if(publishers.size() > 0){
 	        int delay = 0;
 	        int intervalBetweenMonitors = PERIOD / publishers.size();
-	
+
 	        for (Publisher publisher : publishers) {
 	            schedule(publisher, delay);
 	            delay += intervalBetweenMonitors;
 	        }
         }
-        
+
         LOG.info("EspPublishingService started.");
     }
-    
+
     private void schedule(Publisher publisher) {
         schedule(publisher, 0);
     }
-    
+
+    Map<Publisher, ScheduledFuture<?>> schedMap = Maps.newHashMap();
+
     private void schedule(Publisher publisher, int delay) {
-        scheduler.scheduleAtFixedRate(publisher, delay, PERIOD, UNIT);
+        ScheduledFuture<?> scd = scheduler.scheduleAtFixedRate(publisher, delay, PERIOD, UNIT);
+        schedMap.put(publisher, scd);
+    }
+
+    public void removePublishers(Collection<Publisher> publishers) {
+        for (Publisher publisher : publishers) {
+            removePublisher(publisher);
+        }
+    }
+
+    private void removePublisher(Publisher publisher) {
+        ScheduledFuture<?> scd = schedMap.get(publisher);
+        if (scd != null) { scd.cancel(true); }
+        schedMap.remove(publisher);
     }
 
     @Override
@@ -83,7 +102,7 @@ public class EspPublishingService implements PublishingService, Broker {
             eventManager = null;
         }
         started = false;
-        
+
         LOG.info("EspPublishingService stopped.");
     }
 

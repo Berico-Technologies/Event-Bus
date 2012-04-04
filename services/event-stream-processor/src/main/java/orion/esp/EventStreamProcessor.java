@@ -28,6 +28,7 @@ import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.UpdateListener;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Lists;
 
 public class EventStreamProcessor {
 
@@ -46,6 +47,7 @@ public class EventStreamProcessor {
     private EventMonitorRepository repository;
 
     private final String espKey = this.getClass().getCanonicalName();
+    private Collection<Publisher> publishers = Lists.newArrayList();
 
     class EnvelopeListener implements UpdateListener {
 
@@ -191,7 +193,6 @@ public class EventStreamProcessor {
         try {
             attachToPublishingService(publishingService);
         } catch (RuntimeException e) {
-            System.err.println("@@@@ Error attaching to PS:");
             e.printStackTrace();
             throw e;
         }
@@ -206,13 +207,15 @@ public class EventStreamProcessor {
     
     public void detachFromPublishingService() {
         if (publishingService != null) {
-            //@todo - remove the publishers registered by esp
+            publishingService.removePublishers(publishers);
+            this.publishers.removeAll(publishers);
         }
     }
     
     private void schedulePublishers(Collection<Publisher> publishers) {
         if (publishingService != null) {
             publishingService.addPublishers(publishers);
+            this.publishers.addAll(publishers);
         } else {
             LOG.error("Publishing Service is null. Not reporting results");
         }
