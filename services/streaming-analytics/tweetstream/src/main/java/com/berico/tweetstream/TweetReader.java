@@ -4,10 +4,12 @@ import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ParseException;
 import org.springframework.batch.item.UnexpectedInputException;
 import org.springframework.batch.item.file.FlatFileItemReader;
-import org.springframework.batch.item.file.FlatFileParseException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.FileSystemResource;
+
+import com.berico.tweetstream.TwitterStreamMode.StreamState;
+import com.berico.tweetstream.publishers.TwitterStreamModePublisher;
 
 import pegasus.eventbus.amqp.AmqpConfiguration;
 import pegasus.eventbus.amqp.AmqpConnectionParameters;
@@ -23,7 +25,7 @@ public class TweetReader {
 	public static void main(String[] args) throws UnexpectedInputException, ParseException, Exception{
 		
 		String filePath = args[0];
-		/*
+		
 		AmqpConfiguration config = AmqpConfiguration.getDefault(
 				"tweetstream", 
 				new AmqpConnectionParameters(
@@ -33,26 +35,23 @@ public class TweetReader {
     	EventManager em = new AmqpEventManager(config);
     	
     	//Start the EventManager
-    	em.start();*/
+    	em.start();
     	
-		
+    	new TwitterStreamModePublisher(new TwitterStreamMode(StreamState.Historical), em).start();
+    	
 		ApplicationContext ctxt = new ClassPathXmlApplicationContext("tweetReader.xml");
 	
 		FlatFileItemReader<Tweet> tweetReader = (FlatFileItemReader<Tweet>) ctxt.getBean("tweetItemReader");
+
 		tweetReader.setResource(new FileSystemResource(filePath));
 		tweetReader.setLinesToSkip(1);
 		tweetReader.open(new ExecutionContext());
 		
 		Tweet tweet = null;
+		
 		do{
-			try{
-				tweet = tweetReader.read();
-			}catch(FlatFileParseException ffpe){
-				//do nothing
-			}
-			
-			System.out.println(String.format("Publishing [%s -- %s]", tweet.getUser().getUser(), tweet.getMessage()));
-			//em.publish(tweet);
+			 tweet = tweetReader.read();
+			 em.publish(tweet);
 			
 		}while(tweet != null);
 		

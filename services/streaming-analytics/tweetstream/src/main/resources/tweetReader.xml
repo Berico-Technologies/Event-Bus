@@ -6,13 +6,7 @@
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd">
 
 
-	<bean name="lineTokenizer" class="org.springframework.batch.item.file.transform.DelimitedLineTokenizer">
-
-        <property name="delimiter" >
-  			 <util:constant static-field="org.springframework.batch.item.file.transform.DelimitedLineTokenizer.DELIMITER_TAB"/>
-		</property>
-		
-        
+	<bean name="lineTokenizer" class="com.berico.tweetstream.TabTokenizer">
     </bean>
 
 	<bean name="tweetMapper" class="com.berico.tweetstream.TweetMapper"/>

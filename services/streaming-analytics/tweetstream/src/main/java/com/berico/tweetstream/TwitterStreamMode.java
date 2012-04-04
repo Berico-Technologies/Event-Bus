@@ -22,6 +22,11 @@ public class TwitterStreamMode {
 
 	public TwitterStreamMode(){}
 	
+	public TwitterStreamMode(StreamState state){
+		
+		this.state = state;
+	}
+	
 	public TwitterStreamMode(StreamState state, String[] keywords) {
 
 		this.mode = Mode.Filter;
