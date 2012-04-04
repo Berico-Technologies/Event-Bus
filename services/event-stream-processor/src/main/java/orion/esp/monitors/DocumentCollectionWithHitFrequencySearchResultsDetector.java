@@ -12,7 +12,7 @@ import pegasus.eventbus.client.Envelope;
 
 import com.espertech.esper.client.EventBean;
 
-class DocumentCollectionWithHitFrequencySearchResultsDetector extends EventMonitor {
+public class DocumentCollectionWithHitFrequencySearchResultsDetector extends EventMonitor {
 
     public static final String INFERRED_TYPE = "DocumentCollectionWithHitFrequencySearchResult";
 

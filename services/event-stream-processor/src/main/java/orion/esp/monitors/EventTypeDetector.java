@@ -12,7 +12,7 @@ import pegasus.eventbus.client.Envelope;
 
 import com.espertech.esper.client.EventBean;
 
-class EventTypeDetector extends EventMonitor {
+public class EventTypeDetector extends EventMonitor {
 
     private String eventType;
 
