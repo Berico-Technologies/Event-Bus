@@ -49,6 +49,15 @@ public class EventStreamProcessor {
     private final String espKey = this.getClass().getCanonicalName();
     private Collection<Publisher> publishers = Lists.newArrayList();
 
+    /**
+     * This is a wrapper class around an EventMonitor to allow it to receive events
+     * from the Esper runtime.  It simplifies the API so that an EventMonitor registers its
+     * patterns with the ESP and has a 'receive' method that is called for each new
+     * Event Bean which may return an Inferred Event.
+     * 
+     * @author israel
+     *
+     */
     class EnvelopeListener implements UpdateListener {
 
         public EnvelopeListener(EventMonitor monitor) {
@@ -92,8 +101,6 @@ public class EventStreamProcessor {
     }
 
     class EventbusListener implements EnvelopeHandler {
-
-
 
         private void addHeader(Envelope env, String label, String val) {
             env.getHeaders().put(label, val);
