@@ -29,7 +29,7 @@
         <constructor-arg ref="defaultConfiguration" />
     </bean>
 
-<!-- ++++++++ EnvelopeLogger is only for debugging
+<!-- ++++++++ EnvelopeLogger is only for debugging; this logs all traffic out to a file in JSON
     <bean id="envLogger" class="orion.esp.monitors.EnvelopeLogger">
         <property name="logdir" value='/tmp/EventBus-traffic' />
     </bean>
@@ -44,7 +44,7 @@
     <bean id="envCounter" class="orion.esp.monitors.EnvelopeCounter"/>
 
     <bean id="envLogRepo" class="orion.esp.monitors.StorageRepository">
-<!-- ++++++++ EnvelopeLogger is only for debugging
+<!-- ++++++++ EnvelopeLogger is only for debugging; this logs all traffic out to a file in JSON
         <constructor-arg ref="envLogger"></constructor-arg>
  -->
         <constructor-arg ref="envCounter"></constructor-arg>
