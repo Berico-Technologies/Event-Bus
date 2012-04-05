@@ -13,71 +13,54 @@
  *  All rights reserved - Feb. 2012
  *  Richard Clayton (rclayton@bericotechnologies.com)                                                                                                                
  */
-package com.berico.tweetstream;
+package com.berico.tweetstream.geo;
+
+import java.util.Map;
 
 
-/**
- * This is a wrapper around the twitter4j Status interface
- * so it can be published on the Bus.
- * @author rclayton
- */
-public class Tweet {
+public class TopNCountries {
 
-	private User user = null;
-	private String message = null;
-	private Location location = null;
-	private User[] mentioned = null;
-	private String timeOfTweet = null;
-	private long retweetCount = 0;
+	private Map<String, Long> topCountries;
 	
-	public Tweet(){}
+	private String source = null;
 	
-	public String getMessage() {
-		return message;
+	private long timestamp = System.currentTimeMillis();
+
+	public TopNCountries(Map<String, Long> topCountries, String source) {
+
+		this.topCountries = topCountries;
+		this.source = source;
+	}
+
+	public TopNCountries(Map<String, Long> topWords, String source, long timestamp) {
+		
+		this.topCountries = topWords;
+		this.source = source;
+		this.timestamp = timestamp;
+	}
+
+	public Map<String, Long> getTopCountriess() {
+		return topCountries;
+	}
+
+	public void setTopCountries(Map<String, Long> topCountries) {
+		this.topCountries = topCountries;
+	}
+
+	public String getSource() {
+		return source;
+	}
+
+	public void setSource(String source) {
+		this.source = source;
+	}
+
+	public long getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(long timestamp) {
+		this.timestamp = timestamp;
 	}
 	
-	public void setMessage(String message) {
-		this.message = message;
-	}
-
-	public User getUser() {
-		return user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
-	}
-	
-	public Location getLocation() {
-		return location;
-	}
-
-	public void setLocation(Location location) {
-		this.location = location;
-	}
-
-	public User[] getMentioned() {
-		return mentioned;
-	}
-
-	public void setMentioned(User[] mentioned) {
-		this.mentioned = mentioned;
-	}
-
-	public String getTimeOfTweet() {
-		return timeOfTweet;
-	}
-
-	public void setTimeOfTweet(String timeOfTweet) {
-		this.timeOfTweet = timeOfTweet;
-	}
-
-	public long getRetweetCount() {
-		return retweetCount;
-	}
-
-	public void setRetweetCount(long retweetCount) {
-		this.retweetCount = retweetCount;
-	}
-
 }

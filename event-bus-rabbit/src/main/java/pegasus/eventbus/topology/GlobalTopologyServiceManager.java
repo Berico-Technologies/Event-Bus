@@ -1,10 +1,15 @@
 package pegasus.eventbus.topology;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pegasus.eventbus.amqp.RoutingInfo;
 import pegasus.eventbus.amqp.TopologyManager;
+import pegasus.eventbus.topology.event.HeartBeat;
 import pegasus.eventbus.topology.event.RegisterClient;
 import pegasus.eventbus.topology.event.TopologyUpdate;
 import pegasus.eventbus.topology.event.UnregisterClient;
@@ -21,14 +26,18 @@ public class GlobalTopologyServiceManager implements TopologyManager {
 
     private TopologyRegistry      topologyRegistry = new TopologyRegistry();
     private String                clientName;
+    private int                   hearbeatIntervalSeconds;
     private EventManager          eventManager;
     private SubscriptionToken     subscriptionToken;
 
-    public GlobalTopologyServiceManager(String clientName) {
+	private ScheduledExecutorService scheduler ;
+
+    public GlobalTopologyServiceManager(String clientName, int hearbeatIntervalSeconds) {
 
         LOG.info("Instantiating the Global Topology Service Manager.");
 
         this.clientName = clientName;
+        this.hearbeatIntervalSeconds = hearbeatIntervalSeconds;
     }
 
     @Override
@@ -50,25 +59,57 @@ public class GlobalTopologyServiceManager implements TopologyManager {
             @SuppressWarnings("unchecked")
             TopologyUpdate topologyUpdateResponseEvent = eventManager.getResponseTo(registerClientEvent, 5000, TopologyUpdate.class);
             topologyRegistry = topologyUpdateResponseEvent.getTopologyRegistry();
+        
+            startHeartBeat();
+            
+    		LOG.debug("Global Topology Service Manager started.");
+
         } catch (Exception e) {
 
             // unable to connect with the topo service.
             // this is expected behavior if this is the topo service itself
             // @todo - review
-            LOG.error("Error starting Global Topology Service.", e);
+            LOG.error("Error starting Global Topology Service Manager.", e);
 
         }
     }
 
-    @Override
+    private void startHeartBeat() {
+
+		scheduler = Executors.newScheduledThreadPool(1);
+		
+		Runnable sender = new Runnable(){
+			@Override
+			public void run() {
+				try{
+					LOG.trace("Sending HearBeat.");
+					eventManager.publish(new HeartBeat(clientName));
+				} catch ( Throwable e){
+					LOG.error("Exception occurred attempting to send heartbeat message." , e);
+				}
+			}};
+		
+		scheduler.scheduleAtFixedRate(sender, hearbeatIntervalSeconds, hearbeatIntervalSeconds, TimeUnit.SECONDS);
+
+		LOG.debug("HearBeat thread started.");
+    }
+
+	@Override
     public void close() {
+		
+		if(scheduler != null && !scheduler.isShutdown()){
+			LOG.trace("Stopping HearBeat thread.");
+        	scheduler.shutdownNow();
+		}
+		
         LOG.trace("Global Topology Service Manager closing.");
         eventManager.unsubscribe(subscriptionToken);
         LOG.trace("Unsubscribed TopologyUpdateHandler.");
         UnregisterClient unregisterClientEvent = new UnregisterClient(clientName);
         LOG.trace("Unregistered client.");
         eventManager.publish(unregisterClientEvent);
-        LOG.trace("Global Topology Service Manager closed.");
+        
+        LOG.debug("Global Topology Service Manager closed.");
     }
 
     @Override

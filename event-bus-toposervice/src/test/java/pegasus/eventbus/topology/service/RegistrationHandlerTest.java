@@ -15,6 +15,7 @@ import pegasus.eventbus.client.EventManager;
 import pegasus.eventbus.client.EventResult;
 import pegasus.eventbus.client.SubscriptionToken;
 import pegasus.eventbus.topology.TopologyRegistry;
+import pegasus.eventbus.topology.event.HeartBeat;
 import pegasus.eventbus.topology.event.RegisterClient;
 import pegasus.eventbus.topology.event.Registration;
 import pegasus.eventbus.topology.event.UnregisterClient;
@@ -60,7 +61,8 @@ public class RegistrationHandlerTest {
         List<Class<Registration>> handledEventTypes = Arrays.asList(registrationHandler.getHandledEventTypes());
         assertTrue(handledEventTypes.contains(RegisterClient.class));
         assertTrue(handledEventTypes.contains(UnregisterClient.class));
-    }
+        assertTrue(handledEventTypes.contains(HeartBeat.class));
+           }
 
     @Test
     public void handleRegisterClientEventTest() {
@@ -77,6 +79,15 @@ public class RegistrationHandlerTest {
         UnregisterClient unregisterEvent = new UnregisterClient(clientName);
         assertEquals(EventResult.Handled, registrationHandler.handleEvent(unregisterEvent));
         verify(clientRegistry).unregisterClient(unregisterEvent);
+    }
+
+    @Test
+    public void handleHeartBeatEventTest() {
+        String clientName = "clientName";
+        HeartBeat heartbeatEvent = new HeartBeat(clientName);
+        assertEquals(EventResult.Handled, registrationHandler.handleEvent(heartbeatEvent));
+        verify(clientRegistry, never()).registerClient(any(RegisterClient.class));
+        verify(clientRegistry, never()).unregisterClient(any(UnregisterClient.class));
     }
 
     @Test

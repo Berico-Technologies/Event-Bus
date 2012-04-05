@@ -22,7 +22,7 @@ public class MentionedUserCounterTweetHandler extends BaseTweetCounterHandler {
 			
 			for(User mention : tweet.getMentioned()){
 				
-				mentioned[count] = mention.getAccountName();
+				mentioned[count] = Long.toString(mention.getUserId());
 				count++;
 			}
 			

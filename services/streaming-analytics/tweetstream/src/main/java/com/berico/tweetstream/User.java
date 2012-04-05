@@ -15,8 +15,6 @@
  */
 package com.berico.tweetstream;
 
-import twitter4j.UserMentionEntity;
-
 /**
  * A user, either making the Tweet or mentioned
  * within a Tweet.
@@ -24,10 +22,13 @@ import twitter4j.UserMentionEntity;
  */
 public class User {
 
-	private String user = null;
-	private String accountName = null;
-	private String userImageUrl = null;
-	private String userUrl = null;
+	private String user = "ommited";
+	private String accountName = "ommited";
+	private String userImageUrl = "ommited";
+	private String userUrl = "ommited";
+	private long userId = -1;
+	private int followers = 0;
+	private String location = "";
 
 	public String getUser() {
 		return user;
@@ -61,41 +62,28 @@ public class User {
 		this.userUrl = userUrl;
 	}
 	
-	/**
-	 * Convert a Twitter4j user into our representation
-	 * of a User.
-	 * @param tuser Twitter4j user
-	 * @return Our representation of a user.
-	 */
-	public static User fromUser(twitter4j.User tuser){
-		
-		User user = new User();
-		user.setUser(tuser.getName());
-		user.setAccountName(tuser.getScreenName());
-		user.setUserImageUrl(tuser.getProfileImageURL().toExternalForm());
-		
-		if(tuser.getURL() != null){
-		
-			user.setUserUrl(tuser.getURL().toExternalForm());
-		}
-		
-		return user;
+	public long getUserId() {
+		return userId;
 	}
-	
-	/**
-	 * Convert a Twitter4j UserMentionEntity (this is someone
-	 * mentioned in a Tweet [prefixed with an '@' sign) into
-	 * a User in our model.
-	 * @param tuser Twitter4j UserMentionEntity
-	 * @return Our representation of a User.
-	 */
-	public static User fromUserMentionEntity(UserMentionEntity tuser){
-		
-		User user = new User();
-		user.setUser(tuser.getName());
-		user.setAccountName(tuser.getScreenName());
-		
-		return user;
+
+	public void setUserId(long userId) {
+		this.userId = userId;
+	}
+
+	public int getFollowers() {
+		return followers;
+	}
+
+	public void setFollowers(int followers) {
+		this.followers = followers;
+	}
+
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
 	}
 	
 }
