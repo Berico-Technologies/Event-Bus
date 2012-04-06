@@ -64,6 +64,8 @@
     <Compile Include="src\main\dotnet\IEventHandler.cs" />
     <Compile Include="src\main\dotnet\Envelope.cs" />
     <Compile Include="src\main\dotnet\EventHeaders.cs" />
+    <Compile Include="src\main\dotnet\EventBusConfiguration.cs" />
+    <Compile Include="src\main\dotnet\EventBusConnectionParameters.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

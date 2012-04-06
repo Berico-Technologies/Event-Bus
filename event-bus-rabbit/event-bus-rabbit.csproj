@@ -54,6 +54,9 @@
     <Compile Include="src\main\dotnet\amqp\ActiveSubscription.cs" />
     <Compile Include="src\main\dotnet\amqp\QueueListener.cs" />
     <Compile Include="src\main\dotnet\amqp\Listeners.cs" />
+    <Compile Include="src\main\dotnet\amqp\StringExtensions.cs" />
+    <Compile Include="src\main\dotnet\rabbitmq\RabbitConnection.cs" />
+    <Compile Include="src\main\dotnet\amqp\AmqpConnectionParameters.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\event-bus-client\event-bus-client.csproj">
@@ -72,4 +75,7 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <Folder Include="src\main\dotnet\rabbitmq\" />
+  </ItemGroup>
 </Project>

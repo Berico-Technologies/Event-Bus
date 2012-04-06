@@ -1,10 +1,13 @@
 using System;
+
+
 namespace pegasus.eventbus.rabbit
 {
-	public class StringExtensions
+	public static class StringExtensions
 	{
-		public StringExtensions ()
+		public static string RectifyClientName (this string start)
 		{
+		
 		}
 	}
 }

@@ -1,10 +1,12 @@
 using System;
-namespace pegasus.eventbus.rabbit
+
+namespace pegasus.eventbus.rabbitmq
 {
 	public class RabbitConnection
 	{
-		public RabbitConnection()
+		public RabbitConnection(AmqpConnectionParameters connectionParameters)
 		{
+
 		}
 	}
 }
