@@ -54,7 +54,6 @@
     <Compile Include="src\main\dotnet\amqp\ActiveSubscription.cs" />
     <Compile Include="src\main\dotnet\amqp\QueueListener.cs" />
     <Compile Include="src\main\dotnet\amqp\Listeners.cs" />
-    <Compile Include="src\main\dotnet\amqp\StringExtensions.cs" />
     <Compile Include="src\main\dotnet\rabbitmq\RabbitConnection.cs" />
     <Compile Include="src\main\dotnet\amqp\AmqpConnectionParameters.cs" />
   </ItemGroup>

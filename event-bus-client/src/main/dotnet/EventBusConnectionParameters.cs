@@ -17,6 +17,37 @@ namespace pegasus.eventbus.client
 		private IDictionary<string, string> _parameters;
 
 
+		public string Username
+		{
+			get { return this[USERNAME_PROPERTY]; }
+			set { this[USERNAME_PROPERTY] = value; }
+		}
+
+		public string Password
+		{
+			get { return this[PASSWORD_PROPERTY]; }
+			set { this[PASSWORD_PROPERTY] = value; }
+		}
+
+		public string Host
+		{
+			get { return this[HOST_PROPERTY]; }
+			set { this[HOST_PROPERTY] = value; }
+		}
+
+		public string Port
+		{
+			get { return this [PORT_PROPERTY]; }
+			set { this [PORT_PROPERTY] = value; }
+		}
+
+		public string VHost
+		{
+			get { return this[VHOST_PROPERTY]; }
+			set { this[VHOST_PROPERTY] = value; }
+		}
+
+
 		public string this [string key]
 		{
 			get
