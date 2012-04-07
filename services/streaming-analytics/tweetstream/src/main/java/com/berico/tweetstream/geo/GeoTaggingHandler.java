@@ -1,7 +1,5 @@
 package com.berico.tweetstream.geo;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import pegasus.eventbus.client.EventHandler;
 import pegasus.eventbus.client.EventResult;
@@ -32,18 +30,13 @@ public class GeoTaggingHandler implements EventHandler<Tweet> {
 
 	public EventResult handleEvent(Tweet tweet) {
 
-		//List<String> countryCodesFromMeassge = resolver.resolveTweetCountryCodes(tweet.getMessage());
-		String userCountry = resolver.resolveUserCountryCode(tweet.getUser().getLocation());
-		
-		
-		List<LocationMention> geoLocs = new ArrayList<LocationMention>();
 		
 		for(ResolvedGeoLocation location : resolver.resolveTweetLocations(tweet.getMessage())){
 			Location loc = buildLocation(location);
 			this.locationRepository.addLocation(new LocationMention(loc, "message"));
 		}
 		
-		ResolvedGeoLocation location = resolver.resolveUserLocation(tweet.getMessage());
+		ResolvedGeoLocation location = resolver.resolveUserLocation(tweet.getUser().getLocation());
 		if(location != null){
 			Location loc = buildLocation(location);
 			this.locationRepository.addLocation(new LocationMention(loc, "user"));

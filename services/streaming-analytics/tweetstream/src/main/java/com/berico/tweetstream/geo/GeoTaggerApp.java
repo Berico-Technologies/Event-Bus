@@ -47,9 +47,11 @@ public class GeoTaggerApp {
     		em.subscribe(new GeoTaggingHandler(repo));
     	}
     	
-    	new UserCountryCountPublisher(em, repo).start();
-    	new MentionedCountryCountPublisher(em, repo).start();
-    	new UserLocationsByCountryPublisher(em, repo).start();
-    	new MentionedLocationsByCountryPublisher(em, repo).start();
+    	new UserCountryCountPublisher(em, repo, 15000l).start();
+    	new UserCountryCountPublisher(em, repo, 200, 8000, "all.user.locations").start();
+    	new MentionedCountryCountPublisher(em, repo, 19000).start();
+    	new MentionedCountryCountPublisher(em, repo, 200, 8000, "all.mention.locations").start();
+    	//new UserLocationsByCountryPublisher(em, repo).start();
+    	//new MentionedLocationsByCountryPublisher(em, repo).start();
 	}
 }

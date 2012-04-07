@@ -38,6 +38,14 @@ public class WordCountPublisher extends IntervalPublisher<TopNWords> {
 		this.wordCountTopic = wordCountTopic;
 	}
 	
+	public WordCountPublisher(EventManager em, WordCountRepository wordCountRepo, String wordCountTopic, long sleepInterval) {
+
+		super(em, sleepInterval);
+		
+		this.wordCountRepo = wordCountRepo;
+		this.wordCountTopic = wordCountTopic;
+	}
+	
 	public WordCountPublisher(EventManager em, WordCountRepository wordCountRepo, String wordCountTopic, int wordCount, long sleepInterval) {
 
 		super(em, sleepInterval);

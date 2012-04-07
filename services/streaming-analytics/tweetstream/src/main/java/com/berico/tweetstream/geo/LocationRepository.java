@@ -1,5 +1,6 @@
 package com.berico.tweetstream.geo;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -16,9 +17,8 @@ public interface LocationRepository {
 	public Map<String, List<Location>> getUserLocationsByCountry();
 	public Map<String, List<Location>> getMentionedLocationsByCountry();
 
-	Map<String, Long> getTopNUserCountryCodes(int N);
-
-	Map<String, Long> getTopNMentionedCountryCodes(int N);
+	Collection<CountryCount> getTopNUserCountryCodes(int N);
+	Collection<CountryCount> getTopNMentionedCountryCodes(int N);
 	
 	//topN Messages
 	//topN User

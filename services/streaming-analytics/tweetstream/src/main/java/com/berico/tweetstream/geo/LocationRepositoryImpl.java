@@ -16,13 +16,12 @@
 package com.berico.tweetstream.geo;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -38,8 +37,8 @@ public class LocationRepositoryImpl implements LocationRepository {
 	/*
 	 * Count indices
 	 */
-	private ConcurrentHashMap<String, Long> userLocationByCountryCount;
-	private ConcurrentHashMap<String, Long> menitionedLocationsByCountryCount;
+	private ConcurrentHashMap<String, CountryCount> userLocationByCountryCount;
+	private ConcurrentHashMap<String, CountryCount> menitionedLocationsByCountryCount;
 	private ConcurrentHashMap<Location, Long> userLocationCount;
 	private ConcurrentHashMap<Location, Long> mentionLocationCount;
 
@@ -48,12 +47,10 @@ public class LocationRepositoryImpl implements LocationRepository {
 		this.allLocations = new Vector<LocationMention>();
 		this.locationsByCountry = new ConcurrentHashMap<String, List<LocationMention>>();
 		this.locationsBySource = new ConcurrentHashMap<String, List<LocationMention>>();
-		this.userLocationByCountryCount = new ConcurrentHashMap<String, Long>();
-		this.menitionedLocationsByCountryCount = new ConcurrentHashMap<String, Long>();
+		this.userLocationByCountryCount = new ConcurrentHashMap<String, CountryCount>();
+		this.menitionedLocationsByCountryCount = new ConcurrentHashMap<String, CountryCount>();
 		this.userLocationCount = new ConcurrentHashMap<Location, Long>();
 		this.mentionLocationCount = new ConcurrentHashMap<Location, Long>();
-		
-		
 	}
 	
 	@Override
@@ -62,10 +59,6 @@ public class LocationRepositoryImpl implements LocationRepository {
 		indexBySource(mention);
 		
 		this.allLocations.add(mention);
-		
-		
-		
-		
 
 	}
 	
@@ -96,13 +89,12 @@ public class LocationRepositoryImpl implements LocationRepository {
 		this.locationsByCountry.get(countryCode).add(mention);
 		
 		if(mention.getSource().equals("user")){
-			this.userLocationByCountryCount.putIfAbsent(countryCode, 0L);
-			long count = this.userLocationByCountryCount.get(countryCode);
-			this.userLocationByCountryCount.put(countryCode, count+1);
+			this.userLocationByCountryCount.putIfAbsent(countryCode, new CountryCount(mention.getLoc()));
+			this.userLocationByCountryCount.get(countryCode).increment();
+			
 		}else if(mention.getSource().equals("message")){
-			this.menitionedLocationsByCountryCount.putIfAbsent(countryCode, 0L);
-			long count = this.menitionedLocationsByCountryCount.get(countryCode);
-			this.menitionedLocationsByCountryCount.put(countryCode, count + 1);
+			this.menitionedLocationsByCountryCount.putIfAbsent(countryCode, new CountryCount(mention.getLoc()));
+			this.menitionedLocationsByCountryCount.get(countryCode).increment();
 		}
 		
 	}
@@ -110,40 +102,40 @@ public class LocationRepositoryImpl implements LocationRepository {
 	/*
 	 * Finds the keys for the N largest values
 	 */
-	private List<String> findNLargestKeyCount(Map<String, Long> countMap, int n){
+	private List<String> findNLargestKeyCount(Map<String, CountryCount> countMap, int n){
 		
 		List<String> keys = new ArrayList<String>();
 		for(String key : countMap.keySet()){
 			keys.add(key);
 		}
 		
-		Collections.sort(keys, new CountComparator<String>(countMap));
+		Collections.sort(keys, new CountryCountComparator<String>(countMap));
 		
 		return keys.subList(0, Math.min(keys.size(), n));
 	}
 	
 	
 	@Override
-	public Map<String, Long> getTopNUserCountryCodes(int N) {
+	public Collection<CountryCount> getTopNUserCountryCodes(int N) {
 		List<String> countryCodes = findNLargestKeyCount(this.userLocationByCountryCount, N);
-		Map<String, Long> result = new HashMap<String, Long>();
+		Map<String, CountryCount> result = new HashMap<String, CountryCount>();
 
 		for(String countryCode : countryCodes){
 			result.put(countryCode, this.userLocationByCountryCount.get(countryCode));
 		}
-		return result;
+		return result.values();
 	}
 
 	@Override
-	public Map<String, Long> getTopNMentionedCountryCodes(int N) {
+	public Collection<CountryCount> getTopNMentionedCountryCodes(int N) {
 		List<String> countryCodes = findNLargestKeyCount(this.menitionedLocationsByCountryCount, N);
-		Map<String, Long> result = new HashMap<String, Long>();
+		Map<String, CountryCount> result = new HashMap<String, CountryCount>();
 		
 		for(String countryCode : countryCodes){
 			result.put(countryCode, this.menitionedLocationsByCountryCount.get(countryCode));
 		}
 		
-		return result;
+		return result.values();
 	}
 	
 	/*
@@ -170,7 +162,7 @@ public class LocationRepositoryImpl implements LocationRepository {
 		}
 		return result;
 	}
-
+	
 	@Override
 	public Map<Location, Long> getTopNMentionedLocations(int N) {
 		List<Location> locations = findNLargestLocationCount(this.mentionLocationCount,N);
@@ -217,7 +209,6 @@ public class LocationRepositoryImpl implements LocationRepository {
 		return result;
 	}
 
-	
 
 	@Override
 	public List<LocationMention> getAllLocations() {
@@ -227,7 +218,24 @@ public class LocationRepositoryImpl implements LocationRepository {
 	}
 
 	
+	private static class CountryCountComparator<T> implements Comparator<T>{
+		
+		Map<T, CountryCount> weights;
+		
+		CountryCountComparator(Map<T, CountryCount> weights){
+			this.weights = weights;
+		}
 
+		@Override
+		public int compare(T o1, T o2) {
+
+			return Long.valueOf(
+					weights.get(o2).getCount())
+						.compareTo(
+							Long.valueOf(
+								weights.get(o1).getCount()));
+		}
+	}
 	
 	private static class CountComparator<T> implements Comparator<T>{
 		Map<T, Long> weights;
@@ -242,7 +250,6 @@ public class LocationRepositoryImpl implements LocationRepository {
 			return weights.get(o2).compareTo(weights.get(o1));
 		}
 	}
-
-
+	
 
 }

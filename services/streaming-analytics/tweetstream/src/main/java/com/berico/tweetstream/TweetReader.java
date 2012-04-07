@@ -8,26 +8,27 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.FileSystemResource;
 
-import com.berico.tweetstream.TwitterStreamMode.StreamState;
-import com.berico.tweetstream.publishers.TwitterStreamModePublisher;
-
 import pegasus.eventbus.amqp.AmqpConfiguration;
 import pegasus.eventbus.amqp.AmqpConnectionParameters;
 import pegasus.eventbus.amqp.AmqpEventManager;
 import pegasus.eventbus.client.EventManager;
+
+import com.berico.tweetstream.TwitterStreamMode.StreamState;
+import com.berico.tweetstream.publishers.TwitterStreamModePublisher;
 
 public class TweetReader {
 
 	private static final int batchSize = 10;
 	private static final long timeBetweenBatches = 1200;
 	private static final long timeBetweenEach = 100;
+	private static final long delay = 50;
 	
 	public static void main(String[] args) throws UnexpectedInputException, ParseException, Exception{
 		
 		String filePath = args[0];
 		
 		AmqpConfiguration config = AmqpConfiguration.getDefault(
-				"tweetstream", 
+				"archive_stream", 
 				new AmqpConnectionParameters(
 					"amqp://guest:guest@localhost:5672/"));
 
@@ -51,11 +52,15 @@ public class TweetReader {
 		
 		do{
 			 tweet = tweetReader.read();
+			 
+			 ModelAdaptors.rectifyAbsentMentions(tweet);
+			 ModelAdaptors.obfuscateUserNames(tweet);
+			 
+			 Thread.sleep(delay);
+			 
 			 em.publish(tweet);
 			
 		}while(tweet != null);
 		
 	}
-
-
 }
