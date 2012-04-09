@@ -48,6 +48,7 @@ public class StaticTopologyManager implements TopologyManager {
     private void initializeTopologyRegistries() {
     	registerType(RegisterClient.class);
     	registerType(UnregisterClient.class);
+    	registerType(HeartBeat.class);
       	registerType(TopologyUpdate.class);
      	registerType(GetEventTypeRoute.class);
       	registerType(EventTypeRoutingInfo.class);
