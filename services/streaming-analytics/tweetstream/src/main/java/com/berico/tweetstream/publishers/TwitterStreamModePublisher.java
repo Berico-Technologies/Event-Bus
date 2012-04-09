@@ -20,7 +20,7 @@ public class TwitterStreamModePublisher extends IntervalPublisher<TwitterStreamM
 
 	@Override
 	protected TwitterStreamMode nextEvent() {
-		
+		System.out.println("Publishing TwitterStreamMode");
 		return this.tsm;
 	}
 

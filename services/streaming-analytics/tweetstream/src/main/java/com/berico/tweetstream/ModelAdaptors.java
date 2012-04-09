@@ -153,4 +153,70 @@ public class ModelAdaptors {
 		
 		return tweet;
 	}
+	
+	public static User[] extractMentions(Tweet tweet){
+		ArrayList<User> users = new ArrayList<User>();
+		
+		String text = tweet.getMessage();
+		
+		int mentionStart = -1;
+		
+		int count = -1;
+		
+		StringBuilder sb = null;
+		
+		for(char c : text.toCharArray()){
+			
+			count++;
+			
+			if(c == '@'){
+				
+				mentionStart = count;
+				sb = new StringBuilder();
+			}
+			
+			if(!Character.isLetterOrDigit(c) && c != '@'){
+				
+				mentionStart = -1;
+				
+				if(sb != null){
+					
+					User user = new User();
+					user.setAccountName(sb.toString());
+					users.add(user);
+					
+					sb = null;
+				}
+			}
+			
+			if(mentionStart != -1){
+				
+				sb.append(c);
+			}
+			
+		}
+		
+		return users.toArray(new User[]{});
+	}
+	
+	public static void rectifyAbsentMentions(Tweet tweet){
+		
+		tweet.setMentioned(extractMentions(tweet));
+	}
+
+	public static void obfuscateUserNames(Tweet tweet){
+		
+		String message = tweet.getMessage();
+		
+		for(User mention : tweet.getMentioned()){
+			
+			mention.setUserId(mention.getAccountName().hashCode());
+			
+			message = message.replace(mention.getAccountName(), String.format("@%s", mention.getUserId()));
+			
+			mention.setAccountName("omitted");
+		}
+		
+		tweet.setMessage(message);
+	}
 }

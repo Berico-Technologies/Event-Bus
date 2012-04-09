@@ -46,15 +46,15 @@ public class AnalyticServices {
         
         WordCountRepository tweetWordsCount = new ConcurrentMapWordCountRepository();
         this.eventManager.subscribe(new WordCounterTweetHandler(tweetWordsCount, new StopFilterWordSplitter(keywordFilters)));
-        new WordCountPublisher(this.eventManager, tweetWordsCount, "tweet.words").start();
+        new WordCountPublisher(this.eventManager, tweetWordsCount, "tweet.words", 12000l).start();
         
         WordCountRepository userCount = new ConcurrentMapWordCountRepository();
         this.eventManager.subscribe(new UserCounterTweetHandler(userCount));
-        new WordCountPublisher(this.eventManager, userCount, "tweet.users").start();
+        new WordCountPublisher(this.eventManager, userCount, "tweet.users", 16000l).start();
         
         WordCountRepository mentionedCount = new ConcurrentMapWordCountRepository();
         this.eventManager.subscribe(new MentionedUserCounterTweetHandler(mentionedCount));
-        new WordCountPublisher(this.eventManager, mentionedCount, "tweet.mentioned").start();
+        new WordCountPublisher(this.eventManager, mentionedCount, "tweet.mentioned", 18000l).start();
         
         this.eventManager.subscribe(new TopRetweetHandler(this.eventManager));
         

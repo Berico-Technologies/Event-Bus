@@ -3,13 +3,14 @@ package com.berico.tweetstream.handlers;
 import java.util.List;
 
 import com.berico.tweetstream.Tweet;
+import com.berico.tweetstream.publishers.IntervalPublisher;
 import com.berico.tweetstream.wordcount.WordSplitter;
 
 import pegasus.eventbus.client.EventHandler;
 import pegasus.eventbus.client.EventManager;
 import pegasus.eventbus.client.EventResult;
 
-public class NaiveTopicCounterTweetHandler implements EventHandler<Tweet> {
+public class NaiveTopicCounterTweetHandler extends IntervalPublisher<TopicMatchAggregateSet> implements EventHandler<Tweet> {
 
 	WordSplitter wordSplitter = null;
 	List<TopicMatchAggregate> topicMatchAggregates = null;
@@ -17,11 +18,15 @@ public class NaiveTopicCounterTweetHandler implements EventHandler<Tweet> {
 	
 	public NaiveTopicCounterTweetHandler(EventManager eventManager, List<TopicMatchAggregate> topicMatchAggregates, WordSplitter splitter) {
 	
+		super(eventManager, 5000);
+		
 		this.eventManager = eventManager;
 		
 		this.topicMatchAggregates = topicMatchAggregates;
 		
 		this.wordSplitter = splitter;
+		
+		this.start();
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -46,4 +51,14 @@ public class NaiveTopicCounterTweetHandler implements EventHandler<Tweet> {
 		
 		return EventResult.Handled;
 	}
+
+	@Override
+	protected TopicMatchAggregateSet nextEvent() {
+		
+		System.out.println("Publishing Aggegrate Set.");
+		
+		return new TopicMatchAggregateSet(this.topicMatchAggregates, null);
+	}
+	
+	
 }

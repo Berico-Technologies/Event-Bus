@@ -15,35 +15,34 @@
  */
 package com.berico.tweetstream.geo;
 
-import java.util.Map;
-
+import java.util.Collection;
 
 public class TopNCountries {
 
-	private Map<String, Long> topCountries;
+	private Collection<CountryCount> topCountries;
 	
 	private String source = null;
 	
 	private long timestamp = System.currentTimeMillis();
 
-	public TopNCountries(Map<String, Long> topCountries, String source) {
+	public TopNCountries(Collection<CountryCount> topCountries, String source) {
 
 		this.topCountries = topCountries;
 		this.source = source;
 	}
 
-	public TopNCountries(Map<String, Long> topWords, String source, long timestamp) {
+	public TopNCountries(Collection<CountryCount> topWords, String source, long timestamp) {
 		
 		this.topCountries = topWords;
 		this.source = source;
 		this.timestamp = timestamp;
 	}
 
-	public Map<String, Long> getTopCountriess() {
+	public Collection<CountryCount> getTopCountriess() {
 		return topCountries;
 	}
 
-	public void setTopCountries(Map<String, Long> topCountries) {
+	public void setTopCountries(Collection<CountryCount> topCountries) {
 		this.topCountries = topCountries;
 	}
 
