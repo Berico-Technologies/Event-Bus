@@ -39,30 +39,30 @@ namespace pegasus.eventbus.amqp
 //    	{
 //    	}
 //    	
-//    	public static AmqpConfiguration GetDefault(string clientName, AmqpConnectionParameters connectionParameters)
-//		{
-//			RabbitConnection rabbitConnection = new RabbitConnection(connectionParameters);
-//			AmqpMessageBus amqpMessageBus = new RabbitMessageBus(rabbitConnection);
-//			CompositeTopologyManager compositeTopologyManager = new CompositeTopologyManager();
-//			TopologyManager fixedTopologyManager = new StaticTopologyManager();
-//			compositeTopologyManager.addManager(fixedTopologyManager);
-//			//TODO: Make the heartbeat interval configurable?
-//			TopologyManager globalTopologyService = new GlobalTopologyServiceManager(clientName, 300);
-//			compositeTopologyManager.addManager(globalTopologyService);
-//			TopologyManager fallbackToplogyService = new FallbackTopologyManager();
-//			compositeTopologyManager.addManager(fallbackToplogyService);
-//			Serializer serializer = new GsonSerializer();
-//
-//			AmqpConfiguration defaultConfiguration = new AmqpConfiguration();
-//			defaultConfiguration.setClientName(clientName);
-//			defaultConfiguration.setConnectionParameters(connectionParameters);
-//			defaultConfiguration.setAmqpMessageBus(amqpMessageBus);
-//			defaultConfiguration.setTopologyManager(compositeTopologyManager);
-//			defaultConfiguration.setSerializer(serializer);
-//
-//			return defaultConfiguration;
-//    	}
-//    		
+    	public static AmqpConfiguration GetDefault(string clientName, AmqpConnectionParameters connectionParameters)
+		{
+			RabbitConnection rabbitConnection = new RabbitConnection(connectionParameters);
+			AmqpMessageBus amqpMessageBus = new RabbitMessageBus(rabbitConnection);
+			CompositeTopologyManager compositeTopologyManager = new CompositeTopologyManager();
+			TopologyManager fixedTopologyManager = new StaticTopologyManager();
+			compositeTopologyManager.addManager(fixedTopologyManager);
+			//TODO: Make the heartbeat interval configurable?
+			TopologyManager globalTopologyService = new GlobalTopologyServiceManager(clientName, 300);
+			compositeTopologyManager.addManager(globalTopologyService);
+			TopologyManager fallbackToplogyService = new FallbackTopologyManager();
+			compositeTopologyManager.addManager(fallbackToplogyService);
+			Serializer serializer = new GsonSerializer();
+
+			AmqpConfiguration defaultConfiguration = new AmqpConfiguration();
+			defaultConfiguration.setClientName(clientName);
+			defaultConfiguration.setConnectionParameters(connectionParameters);
+			defaultConfiguration.setAmqpMessageBus(amqpMessageBus);
+			defaultConfiguration.setTopologyManager(compositeTopologyManager);
+			defaultConfiguration.setSerializer(serializer);
+
+			return defaultConfiguration;
+    	}
+    		
     		
     		
 		private string _clientName;
