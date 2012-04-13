@@ -75,6 +75,6 @@
   </Target>
   -->
   <ItemGroup>
-    <Folder Include="src\main\dotnet\rabbitmq\" />
+    <Folder Include="src\main\dotnet\topology\" />
   </ItemGroup>
 </Project>

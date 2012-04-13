@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 using log4net;
 
 using pegasus.eventbus.client;
-
+using pegasus.eventbus.rabbitmq;
 
 namespace pegasus.eventbus.amqp
 {
@@ -33,18 +33,19 @@ namespace pegasus.eventbus.amqp
 		// in command as a presumed extension.
 		private static readonly Regex NAME_FROM_COMMAND = new Regex(
 	    	"((?:^([^\\s./\\\\]+?(?:\\.[^\\s./\\\\]{0,7})*?))|((?:(?:^\\S*?[./\\\\])|^)([^\\s./\\\\]+?(?:\\.[^\\s./\\\\]{0,7})*?)))(?:\\s|$)");
+
+
+        public static AmqpConfiguration GetDefault(string clientName)
+        {
+            return AmqpConfiguration.GetDefault(clientName, new AmqpConnectionParameters());
+        }
     	
-    	
-//    	public static AmqpConfiguration GetDefault(string clientName)
-//    	{
-//    	}
-//    	
     	public static AmqpConfiguration GetDefault(string clientName, AmqpConnectionParameters connectionParameters)
 		{
 			RabbitConnection rabbitConnection = new RabbitConnection(connectionParameters);
-			AmqpMessageBus amqpMessageBus = new RabbitMessageBus(rabbitConnection);
+			IAmqpMessageBus amqpMessageBus = new RabbitMessageBus(rabbitConnection);
 			CompositeTopologyManager compositeTopologyManager = new CompositeTopologyManager();
-			TopologyManager fixedTopologyManager = new StaticTopologyManager();
+			ITopologyService fixedTopologyManager = new StaticTopologyManager();
 			compositeTopologyManager.addManager(fixedTopologyManager);
 			//TODO: Make the heartbeat interval configurable?
 			TopologyManager globalTopologyService = new GlobalTopologyServiceManager(clientName, 300);
