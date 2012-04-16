@@ -8,8 +8,14 @@ using pegasus.eventbus.client;
 
 namespace pegasus.eventbus.amqp
 {
+    public delegate void UnexpectedConnectionCloseHandler(bool successfullyReopened);
+
+
     public interface IAmqpMessageBus
     {
+        event UnexpectedConnectionCloseHandler UnexpectedConnectionClose;
+
+
 		/// <summary>
 		/// Start the bus and open the connections.
 		/// </summary>
