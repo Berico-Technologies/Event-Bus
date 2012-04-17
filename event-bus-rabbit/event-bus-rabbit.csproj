@@ -57,6 +57,11 @@
     <Compile Include="src\main\dotnet\amqp\Listeners.cs" />
     <Compile Include="src\main\dotnet\rabbitmq\RabbitConnection.cs" />
     <Compile Include="src\main\dotnet\amqp\AmqpConnectionParameters.cs" />
+    <Compile Include="src\main\dotnet\topology\CompositeTopologyManager.cs" />
+    <Compile Include="src\main\dotnet\topology\event\TopologyUpdate.cs" />
+    <Compile Include="src\main\dotnet\topology\GlobalTopologyService.cs" />
+    <Compile Include="src\main\dotnet\topology\StaticTopologyManager.cs" />
+    <Compile Include="src\main\dotnet\topology\TopologyRegistry.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\event-bus-client\event-bus-client.csproj">
@@ -75,7 +80,5 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <ItemGroup>
-    <Folder Include="src\main\dotnet\topology\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

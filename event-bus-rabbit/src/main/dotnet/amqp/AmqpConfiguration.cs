@@ -8,6 +8,8 @@ using log4net;
 
 using pegasus.eventbus.client;
 using pegasus.eventbus.rabbitmq;
+using pegasus.eventbus.topology;
+
 
 namespace pegasus.eventbus.amqp
 {
@@ -42,24 +44,27 @@ namespace pegasus.eventbus.amqp
     	
     	public static AmqpConfiguration GetDefault(string clientName, AmqpConnectionParameters connectionParameters)
 		{
+            // use the given connection parameters to create a rabbit connection
 			RabbitConnection rabbitConnection = new RabbitConnection(connectionParameters);
+
+            // use the connection to create a message bus
 			IAmqpMessageBus amqpMessageBus = new RabbitMessageBus(rabbitConnection);
-			CompositeTopologyManager compositeTopologyManager = new CompositeTopologyManager();
-			ITopologyService fixedTopologyManager = new StaticTopologyManager();
-			compositeTopologyManager.addManager(fixedTopologyManager);
-			//TODO: Make the heartbeat interval configurable?
-			TopologyManager globalTopologyService = new GlobalTopologyServiceManager(clientName, 300);
-			compositeTopologyManager.addManager(globalTopologyService);
-			TopologyManager fallbackToplogyService = new FallbackTopologyManager();
-			compositeTopologyManager.addManager(fallbackToplogyService);
-			Serializer serializer = new GsonSerializer();
+
+            // our default implementation of the topology manager is a composite of multiple
+            // topology managers
+			CompositeTopologyManager composite = new CompositeTopologyManager();
+            composite.Append(new StaticTopologyManager());
+            composite.Append(new GlobalTopologyManager(clientName, 300)); //TODO: Make the heartbeat interval configurable?
+			composite.Append(new FallbackTopologyManager());
+
+			IEventSerializer serializer = new GsonSerializer();
 
 			AmqpConfiguration defaultConfiguration = new AmqpConfiguration();
 			defaultConfiguration.ClientName = clientName;
 			defaultConfiguration.ConnectionParameters = connectionParameters;
-			defaultConfiguration.AmqpMessageBus(amqpMessageBus);
-			defaultConfiguration.TopologyManager(compositeTopologyManager);
-			defaultConfiguration.Serializer(serializer);
+			defaultConfiguration.MessageBus = amqpMessageBus;
+			defaultConfiguration.TopologyService = composite;
+			defaultConfiguration.EventSerializer = serializer;
 
 			return defaultConfiguration;
     	}
