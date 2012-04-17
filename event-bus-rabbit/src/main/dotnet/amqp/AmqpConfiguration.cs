@@ -55,11 +55,11 @@ namespace pegasus.eventbus.amqp
 			Serializer serializer = new GsonSerializer();
 
 			AmqpConfiguration defaultConfiguration = new AmqpConfiguration();
-			defaultConfiguration.setClientName(clientName);
-			defaultConfiguration.setConnectionParameters(connectionParameters);
-			defaultConfiguration.setAmqpMessageBus(amqpMessageBus);
-			defaultConfiguration.setTopologyManager(compositeTopologyManager);
-			defaultConfiguration.setSerializer(serializer);
+			defaultConfiguration.ClientName = clientName;
+			defaultConfiguration.ConnectionParameters = connectionParameters;
+			defaultConfiguration.AmqpMessageBus(amqpMessageBus);
+			defaultConfiguration.TopologyManager(compositeTopologyManager);
+			defaultConfiguration.Serializer(serializer);
 
 			return defaultConfiguration;
     	}
