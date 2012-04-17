@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import pegasus.eventbus.amqp.RoutingInfo;
 import pegasus.eventbus.amqp.TopologyManager;
-import pegasus.eventbus.topology.event.*;
+import pegasus.eventbus.topology.events.*;
 
 import pegasus.eventbus.client.EventManager;
 

@@ -9,10 +9,10 @@ import org.slf4j.LoggerFactory;
 
 import pegasus.eventbus.amqp.RoutingInfo;
 import pegasus.eventbus.amqp.TopologyManager;
-import pegasus.eventbus.topology.event.HeartBeat;
-import pegasus.eventbus.topology.event.RegisterClient;
-import pegasus.eventbus.topology.event.TopologyUpdate;
-import pegasus.eventbus.topology.event.UnregisterClient;
+import pegasus.eventbus.topology.events.HeartBeat;
+import pegasus.eventbus.topology.events.RegisterClient;
+import pegasus.eventbus.topology.events.TopologyUpdate;
+import pegasus.eventbus.topology.events.UnregisterClient;
 
 import pegasus.eventbus.client.EventHandler;
 import pegasus.eventbus.client.EventManager;

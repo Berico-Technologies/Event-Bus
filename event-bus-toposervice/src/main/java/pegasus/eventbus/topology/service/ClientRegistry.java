@@ -7,8 +7,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pegasus.eventbus.topology.event.RegisterClient;
-import pegasus.eventbus.topology.event.UnregisterClient;
+import pegasus.eventbus.topology.events.RegisterClient;
+import pegasus.eventbus.topology.events.UnregisterClient;
 
 public class ClientRegistry implements Iterable<RegisterClient> {
 

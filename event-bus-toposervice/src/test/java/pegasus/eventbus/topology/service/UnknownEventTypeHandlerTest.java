@@ -17,9 +17,9 @@ import pegasus.eventbus.amqp.RoutingInfo.ExchangeType;
 import pegasus.eventbus.client.EventManager;
 import pegasus.eventbus.client.SubscriptionToken;
 import pegasus.eventbus.topology.TopologyRegistry;
-import pegasus.eventbus.topology.event.EventTypeRoutingInfo;
-import pegasus.eventbus.topology.event.GetEventTypeRoute;
-import pegasus.eventbus.topology.event.TopologyUpdate;
+import pegasus.eventbus.topology.events.EventTypeRoutingInfo;
+import pegasus.eventbus.topology.events.GetEventTypeRoute;
+import pegasus.eventbus.topology.events.TopologyUpdate;
 
 public class UnknownEventTypeHandlerTest {
 
