@@ -1,8 +1,13 @@
 package pegasus.eventbus.rabbitmq;
 
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
 
 import org.apache.commons.lang.time.StopWatch;
 import org.slf4j.Logger;
@@ -10,7 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.NullTrustManager;
 import com.rabbitmq.client.ShutdownListener;
 import com.rabbitmq.client.ShutdownSignalException;
 
@@ -21,10 +26,12 @@ public class RabbitConnection implements ShutdownListener {
     private static final Logger          LOG                      = LoggerFactory.getLogger(RabbitConnection.class);
     private static final long            DEFAULT_RETRY_TIMEOUT    = 30000;
 
-    private ConnectionFactory            connectionFactory        = new ConnectionFactory();
-    protected Connection                   connection;
+    private BericoConnectionFactory      connectionFactory        = new BericoConnectionFactory();
+    protected Connection                 connection;
+    
     private long                         retryTimeout             = DEFAULT_RETRY_TIMEOUT;
     private Set<UnexpectedCloseListener> unexpectedCloseListeners = new HashSet<UnexpectedCloseListener>();
+    private SSLContextFactory            sslContextFactory        = new SSLContextFactoryImpl();
 
     private volatile boolean             isClosing;
     private volatile boolean             isInConnectionErrorState;
@@ -35,6 +42,9 @@ public class RabbitConnection implements ShutdownListener {
         connectionFactory.setVirtualHost(connectionParameters.getVHost());
         connectionFactory.setHost(connectionParameters.getHost());
         connectionFactory.setPort(connectionParameters.getPort());
+        if(connectionParameters.isSsl()){
+        	connectionFactory.useSslProtocol(sslContextFactory.getInstance(connectionParameters));         	
+        }
     }
 
     public void open() throws IOException {
