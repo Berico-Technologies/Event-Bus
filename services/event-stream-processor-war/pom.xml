@@ -6,7 +6,7 @@
   <parent>
     <groupId>pegasus.cip</groupId>
     <artifactId>event-bus</artifactId>
-    <version>0.0.3-SNAPSHOT</version>
+    <version>0.0.4-SNAPSHOT</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
   <groupId>pegasus.esp</groupId>
@@ -18,7 +18,7 @@
     <dependency>
       <groupId>pegasus.cip</groupId>
       <artifactId>event-bus-rabbit</artifactId>
-      <version>0.0.3-SNAPSHOT</version>
+      <version>0.0.4-SNAPSHOT</version>
     </dependency>
 
     <dependency>

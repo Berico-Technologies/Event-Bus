@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>pegasus.cip</groupId>
   <artifactId>event-bus</artifactId>
-  <version>0.0.3-SNAPSHOT</version>
+  <version>0.0.4-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Orion Event Bus</name>
   <description>The Event Bus component of the Orion High-capacity Computing Environment</description>
