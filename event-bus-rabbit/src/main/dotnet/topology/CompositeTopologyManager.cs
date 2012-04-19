@@ -56,7 +56,7 @@ namespace pegasus.eventbus.topology
             });
 
             if (null != route)
-                LOG.DebugFormat("Returning route {0}:{1} for event of type {2}", route.RoutingKey, route.Exchange, evType.FullName)
+                LOG.DebugFormat("Returning route {0}:{1} for event of type {2}", route.RoutingKey, route.Exchange, evType.FullName);
             else
                 LOG.DebugFormat("No route for event of type {0}", evType.FullName);
 

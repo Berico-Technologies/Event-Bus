@@ -52,7 +52,7 @@ namespace pegasus.eventbus.amqp
             LOG.Info("The event bus client is starting");
 
             _messageBus.Start();
-            _topologySvc.Start();
+            _topologySvc.Start(this);
 
             this.RaiseStartEvent();
 

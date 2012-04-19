@@ -41,13 +41,13 @@
     <Compile Include="src\test\dotnet\AmqpConnectionParametersTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="event-bus-rabbit.csproj">
-      <Project>{81EACA35-DBDA-431A-BB37-2685A6AA1E1D}</Project>
-      <Name>event-bus-rabbit</Name>
-    </ProjectReference>
     <ProjectReference Include="..\event-bus-client\event-bus-client.csproj">
       <Project>{61C42B9F-9CC7-44C5-A345-0E5884BC2EDD}</Project>
       <Name>event-bus-client</Name>
+    </ProjectReference>
+    <ProjectReference Include="event-bus-rabbit.csproj">
+      <Project>{81EACA35-DBDA-431A-BB37-2685A6AA1E1D}</Project>
+      <Name>event-bus-rabbit</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

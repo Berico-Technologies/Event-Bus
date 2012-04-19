@@ -3,14 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using log4net;
+
 using pegasus.eventbus.client;
 using pegasus.eventbus.amqp;
+using pegasus.eventbus.topology.events;
 
 
 namespace pegasus.eventbus.topology
 {
     public class FallbackTopologyManager : ITopologyService
     {
+        private static readonly ILog LOG = LogManager.GetLogger(typeof(FallbackTopologyManager));
+
         private IEventManager _eventMgr;
 
 
@@ -21,7 +26,6 @@ namespace pegasus.eventbus.topology
 
         public void Close()
         {
-            throw new NotImplementedException();
         }
 
         public RoutingInfo GetRoutingInfoForEventOfType(Type evType)
@@ -36,7 +40,7 @@ namespace pegasus.eventbus.topology
             }
             catch (Exception ex)
             {
-
+                LOG.WarnFormat("Failed to get routing information for events of type {0}", evType.FullName);
             }
 
             return route;

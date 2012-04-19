@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using log4net;
 
 using pegasus.eventbus.client;
+using pegasus.eventbus.gson;
 using pegasus.eventbus.rabbitmq;
 using pegasus.eventbus.topology;
 
@@ -54,7 +55,7 @@ namespace pegasus.eventbus.amqp
             // topology managers
 			CompositeTopologyManager composite = new CompositeTopologyManager();
             composite.Append(new StaticTopologyManager());
-            composite.Append(new GlobalTopologyManager(clientName, 300)); //TODO: Make the heartbeat interval configurable?
+            composite.Append(new GlobalTopologyService(clientName, 300)); //TODO: Make the heartbeat interval configurable?
 			composite.Append(new FallbackTopologyManager());
 
 			IEventSerializer serializer = new GsonSerializer();

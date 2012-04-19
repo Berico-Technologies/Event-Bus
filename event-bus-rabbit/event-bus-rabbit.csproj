@@ -30,6 +30,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>lib\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="RabbitMQ.Client">
+      <HintPath>lib\RabbitMQ.Client.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -55,12 +61,15 @@
     <Compile Include="src\main\dotnet\amqp\ActiveSubscription.cs" />
     <Compile Include="src\main\dotnet\amqp\QueueListener.cs" />
     <Compile Include="src\main\dotnet\amqp\Listeners.cs" />
+    <Compile Include="src\main\dotnet\gson\GsonSerializer.cs" />
     <Compile Include="src\main\dotnet\rabbitmq\RabbitConnection.cs" />
     <Compile Include="src\main\dotnet\amqp\AmqpConnectionParameters.cs" />
+    <Compile Include="src\main\dotnet\rabbitmq\RabbitMessageBus.cs" />
     <Compile Include="src\main\dotnet\topology\CompositeTopologyManager.cs" />
     <Compile Include="src\main\dotnet\topology\events\EventTypeRoutingInfo.cs" />
     <Compile Include="src\main\dotnet\topology\events\GetEventTypeRoute.cs" />
     <Compile Include="src\main\dotnet\topology\events\HeartBeat.cs" />
+    <Compile Include="src\main\dotnet\topology\events\RegisterClient.cs" />
     <Compile Include="src\main\dotnet\topology\events\Registration.cs" />
     <Compile Include="src\main\dotnet\topology\events\TopologyUpdate.cs" />
     <Compile Include="src\main\dotnet\topology\events\UnregisterClient.cs" />

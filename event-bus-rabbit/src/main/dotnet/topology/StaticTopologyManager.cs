@@ -7,6 +7,7 @@ using log4net;
 
 using pegasus.eventbus.client;
 using pegasus.eventbus.amqp;
+using pegasus.eventbus.topology.events;
 
 
 namespace pegasus.eventbus.topology
