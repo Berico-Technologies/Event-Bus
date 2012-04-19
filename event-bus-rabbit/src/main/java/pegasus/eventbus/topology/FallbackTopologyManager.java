@@ -8,8 +8,8 @@ import org.slf4j.LoggerFactory;
 import pegasus.eventbus.amqp.RoutingInfo;
 import pegasus.eventbus.amqp.TopologyManager;
 import pegasus.eventbus.client.EventManager;
-import pegasus.eventbus.topology.event.EventTypeRoutingInfo;
-import pegasus.eventbus.topology.event.GetEventTypeRoute;
+import pegasus.eventbus.topology.events.EventTypeRoutingInfo;
+import pegasus.eventbus.topology.events.GetEventTypeRoute;
 
 //TODO: PEGA-720 This class need test coverage.
 public class FallbackTopologyManager implements TopologyManager {

@@ -9,7 +9,6 @@
     <OutputType>Library</OutputType>
     <RootNamespace>pegasus.eventbus.client</RootNamespace>
     <AssemblyName>event-bus-client</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>3.5</OldToolsVersion>
@@ -65,6 +64,10 @@
     <Compile Include="src\main\dotnet\IEventHandler.cs" />
     <Compile Include="src\main\dotnet\Envelope.cs" />
     <Compile Include="src\main\dotnet\EventHeaders.cs" />
+    <Compile Include="src\main\dotnet\EventBusConfiguration.cs" />
+    <Compile Include="src\main\dotnet\EventBusConnectionParameters.cs" />
+    <Compile Include="src\main\dotnet\IEventBusFactory.cs" />
+    <Compile Include="src\main\dotnet\TypedEventHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

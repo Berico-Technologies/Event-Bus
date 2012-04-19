@@ -15,9 +15,9 @@ import org.junit.Test;
 
 import pegasus.eventbus.client.EventHandler;
 import pegasus.eventbus.client.EventResult;
-import pegasus.eventbus.topology.event.EventTypeRoutingInfo;
-import pegasus.eventbus.topology.event.GetEventTypeRoute;
-import pegasus.eventbus.topology.event.TopologyUpdate;
+import pegasus.eventbus.topology.events.EventTypeRoutingInfo;
+import pegasus.eventbus.topology.events.GetEventTypeRoute;
+import pegasus.eventbus.topology.events.TopologyUpdate;
 
 public class FallbackTopologyManagerTest extends IntegrationTestBase {
 

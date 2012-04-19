@@ -9,11 +9,11 @@ import pegasus.eventbus.client.EventResult;
 import pegasus.eventbus.client.SubscriptionToken;
 
 import pegasus.eventbus.topology.TopologyRegistry;
-import pegasus.eventbus.topology.event.HeartBeat;
-import pegasus.eventbus.topology.event.RegisterClient;
-import pegasus.eventbus.topology.event.Registration;
-import pegasus.eventbus.topology.event.UnregisterClient;
-import pegasus.eventbus.topology.event.TopologyUpdate;
+import pegasus.eventbus.topology.events.HeartBeat;
+import pegasus.eventbus.topology.events.RegisterClient;
+import pegasus.eventbus.topology.events.Registration;
+import pegasus.eventbus.topology.events.TopologyUpdate;
+import pegasus.eventbus.topology.events.UnregisterClient;
 
 public class RegistrationHandler implements EventHandler<Registration> {
 
