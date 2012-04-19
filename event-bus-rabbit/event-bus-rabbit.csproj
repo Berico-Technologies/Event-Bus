@@ -58,7 +58,13 @@
     <Compile Include="src\main\dotnet\rabbitmq\RabbitConnection.cs" />
     <Compile Include="src\main\dotnet\amqp\AmqpConnectionParameters.cs" />
     <Compile Include="src\main\dotnet\topology\CompositeTopologyManager.cs" />
-    <Compile Include="src\main\dotnet\topology\event\TopologyUpdate.cs" />
+    <Compile Include="src\main\dotnet\topology\events\EventTypeRoutingInfo.cs" />
+    <Compile Include="src\main\dotnet\topology\events\GetEventTypeRoute.cs" />
+    <Compile Include="src\main\dotnet\topology\events\HeartBeat.cs" />
+    <Compile Include="src\main\dotnet\topology\events\Registration.cs" />
+    <Compile Include="src\main\dotnet\topology\events\TopologyUpdate.cs" />
+    <Compile Include="src\main\dotnet\topology\events\UnregisterClient.cs" />
+    <Compile Include="src\main\dotnet\topology\FallbackTopologyManager.cs" />
     <Compile Include="src\main\dotnet\topology\GlobalTopologyService.cs" />
     <Compile Include="src\main\dotnet\topology\StaticTopologyManager.cs" />
     <Compile Include="src\main\dotnet\topology\TopologyRegistry.cs" />
