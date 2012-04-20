@@ -19,8 +19,12 @@ public class EncryptedPropertyPlaceholderConfigurer extends PropertyPlaceholderC
 	};
 	
 	protected String convertPropertyValue(String originalValue) {
-		if(originalValue != null && originalValue.startsWith(ENCRYPTED)){
-			crypto.decrypt(originalValue.replaceFirst(ENCRYPTED, ""));
+		try {
+			if (originalValue != null && originalValue.startsWith(ENCRYPTED)) {
+				String strippedVal = originalValue.substring(ENCRYPTED.length());
+				return crypto.decrypt(strippedVal);
+			}
+		} catch (Exception e) {
 		}
 		return originalValue;
 	}
