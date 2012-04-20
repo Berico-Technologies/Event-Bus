@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:osgi="http://www.springframework.org/schema/osgi"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                      http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd
+                      http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+  <context:property-placeholder
+    location="classpath:event-bus-toposervice.properties"
+    ignore-unresolvable="false" ignore-resource-not-found="true" />
+
+  <bean id="topologyRegistry" class="gov.ment.eventbus.topology.TopologyRegistry">
+    <property name="eventMap">
+      <map>
+        <entry>
+          <key>
+            <value>gov.ment.eventbus.topology.events.RegisterClient
+            </value>
+          </key>
+          <bean class="gov.ment.eventbus.amqp.RoutingInfo">
+            <constructor-arg name="exchangeName" value="topology" />
+            <constructor-arg name="routingKey"
+              value="gov.ment.eventbus.topology.events.RegisterClient" />
+          </bean>
+        </entry>
+        <entry>
+          <key>
+            <value>gov.ment.eventbus.topology.events.UnregisterClient
+            </value>
+          </key>
+          <bean class="gov.ment.eventbus.amqp.RoutingInfo">
+            <constructor-arg name="exchangeName" value="topology" />
+            <constructor-arg name="routingKey"
+              value="gov.ment.eventbus.topology.events.UnregisterClient" />
+          </bean>
+        </entry>
+        <entry>
+          <key>
+            <value>gov.ment.eventbus.topology.events.TopologyUpdate
+            </value>
+          </key>
+          <bean class="gov.ment.eventbus.amqp.RoutingInfo">
+            <constructor-arg name="exchangeName" value="topology" />
+            <constructor-arg name="routingKey"
+              value="gov.ment.eventbus.topology.events.TopologyUpdate" />
+          </bean>
+        </entry>
+      </map>
+    </property>
+    <property name="eventSetMap">
+      <map>
+        <entry>
+          <key>
+            <value>All</value>
+          </key>
+          <list>
+            <bean class="gov.ment.eventbus.amqp.RoutingInfo">
+              <constructor-arg name="exchangeName"
+                value="default" />
+              <constructor-arg name="routingKey" value="#" />
+            </bean>
+            <bean class="gov.ment.eventbus.amqp.RoutingInfo">
+              <constructor-arg name="exchangeName"
+                value="topology" />
+              <constructor-arg name="routingKey" value="#" />
+            </bean>
+          </list>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="unknownEventTypeHandler"
+    class="gov.ment.eventbus.topology.service.UnknownEventTypeHandler">
+    <property name="topologyRegistry" ref="topologyRegistry" />
+  </bean>
+
+  <bean id="clientRegistry" class="gov.ment.eventbus.topology.service.ClientRegistry" />
+
+  <bean id="registrationHandler"
+    class="gov.ment.eventbus.topology.service.RegistrationHandler">
+    <property name="clientRegistry" ref="clientRegistry" />
+    <property name="topologyRegistry" ref="topologyRegistry" />
+  </bean>
+
+  <bean id="topologyService" class="gov.ment.eventbus.topology.service.TopologyService">
+    <property name="registrationHandler" ref="registrationHandler" />
+    <property name="unknownEventTypeHandler" ref="unknownEventTypeHandler" />
+  </bean>
+
+  <bean id="eventBusFactoryServiceListener"
+    class="gov.ment.eventbus.topology.service.osgi.EventBusFactoryServiceListener">
+    <property name="clientName"
+      value="${event.bus.clientName:global-topology-service}" />
+    <property name="username" value="${event.bus.username:guest}" />
+    <property name="password" value="${event.bus.password:guest}" />
+    <property name="host" value="${event.bus.host:rabbit.osd.mil}" />
+    <property name="vHost" value="${event.bus.vhost:/}" />
+    <property name="port" value="${event.bus.port:5672}" />
+    <property name="connectionRetryTimeout" value="${event.bus.connectionRetryTimeout:30000}" />
+    <property name="topologyRegistry" ref="topologyRegistry" />
+    <property name="unknownEventTypeHandler" ref="unknownEventTypeHandler" />
+    <property name="clientRegistry" ref="clientRegistry" />
+    <property name="registrationHandler" ref="registrationHandler" />
+    <property name="topologyService" ref="topologyService" />
+  </bean>
+
+  <osgi:reference id="eventBusFactoryService"
+    interface="gov.ment.eventbus.client.EventBusFactory">
+    <osgi:listener ref="eventBusFactoryServiceListener"
+      bind-method="onEventBusFactoryServiceBound" unbind-method="onEventBusFactoryServiceUnbound" />
+  </osgi:reference>
+</beans>

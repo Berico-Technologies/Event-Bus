@@ -1,0 +1,44 @@
+package gov.ment.esp.monitors;
+
+import gov.ment.esp.EventMonitor;
+import gov.ment.esp.EventStreamProcessor;
+import gov.ment.esp.InferredEvent;
+import gov.ment.esp.publish.Publisher;
+
+import java.util.Collection;
+import java.util.HashSet;
+
+import gov.ment.eventbus.client.Envelope;
+
+import com.espertech.esper.client.EventBean;
+
+class CorrelateRequestResponsesEventDetector extends EventMonitor {
+
+  public static final String INFERRED_TYPE = "RequestResponse";
+
+  @Override
+  public InferredEvent receive(EventBean eventBean) {
+    Envelope req = (Envelope) eventBean.get("request");
+    Envelope resp = (Envelope) eventBean.get("response");
+    return makeInferredEvent().addEnvelope(req).addEnvelope(resp);
+  }
+
+  @Override
+  public Collection<Publisher> registerPatterns(EventStreamProcessor esp) {
+
+    String pattern =
+            "every request=Envelope(eventType='Request')"
+                    + " -> response=Envelope(eventType='Response' and "
+                    + "correlationId=request.id)";
+    esp.monitor(false, pattern, this);
+
+    // @todo = this needs to be integrated
+    return new HashSet<Publisher>();
+  }
+
+  @Override
+  public String getInferredType() {
+    return INFERRED_TYPE;
+  }
+
+}

@@ -1,37 +1,32 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <packaging>jar</packaging>
   <parent>
-    <groupId>pegasus.cip</groupId>
-    <artifactId>event-bus</artifactId>
-    <version>0.0.3-SNAPSHOT</version>
-    <relativePath>../..</relativePath>
+    <groupId>gov.ment</groupId>
+    <artifactId>services</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <relativePath>..</relativePath>
   </parent>
-
   <artifactId>rabbit-status-publisher</artifactId>
   <name>RabbitMQ Server Status Publication Service</name>
   <description>A service to publish server status metrics from RabbitMQ Management Rest API onto the event bus.</description>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
-
   <dependencies>
     <dependency>
-      <groupId>pegasus.cip</groupId>
-      <artifactId>event-bus-rabbit</artifactId>
-      <version>0.0.3-SNAPSHOT</version>
+      <groupId>gov.ment</groupId>
+      <artifactId>core</artifactId>
     </dependency>
     <dependency>
-      <groupId>pegasus.cip</groupId>
-      <artifactId>orion-dashboard-server</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <groupId>gov.ment</groupId>
+      <artifactId>event-bus-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>gov.ment</groupId>
+      <artifactId>event-bus-rabbit</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-httpclient</groupId>
       <artifactId>commons-httpclient</artifactId>
-      <version>3.1</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://www.springframework.org/schema/beans" xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:util="http://www.springframework.org/schema/util"
+  xsi:schemaLocation="http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit-1.0.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+  <context:property-placeholder
+    location="classpath:event-bus-toposervice.properties"
+    ignore-unresolvable="false" ignore-resource-not-found="true" />
+
+  <bean id="eventBusFactory" class="gov.ment.eventbus.rabbit.RabbitBusFactory">
+    <property name="clientName"
+      value="${event.bus.clientName:global-topology-service-test}" />
+    <property name="username" value="${event.bus.username:guest}" />
+    <property name="password" value="${event.bus.password:guest}" />
+    <property name="host" value="${event.bus.host:rabbit.osd.mil}" />
+    <property name="vHost" value="${event.bus.vhost:/}" />
+    <property name="port" value="${event.bus.port:5672}" />
+    <property name="connectionRetryTimeout" value="${event.bus.connectionRetryTimeout:30000}" />
+  </bean>
+
+  <bean id="eventManager" factory-bean="eventBusFactory"
+    factory-method="getNewEventManager" destroy-method="close" />
+
+</beans>

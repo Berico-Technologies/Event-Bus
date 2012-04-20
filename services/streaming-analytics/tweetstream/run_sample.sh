@@ -1,1 +1,0 @@
-mvn exec:java -Dexec.mainClass="com.berico.tweetstream.app.BaseDemo" -Dexec.args="com.berico.tweetstream.app.TwitterSamplingDemo"
