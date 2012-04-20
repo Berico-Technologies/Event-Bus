@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,7 +24,7 @@ namespace pegasus.eventbus.rabbitmq
 
         private RabbitConnection _connection;
         private IModel _cmdChannel;
-        private IDictionary<string, IModel> _consumerChannel;
+        private IDictionary<string, IModel> _consumerChannels;
         private bool _isClosing;
 
 
@@ -62,17 +63,67 @@ namespace pegasus.eventbus.rabbitmq
 
         public void CreateExchange(Exchange exchange)
         {
+            LOG.DebugFormat("Creating exchange '{0}'", exchange.Name);
 
+            try
+            {
+                _cmdChannel.ExchangeDeclare(exchange.Name, exchange.Type.ToString().ToLower(), exchange.IsDurable);
+            }
+            catch (Exception ex)
+            {
+                LOG.Error("Failed to create the '" + exchange.Name + "' exchange", ex);
+                throw;
+            }
         }
 
         public void CreateQueue(string name, IEnumerable<RoutingInfo> bindings, bool durable)
         {
-            throw new NotImplementedException();
+            LOG.DebugFormat("Declaring queue [name: {0}, durable: {1}]", name, durable);
+
+            try
+            {
+                IDictionary args = new Hashtable();
+                args.Add("x-expires", new TimeSpan(0, 30, 0).TotalMilliseconds);
+
+                _cmdChannel.QueueDeclare(name, durable, false, false, args);
+            }
+            catch (Exception ex)
+            {
+                LOG.Error("Failed to create queue '" + name + "'", ex);
+                throw;
+            }
+
+            foreach (RoutingInfo binding in bindings)
+            {
+                string msg = string.Format("Binding queue '{0}' on exchange '{1}' with expression '{2}'", 
+                    name, binding.Exchange.Name, binding.RoutingKey);
+                LOG.DebugFormat(msg);
+
+                try
+                {
+                    _cmdChannel.QueueBind(name, binding.Exchange.Name, binding.RoutingKey);
+                }
+                catch (Exception ex)
+                {
+                    LOG.Error("Failed to Create " + msg, ex);
+                    throw;
+                }
+            }
         }
 
         public void DeleteQueue(string queueName)
         {
-            throw new NotImplementedException();
+            LOG.DebugFormat("Deleting queue '{0}'", queueName);
+
+            try
+            {
+                _cmdChannel.QueueDelete(queueName);
+            }
+            catch (Exception ex)
+            {
+                LOG.Error("Failed to delete queue '" + queueName + "'", ex);
+                throw;
+            }
         }
 
         public void Publish(RoutingInfo route, Envelope message)
