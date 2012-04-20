@@ -118,14 +118,14 @@ public class RabbitMessageBus implements AmqpMessageBus, UnexpectedCloseListener
         	
         	isClosing = true;
 
-            if (commandChannel.isOpen()) {
+            if (commandChannel !=null && commandChannel.isOpen()) {
 
                 LOG.trace("Closing command channel.");
 
                 commandChannel.close();
             }
 
-            if (connection.isOpen()) {
+            if (connection != null && connection.isOpen()) {
 
                 LOG.trace("Closing connection.");
 
