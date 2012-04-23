@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import pegasus.eventbus.amqp.RoutingInfo;
 import pegasus.eventbus.amqp.TopologyManager;
-import pegasus.eventbus.topology.event.*;
+import pegasus.eventbus.topology.events.*;
 
 import pegasus.eventbus.client.EventManager;
 
@@ -48,6 +48,7 @@ public class StaticTopologyManager implements TopologyManager {
     private void initializeTopologyRegistries() {
     	registerType(RegisterClient.class);
     	registerType(UnregisterClient.class);
+    	registerType(HeartBeat.class);
       	registerType(TopologyUpdate.class);
      	registerType(GetEventTypeRoute.class);
       	registerType(EventTypeRoutingInfo.class);

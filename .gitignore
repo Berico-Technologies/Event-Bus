@@ -10,6 +10,7 @@ target
 *.jar
 *.class
 .gpush.settings
+.userprefs
 
 #Visual Studio files
 *.[Oo]bj

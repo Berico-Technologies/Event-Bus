@@ -15,9 +15,16 @@ public class AmqpConnectionParameters implements EventBusConnectionParameters {
 
     private static final Dictionary<String, String> DEFAULT_VALUES = initializeDefaults();
 
-    private final Dictionary<String, String>        parametersMap  = new Hashtable<String, String>();
-
-    /**
+    private final Dictionary<String, String>        parametersMap  = new Hashtable<String, String>();  
+    
+    private boolean ssl;
+    private String trustStore;
+    private String trustStorePassword;
+    private String keyStore;
+    private String keyStorePassword;
+    
+    
+	/**
      * Default Constructor
      */
     public AmqpConnectionParameters() {
@@ -171,8 +178,48 @@ public class AmqpConnectionParameters implements EventBusConnectionParameters {
     public void setConnectionRetryTimeout(long connectionRetryTimeout) {
         setValue(CONNECTION_RETRY_TIMEOUT_PROPERTY, Long.toString(connectionRetryTimeout));
     }
+    
+	public boolean isSsl() {
+		return ssl;
+	}
 
-    /**
+	public void setSsl(boolean ssl) {
+		this.ssl = ssl;
+	}
+
+	public String getTrustStore() {
+		return trustStore;
+	}
+
+	public void setTrustStore(String trustStore) {
+		this.trustStore = trustStore;
+	}
+
+	public String getTrustStorePassword() {
+		return trustStorePassword;
+	}
+
+	public void setTrustStorePassword(String trustStorePassword) {
+		this.trustStorePassword = trustStorePassword;
+	}
+
+	public String getKeyStore() {
+		return keyStore;
+	}
+
+	public void setKeyStore(String keyStore) {
+		this.keyStore = keyStore;
+	}
+
+	public String getKeyStorePassword() {
+		return keyStorePassword;
+	}
+
+	public void setKeyStorePassword(String keyStorePassword) {
+		this.keyStorePassword = keyStorePassword;
+	}
+
+	/**
      * Get the value of a configuration parameter
      * 
      * @param key
@@ -289,8 +336,8 @@ public class AmqpConnectionParameters implements EventBusConnectionParameters {
         defaults.put(PORT_PROPERTY, "5672");
         defaults.put(VHOST_PROPERTY, "/");
         defaults.put(CONNECTION_RETRY_TIMEOUT_PROPERTY, "30000");
+        defaults.put(SSL_PROPERTY, Boolean.FALSE.toString());
 
         return defaults;
     }
-
 }

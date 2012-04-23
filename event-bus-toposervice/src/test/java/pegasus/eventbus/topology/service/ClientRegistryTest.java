@@ -9,8 +9,8 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.Iterator;
 
-import pegasus.eventbus.topology.event.RegisterClient;
-import pegasus.eventbus.topology.event.UnregisterClient;
+import pegasus.eventbus.topology.events.RegisterClient;
+import pegasus.eventbus.topology.events.UnregisterClient;
 import pegasus.eventbus.topology.service.ClientRegistry;
 
 public class ClientRegistryTest {

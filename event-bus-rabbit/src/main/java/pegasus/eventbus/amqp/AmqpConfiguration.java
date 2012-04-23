@@ -267,7 +267,8 @@ public class AmqpConfiguration implements EventBusConfiguration {
         CompositeTopologyManager compositeTopologyManager = new CompositeTopologyManager();
         TopologyManager fixedTopologyManager = new StaticTopologyManager();
         compositeTopologyManager.addManager(fixedTopologyManager);
-        TopologyManager globalTopologyService = new GlobalTopologyServiceManager(clientName);
+        //TODO: Make the heartbeat interval configurable?
+        TopologyManager globalTopologyService = new GlobalTopologyServiceManager(clientName, 300);
         compositeTopologyManager.addManager(globalTopologyService);
         TopologyManager fallbackToplogyService = new FallbackTopologyManager();
         compositeTopologyManager.addManager(fallbackToplogyService);
