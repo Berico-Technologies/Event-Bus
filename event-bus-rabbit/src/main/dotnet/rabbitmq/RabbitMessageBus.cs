@@ -128,7 +128,25 @@ namespace pegasus.eventbus.rabbitmq
 
         public void Publish(RoutingInfo route, Envelope message)
         {
-            throw new NotImplementedException();
+            try
+            {
+                Dictionary<string, string> headers = new Dictionary<string, string>();
+
+                if (null != message.GetTopic())
+                {
+                    headers.Add(TOPIC_HEADER_KEY, message.GetTopic());
+                }
+
+                if (null != message.GetSendTime())
+                {
+                    headers.Add(PUB_TIMESTAMP_HEADER_KEY, message.GetSendTime().GetEpochTimeInMilliseconds().ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
         }
 
         public string BeginConsumingMessages(string queueName, IEnvelopeHandler consumer)

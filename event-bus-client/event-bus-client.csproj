@@ -55,6 +55,7 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Compile Include="src\main\dotnet\AssemblyInfo.cs" />
+    <Compile Include="src\main\dotnet\DateTimeExtensions.cs" />
     <Compile Include="src\main\dotnet\EnvelopeExtensions.cs" />
     <Compile Include="src\main\dotnet\EventResult.cs" />
     <Compile Include="src\main\dotnet\IEnvelopeHandler.cs" />

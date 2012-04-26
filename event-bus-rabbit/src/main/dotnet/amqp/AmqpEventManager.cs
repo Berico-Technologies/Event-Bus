@@ -43,7 +43,7 @@ namespace pegasus.eventbus.amqp
 			_envelopesBeingHandled = new Dictionary<object, Envelope>();
             _exchangesKnownToExist = new List<string>();
 
-            _messageBus.UnexpectedConnectionClose += this.MessageBus_UnexpectedConnectionClose;
+            _messageBus.UnexpectedClose += this.MessageBus_UnexpectedConnectionClose;
         }
 
 

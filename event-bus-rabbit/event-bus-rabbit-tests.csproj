@@ -39,6 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="src\test\dotnet\AmqpConnectionParametersTests.cs" />
+    <Compile Include="src\test\dotnet\GetEpochDateTimeExtensionTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\event-bus-client\event-bus-client.csproj">
