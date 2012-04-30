@@ -28,6 +28,40 @@ namespace pegasus.eventbus.rabbitmq
         private bool _isClosing;
 
 
+        public static Envelope CreateEnvelope(IBasicProperties props, byte[] body)
+        {
+            Envelope envelope = new Envelope();
+
+            IDictionary rabbitHeaders = props.Headers;
+            IDictionary<string, string> ourHeaders = new Dictionary<string, string>();
+            long javaTimestamp = 0L;
+
+            if (null != rabbitHeaders)
+            {
+                foreach (string key in rabbitHeaders.Keys)
+                {
+                    ourHeaders.Add(key, rabbitHeaders[key].ToString());
+                }
+
+                javaTimestamp = long.Parse(ourHeaders[PUB_TIMESTAMP_HEADER_KEY]);
+            }
+
+            envelope.Body = body;
+            envelope.SetId(props.MessageId == null ? Guid.Empty : Guid.Parse(props.MessageId));
+            envelope.SetCorrelationId(props.CorrelationId == null ? Guid.Empty : Guid.Parse(props.CorrelationId));
+            envelope.SetEventType(props.Type);
+            envelope.SetReplyTo(props.ReplyTo);
+            envelope.SetSendTime(javaTimestamp == 0L ? DateTime.MinValue : javaTimestamp.ToDateTimeFromJavaTimestamp());
+            envelope.SetTopic(ourHeaders[TOPIC_HEADER_KEY]);
+
+            // We don't want our internally used headers to be a Header property of the envelope.
+            ourHeaders.Remove(TOPIC_HEADER_KEY);
+            ourHeaders.Remove(PUB_TIMESTAMP_HEADER_KEY);
+
+            return envelope;
+        }
+
+
         public RabbitMessageBus(RabbitConnection connection)
         {
             _connection = connection;
@@ -130,28 +164,49 @@ namespace pegasus.eventbus.rabbitmq
         {
             try
             {
-                Dictionary<string, string> headers = new Dictionary<string, string>();
+                if (null == message.Headers) { message.Headers = new Dictionary<string, string>(); }
 
                 if (null != message.GetTopic())
                 {
-                    headers.Add(TOPIC_HEADER_KEY, message.GetTopic());
+                    message.Headers.Add(TOPIC_HEADER_KEY, message.GetTopic());
                 }
 
                 if (null != message.GetSendTime())
                 {
-                    headers.Add(PUB_TIMESTAMP_HEADER_KEY, message.GetSendTime().GetEpochTimeInMilliseconds().ToString());
+                    message.Headers.Add(PUB_TIMESTAMP_HEADER_KEY, message.GetSendTime().GetEpochTime().ToString());
                 }
+
+                IBasicProperties props = _cmdChannel.CreateBasicProperties();
+                props.MessageId = (null == message.GetId()) ? null : message.GetId().ToString();
+                props.CorrelationId = (null == message.GetCorrelationId()) ? null : message.GetCorrelationId().ToString();
+                props.Type = message.GetEventType();
+                props.ReplyTo = message.GetReplyTo();
+                props.Headers = (IDictionary)message.Headers;
+
+                _cmdChannel.BasicPublish(route.Exchange.Name, route.RoutingKey, props, message.Body);
+
+                LOG.DebugFormat("Event {0} has been published", message.GetId().ToString());
             }
             catch (Exception ex)
             {
-
+                LOG.ErrorFormat("Failed to publish event {0}: {1}", message.GetId(), ex.ToString());
                 throw;
             }
         }
 
         public string BeginConsumingMessages(string queueName, IEnvelopeHandler consumer)
         {
-            throw new NotImplementedException();
+            LOG.DebugFormat("Begin consuming messages for queue [{0}] with an EnvelopeHandler of type [{1}].", 
+                queueName, consumer.GetType().FullName);
+
+            string consumerTag = this.CreateConsumerTag(queueName);
+
+            IModel consumerChannel = this.CreateConsumerChannel(_connection, consumerTag);
+            _consumerChannels.Add(consumerTag, consumerChannel);
+
+            this.BeginConsumingMessages(queueName, consumerChannel, false, consumerTag, consumer);
+
+            return consumerTag;
         }
 
         public void StopConsumingMessages(string consumerTag)
@@ -159,6 +214,63 @@ namespace pegasus.eventbus.rabbitmq
             throw new NotImplementedException();
         }
 
+
+
+        protected virtual void BeginConsumingMessages(string queueName, IModel channel, bool noAck, string consumerTag, IEnvelopeHandler consumer)
+        {
+            LOG.DebugFormat("Beginning basicConsume for ConsumerTag [{0}].", consumerTag);
+
+            try
+            {
+                channel.BasicConsume(queueName, false, consumerTag, new EnvelopeHandlerBasicConsumer(channel, consumerTag, consumer));
+                LOG.DebugFormat("Begun basicConsume for ConsumerTag [{0}].", consumerTag);
+            }
+            catch (Exception ex)
+            {
+                LOG.ErrorFormat("Failed to initiate basicConsume ConsumerTag [{0}].", consumerTag, ex);
+                throw;
+            }
+        }
+
+
+
+        private string CreateConsumerTag(string queueName)
+        {
+            string consumerTag = queueName + ":" + Guid.NewGuid().ToString();
+            LOG.DebugFormat("Created consumerTag [{0}].", consumerTag);
+
+            return consumerTag;
+        }
+
+        private IModel CreateConsumerChannel(RabbitConnection conn, string consumerTag)
+        {
+            IModel consumerChannel = null;
+
+            try
+            {
+                consumerChannel = conn.CreateChannel();
+                consumerChannel.ModelShutdown += new ModelShutdownEventHandler(_consumerChannel_ModelShutdown);
+
+                LOG.DebugFormat("Successfully opened dedicated channel for ConsumerTag [{0}], Model [{1}].", 
+                    consumerTag, consumerChannel.GetHashCode());
+            }
+            catch (Exception ex)
+            {
+                LOG.ErrorFormat("Could not create channel to consume messages with consumerTag {0}: {1}", consumerTag, ex);
+                throw;
+            }
+
+            return consumerChannel;
+        }
+
+        private void _consumerChannel_ModelShutdown(IModel model, ShutdownEventArgs reason)
+        {
+ 	        if (!_isClosing)
+            {
+                LOG.ErrorFormat("Consumer channel shutdown signal received for channel [{0}]: {1}", 
+                    model.GetHashCode(), reason.Cause);
+            }
+        }
 
         private void _connection_UnexpectedClose(bool successfullyReopened)
         {

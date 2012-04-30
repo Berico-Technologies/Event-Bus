@@ -62,6 +62,7 @@
     <Compile Include="src\main\dotnet\amqp\QueueListener.cs" />
     <Compile Include="src\main\dotnet\amqp\Listeners.cs" />
     <Compile Include="src\main\dotnet\gson\GsonSerializer.cs" />
+    <Compile Include="src\main\dotnet\rabbitmq\EnvelopeHandlerBasicConsumer.cs" />
     <Compile Include="src\main\dotnet\rabbitmq\RabbitConnection.cs" />
     <Compile Include="src\main\dotnet\amqp\AmqpConnectionParameters.cs" />
     <Compile Include="src\main\dotnet\rabbitmq\RabbitMessageBus.cs" />

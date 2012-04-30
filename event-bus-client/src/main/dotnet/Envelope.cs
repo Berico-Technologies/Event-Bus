@@ -41,7 +41,7 @@ namespace pegasus.eventbus.client
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("Envelope[REPLYTO=");
+            sb.Append("[REPLYTO=");
             sb.Append(this.GetReplyTo());
             sb.Append(",EVENT_TYPE=");
             sb.Append(this.GetEventType());

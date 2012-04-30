@@ -21,7 +21,7 @@ namespace pegasus.eventbus.client
         /// <returns>
         /// An <see cref="EventResult"/> indicating the final disposition of the event.
         /// </returns>
-        EventResult handleEnvelope(Envelope envelope);
+        EventResult HandleEnvelope(Envelope envelope);
 
         /// <summary>
         /// The EventSetName getter.

@@ -37,7 +37,7 @@ namespace pegasus.eventbus.client
         /// </summary>
         /// <param name="javaTimeStamp"></param>
         /// <returns></returns>
-        public static DateTime ParseJavaTimestamp(long javaTimeStamp)
+        public static DateTime ToDateTimeFromJavaTimestamp(this long javaTimeStamp)
         {
             return EPOCH.AddSeconds(javaTimeStamp / 1000).ToLocalTime();
         }
