@@ -25,10 +25,11 @@ namespace pegasus.eventbus.amqp
 		// Must start with Alpha, Digit or _ and be no more than 255 chars. Special
 		// chars, spaces, etc. are allowed.
 		// We are limiting name to 215 chars to allow us to append UUID.
-		private static readonly Regex VALID_AMQP_NAME = new Regex("^\\w{1}.{0,214}+$");
+        // java regex is: ^\\w{1}.{0,214}+$
+		private static readonly Regex VALID_AMQP_NAME = new Regex(@"^\w{1}.{0,214}$");
 		
 		// AMQP name may not start with amq. as this is reserved
-		private static readonly Regex FIRST_CHARS_INVALID_FOR_AMQP = new Regex("^(\\W|(amq\\.))");
+		private static readonly Regex FIRST_CHARS_INVALID_FOR_AMQP = new Regex(@"^amq");
     	
 		// Assumes command is anything prior to the first whitespace and then
 		// extracts the final ., / or \ delimited segment thereof
