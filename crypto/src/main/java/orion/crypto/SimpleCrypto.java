@@ -1,4 +1,4 @@
-package pegasus.eventbus.rabbitmq;
+package orion.crypto;
 
 public interface SimpleCrypto {
 	

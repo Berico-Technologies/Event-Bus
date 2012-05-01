@@ -1,8 +1,10 @@
-package pegasus.eventbus.rabbitmq;
+package orion.crypto;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+
+import orion.crypto.SimpleCryptoImpl;
 
 public class SimpleCryptoImplTest {
 	

@@ -1,4 +1,4 @@
-package pegasus.eventbus.rabbitmq;
+package orion.crypto;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
@@ -7,6 +7,7 @@ import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+
 
 
 public class SimpleCryptoImpl implements SimpleCrypto {

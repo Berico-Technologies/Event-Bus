@@ -17,6 +17,11 @@
       <artifactId>event-bus-client</artifactId>
       <version>0.0.4-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>orion.crypto</groupId>
+      <artifactId>crypto</artifactId>
+      <version>0.1-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 
 </project>
