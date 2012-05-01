@@ -13,6 +13,7 @@
         <property name="host" value="${event.bus.host:rabbit}" />
         <property name="vHost" value="${event.bus.vhost:/}" />
         <property name="port" value="${event.bus.port:5672}" />
+        <property name="ssl" value="${event.bus.ssl:false}" />
         <property name="connectionRetryTimeout" value="${event.bus.connectionRetryTimeout:30000}" />
     </bean>
 

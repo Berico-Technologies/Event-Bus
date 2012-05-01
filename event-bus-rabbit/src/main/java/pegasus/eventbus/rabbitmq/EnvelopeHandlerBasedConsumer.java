@@ -90,7 +90,7 @@ class EnvelopeHandlerBasedConsumer extends DefaultConsumer {
 				//TODO: PEGA-726 what if handler incorrectly returns null? I think we should assume Failed to be safe.
 				result = consumer.handleEnvelope(envelope);
 				
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				
 				result = EventResult.Failed;
 				
@@ -100,7 +100,7 @@ class EnvelopeHandlerBasedConsumer extends DefaultConsumer {
 					
 					id = envelope.getId().toString();
 					
-				} catch (Exception ee) {
+				} catch (Throwable ee) {
 					
 					id = "<message id not available>";
 				}
@@ -135,7 +135,8 @@ class EnvelopeHandlerBasedConsumer extends DefaultConsumer {
 				
 				break;
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
+
 			LOG.error("handleDelivery failed on queue " + queueName + ".", e);
 		}
 	}

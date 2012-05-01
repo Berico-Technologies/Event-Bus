@@ -9,10 +9,11 @@ import pegasus.eventbus.client.EventResult;
 import pegasus.eventbus.client.SubscriptionToken;
 
 import pegasus.eventbus.topology.TopologyRegistry;
-import pegasus.eventbus.topology.event.RegisterClient;
-import pegasus.eventbus.topology.event.Registration;
-import pegasus.eventbus.topology.event.UnregisterClient;
-import pegasus.eventbus.topology.event.TopologyUpdate;
+import pegasus.eventbus.topology.events.HeartBeat;
+import pegasus.eventbus.topology.events.RegisterClient;
+import pegasus.eventbus.topology.events.Registration;
+import pegasus.eventbus.topology.events.TopologyUpdate;
+import pegasus.eventbus.topology.events.UnregisterClient;
 
 public class RegistrationHandler implements EventHandler<Registration> {
 
@@ -39,7 +40,7 @@ public class RegistrationHandler implements EventHandler<Registration> {
 
     @SuppressWarnings("unchecked")
     public Class<Registration>[] getHandledEventTypes() {
-        return new Class[] { RegisterClient.class, UnregisterClient.class };
+        return new Class[] { RegisterClient.class, UnregisterClient.class, HeartBeat.class };
     }
 
     public EventResult handleEvent(Registration event) {
@@ -67,6 +68,13 @@ public class RegistrationHandler implements EventHandler<Registration> {
                 LOG.info("Received UnregisterClient event [{}]", unregisterEvent);
 
                 clientRegistry.unregisterClient(unregisterEvent);
+                return EventResult.Handled;
+            } else if (eventType.equals(HeartBeat.class.getName())) {
+                
+            	HeartBeat heartbeat = (HeartBeat) event;
+            	
+            	LOG.debug("Received HeartBeat event for {}", heartbeat.getClientName());
+
                 return EventResult.Handled;
             } else {
                 // unknown event type

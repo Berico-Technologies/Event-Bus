@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{3198A508-B2FD-456C-AF2D-D84815297F8F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>eventbusrabbittests</RootNamespace>
+    <AssemblyName>event-bus-rabbit-tests</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Reference Include="nunit.framework">
+      <HintPath>lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="src\test\dotnet\AmqpConnectionParametersTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="event-bus-rabbit.csproj">
+      <Project>{81EACA35-DBDA-431A-BB37-2685A6AA1E1D}</Project>
+      <Name>event-bus-rabbit</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\event-bus-client\event-bus-client.csproj">
+      <Project>{61C42B9F-9CC7-44C5-A345-0E5884BC2EDD}</Project>
+      <Name>event-bus-client</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

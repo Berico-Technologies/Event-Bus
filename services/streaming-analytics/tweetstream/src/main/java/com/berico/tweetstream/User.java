@@ -15,8 +15,6 @@
  */
 package com.berico.tweetstream;
 
-import twitter4j.UserMentionEntity;
-
 /**
  * A user, either making the Tweet or mentioned
  * within a Tweet.
@@ -24,10 +22,13 @@ import twitter4j.UserMentionEntity;
  */
 public class User {
 
-	private String user = null;
-	private String accountName = null;
-	private String userImageUrl = null;
-	private String userUrl = null;
+	private String user = "omitted";
+	private String accountName = "omitted";
+	private String userImageUrl = "omitted";
+	private String userUrl = "omitted";
+	private long userId = -1;
+	private int followers = 0;
+	private String location = "";
 
 	public String getUser() {
 		return user;
@@ -61,41 +62,95 @@ public class User {
 		this.userUrl = userUrl;
 	}
 	
-	/**
-	 * Convert a Twitter4j user into our representation
-	 * of a User.
-	 * @param tuser Twitter4j user
-	 * @return Our representation of a user.
-	 */
-	public static User fromUser(twitter4j.User tuser){
-		
-		User user = new User();
-		user.setUser(tuser.getName());
-		user.setAccountName(tuser.getScreenName());
-		user.setUserImageUrl(tuser.getProfileImageURL().toExternalForm());
-		
-		if(tuser.getURL() != null){
-		
-			user.setUserUrl(tuser.getURL().toExternalForm());
-		}
-		
-		return user;
+	public long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(long userId) {
+		this.userId = userId;
+	}
+
+	public int getFollowers() {
+		return followers;
+	}
+
+	public void setFollowers(int followers) {
+		this.followers = followers;
+	}
+
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
+	}
+
+	@Override
+	public String toString() {
+		return "User [user=" + user + ", accountName=" + accountName
+				+ ", userImageUrl=" + userImageUrl + ", userUrl=" + userUrl
+				+ ", userId=" + userId + ", followers=" + followers
+				+ ", location=" + location + "]";
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((accountName == null) ? 0 : accountName.hashCode());
+		result = prime * result + followers;
+		result = prime * result
+				+ ((location == null) ? 0 : location.hashCode());
+		result = prime * result + ((user == null) ? 0 : user.hashCode());
+		result = prime * result + (int) (userId ^ (userId >>> 32));
+		result = prime * result
+				+ ((userImageUrl == null) ? 0 : userImageUrl.hashCode());
+		result = prime * result + ((userUrl == null) ? 0 : userUrl.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		User other = (User) obj;
+		if (accountName == null) {
+			if (other.accountName != null)
+				return false;
+		} else if (!accountName.equals(other.accountName))
+			return false;
+		if (followers != other.followers)
+			return false;
+		if (location == null) {
+			if (other.location != null)
+				return false;
+		} else if (!location.equals(other.location))
+			return false;
+		if (user == null) {
+			if (other.user != null)
+				return false;
+		} else if (!user.equals(other.user))
+			return false;
+		if (userId != other.userId)
+			return false;
+		if (userImageUrl == null) {
+			if (other.userImageUrl != null)
+				return false;
+		} else if (!userImageUrl.equals(other.userImageUrl))
+			return false;
+		if (userUrl == null) {
+			if (other.userUrl != null)
+				return false;
+		} else if (!userUrl.equals(other.userUrl))
+			return false;
+		return true;
 	}
 	
-	/**
-	 * Convert a Twitter4j UserMentionEntity (this is someone
-	 * mentioned in a Tweet [prefixed with an '@' sign) into
-	 * a User in our model.
-	 * @param tuser Twitter4j UserMentionEntity
-	 * @return Our representation of a User.
-	 */
-	public static User fromUserMentionEntity(UserMentionEntity tuser){
-		
-		User user = new User();
-		user.setUser(tuser.getName());
-		user.setAccountName(tuser.getScreenName());
-		
-		return user;
-	}
 	
 }
