@@ -7,7 +7,7 @@ import org.junit.Test;
 import orion.crypto.SimpleCryptoImpl;
 
 public class SimpleCryptoImplTest {
-	
+
 	private static void assertEncryptionDecryptionWorks(String pass, String text) throws Exception {
 		SimpleCryptoImpl crypto = new SimpleCryptoImpl(pass);
 		String enctext = crypto.encrypt(text);
@@ -22,33 +22,33 @@ public class SimpleCryptoImplTest {
 	public void testRoundTrip() throws Exception {
 		assertEncryptionDecryptionWorks("pass", "text for encryption");
 	}
-	
+
 	@Test
 	public void testEmptyPassword() throws Exception {
 		assertEncryptionDecryptionWorks("", "text for encryption");
 	}
-	
+
 	@Test
 	public void testEmptyString() throws Exception {
 		assertEncryptionDecryptionWorks("pass", "");
 	}
-	
+
 	@Test
 	public void testEmptyStringAndPassword() throws Exception {
 		assertEncryptionDecryptionWorks("", "");
 	}
-	
-	
+
+
 	@Test
 	public void testOneCharPassword() throws Exception {
 		assertEncryptionDecryptionWorks("x", "more text for encryption");
 	}
-	
+
 	@Test
 	public void testOneCharString() throws Exception {
 		assertEncryptionDecryptionWorks("a key", "y");
 	}
-	
+
 	@Test
 	public void testNullPassword() throws Exception {
 		try {
@@ -68,7 +68,7 @@ public class SimpleCryptoImplTest {
 			// Expected
 		}
 	}
-	
+
 	@Test
 	public void testDecryptNullString() throws Exception {
 		SimpleCryptoImpl crypto = new SimpleCryptoImpl("pass");
@@ -79,4 +79,15 @@ public class SimpleCryptoImplTest {
 			// Expected
 		}
 	}
+
+    @Test
+    public void testEncryptDecryptWithSeparateInstances() throws Exception {
+        String password = "Sword Fish";
+        String messageText = "Why a Duck?";
+        SimpleCryptoImpl encrypter = new SimpleCryptoImpl(password);
+        SimpleCryptoImpl decrypter = new SimpleCryptoImpl(password);
+        String enctext = encrypter.encrypt(messageText);
+        String roundTripProcessed = decrypter.decrypt(enctext);
+        assertTrue(roundTripProcessed.equals(messageText));
+    }
 }
