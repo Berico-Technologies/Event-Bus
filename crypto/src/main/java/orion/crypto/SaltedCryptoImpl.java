@@ -39,8 +39,11 @@ public class SaltedCryptoImpl implements SimpleCrypto {
             return AESUtils.decrypt(getRawKey(), baseEncr);
         }
 
-        public String extractBaseEncrypted(String saltedEncr) {
+        public String extractBaseEncrypted(String saltedEncr) throws Exception {
             int splitPoint = saltedEncr.length() - (2 * saltSize);
+            if (splitPoint < 1) {
+                throw new Exception("Invalid encrypted string");
+            }
             String hexSalt = saltedEncr.substring(splitPoint);
             salt = AESUtils.toByte(hexSalt);
             String baseEncr = saltedEncr.substring(0, splitPoint);
