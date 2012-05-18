@@ -1,5 +1,6 @@
 package pegasus.eventbus.amqp;
 
+import java.net.URL;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -18,9 +19,18 @@ public class AmqpConnectionParameters implements EventBusConnectionParameters {
     private final Dictionary<String, String>        parametersMap  = new Hashtable<String, String>();  
     
     private boolean ssl;
-    private String trustStore;
+    private boolean oneWaySSL;
+    public boolean isOneWaySSL() {
+		return oneWaySSL;
+	}
+
+	public void setOneWaySSL(boolean oneWaySSL) {
+		this.oneWaySSL = oneWaySSL;
+	}
+
+	private URL trustStore;
     private String trustStorePassword;
-    private String keyStore;
+    private URL keyStore;
     private String keyStorePassword;
     
     
@@ -187,11 +197,11 @@ public class AmqpConnectionParameters implements EventBusConnectionParameters {
 		this.ssl = ssl;
 	}
 
-	public String getTrustStore() {
+	public URL getTrustStore() {
 		return trustStore;
 	}
 
-	public void setTrustStore(String trustStore) {
+	public void setTrustStore(URL trustStore) {
 		this.trustStore = trustStore;
 	}
 
@@ -203,11 +213,11 @@ public class AmqpConnectionParameters implements EventBusConnectionParameters {
 		this.trustStorePassword = trustStorePassword;
 	}
 
-	public String getKeyStore() {
+	public URL getKeyStore() {
 		return keyStore;
 	}
 
-	public void setKeyStore(String keyStore) {
+	public void setKeyStore(URL keyStore) {
 		this.keyStore = keyStore;
 	}
 
