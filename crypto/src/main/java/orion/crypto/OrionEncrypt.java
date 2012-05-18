@@ -11,25 +11,29 @@ package orion.crypto;
  * @author israel
  *
  */
-public class OrionEncrypt {
+public class OrionEncrypt implements SimpleCrypto{
 
     private final String seedfirst = "Use me for doing the ";
     private SaltedCryptoImpl sci;
 
 
-    public OrionEncrypt() throws Exception {
+    public OrionEncrypt(){
         String wrapper = "--";
         // Construct the seed dynamically so that simple strings examination of the jar
         // file cannot find the key.  Note that this will not stop an attacker who
         // is able to reverse engineer the byte-code and run it.
-        sci = new SaltedCryptoImpl(wrapper + seedfirst + getClass().getSimpleName() + wrapper, 10);
+        try{
+            sci = new SaltedCryptoImpl(wrapper + seedfirst + getClass().getSimpleName() + wrapper, 10);        	
+        }catch (Exception e) {
+        	throw new RuntimeException(e);
+		}
     }
 
-    protected String encrypt(String s) throws Exception {
+    public String encrypt(String s) throws Exception {
         return sci.encrypt(s);
     }
 
-    protected String decrypt(String s) throws Exception {
+    public String decrypt(String s) throws Exception {
         return sci.decrypt(s);
     }
 
