@@ -18,9 +18,9 @@
       <version>0.0.4-SNAPSHOT</version>
     </dependency>
     <dependency>
-      <groupId>orion.crypto</groupId>
+      <groupId>pegasus.cip</groupId>
       <artifactId>crypto</artifactId>
-      <version>0.1-SNAPSHOT</version>
+      <version>0.0.1-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
