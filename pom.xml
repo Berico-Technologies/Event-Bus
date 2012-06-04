@@ -1,15 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>pegasus.cip</groupId>
+  <groupId>${parent.groupId}.event-bus</groupId>
   <artifactId>event-bus</artifactId>
   <version>0.0.4-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Orion Event Bus</name>
   <description>The Event Bus component of the Orion High-capacity Computing Environment</description>
 
+    <parent>
+        <groupId>pegasus.cip</groupId>
+        <artifactId>base</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
   <modules>
-    <module>crypto</module>
     <module>event-bus-client</module>
     <module>event-bus-rabbit</module>
     <module>event-bus-test-support</module>
