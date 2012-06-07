@@ -21,10 +21,12 @@
     <module>event-bus-test-support</module>
     <module>event-bus-toposervice</module>
     <module>event-bus-toposervice-war</module>
-<!--     <module>services/event-stream-processor</module> -->
-<!--     <module>services/event-stream-processor-war</module> -->
-<!--     <module>services/rabbit-status-service</module> -->
-<!--     <module>services/rabbit-status-service-war</module> -->
+    <!--
+    <module>services/event-stream-processor</module>
+    <module>services/event-stream-processor-war</module>
+    <module>services/rabbit-status-service</module>
+    <module>services/rabbit-status-service-war</module>
+    -->
   </modules>
 
   <properties>
@@ -231,27 +233,6 @@
       </plugin>
     </plugins>
   </build>
-
-  <repositories>
-    <repository>
-      <id>central</id>
-      <name>Maven Repository Switchboard</name>
-      <layout>default</layout>
-      <url>http://ci.pegasus.gov:11111/nexus/content/repositories/central</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>snapshots</id>
-      <name>Maven Repository Switchboard</name>
-      <layout>default</layout>
-      <url>http://ci.pegasus.gov:11111/nexus/content/repositories/snapshots/</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
 
   <distributionManagement>
     <site>
