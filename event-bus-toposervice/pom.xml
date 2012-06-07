@@ -13,16 +13,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>pegasus.cip</groupId>
-      <artifactId>event-bus-client</artifactId>
-      <version>0.0.4-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>pegasus.cip</groupId>
-      <artifactId>event-bus-rabbit</artifactId>
-      <version>0.0.4-SNAPSHOT</version>
-    </dependency>
-    <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
       <version>3.1.0.RELEASE</version>

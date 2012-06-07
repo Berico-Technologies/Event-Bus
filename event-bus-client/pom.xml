@@ -4,7 +4,7 @@
     <artifactId>event-bus</artifactId>
     <groupId>pegasus.cip</groupId>
     <version>0.0.4-SNAPSHOT</version>
-    <relativePath>..</relativePath>
+    <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>event-bus-client</artifactId>
   <name>Event Bus Client API</name>

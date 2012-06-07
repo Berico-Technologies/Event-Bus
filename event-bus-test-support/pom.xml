@@ -6,30 +6,10 @@
     <groupId>pegasus.cip</groupId>
     <artifactId>event-bus</artifactId>
     <version>0.0.4-SNAPSHOT</version>
-    <relativePath>..</relativePath>
+    <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>event-bus-test-support</artifactId>
   <name>Event Bus Integration Testing Support</name>
   <description>Contains classes to facilitate the authoring tests that assert correct integration with an actual event bus.</description>
-
-  <dependencies>
-    <dependency>
-      <groupId>pegasus.cip</groupId>
-      <artifactId>event-bus-rabbit</artifactId>
-      <version>0.0.4-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.8.1</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>commons-httpclient</groupId>
-      <artifactId>commons-httpclient</artifactId>
-      <version>3.1</version>
-      <scope>compile</scope>
-    </dependency>
-  </dependencies>
 
 </project>
