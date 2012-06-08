@@ -15,16 +15,19 @@ import org.junit.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.junit.experimental.categories.Category;
 
 import pegasus.eventbus.client.Envelope;
 import pegasus.eventbus.client.EnvelopeHandler;
 import pegasus.eventbus.client.EventResult;
+import pegasus.core.testsupport.IntegrationTest;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.AMQP.BasicProperties;
 
 //TODO: PEGA-718 These tests need to be converted from testing getGetMessage to testing Consume
 @RunWith(value = Parameterized.class)
+@Category(IntegrationTest.class)
 public class RabbitMessageBus_GetMessageTest extends RabbitMessageBus_TestBase {
 
 	@Parameters

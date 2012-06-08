@@ -9,11 +9,13 @@ import java.util.UUID;
 
 import org.apache.commons.lang.time.StopWatch;
 import org.junit.*;
+import org.junit.experimental.categories.Category;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import pegasus.core.testsupport.IntegrationTest;
 import pegasus.eventbus.client.Envelope;
 import pegasus.eventbus.client.EnvelopeHandler;
 import pegasus.eventbus.client.EventResult;
@@ -21,6 +23,7 @@ import pegasus.eventbus.client.EventResult;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.GetResponse;
 
+@Category(IntegrationTest.class)
 public class RabbitMessageBus_MessageAcknowledgementTest extends RabbitMessageBus_TestBase {
 
     @Mock

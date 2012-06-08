@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 import java.io.IOException;
 
 import org.junit.*;
+import org.junit.experimental.categories.Category;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -16,7 +17,9 @@ import com.rabbitmq.client.AMQP.BasicProperties;
 import pegasus.eventbus.client.Envelope;
 import pegasus.eventbus.client.EnvelopeHandler;
 import pegasus.eventbus.client.EventResult;
+import pegasus.core.testsupport.IntegrationTest;
 
+@Category(IntegrationTest.class)
 public class EnvelopeHandlerBasedConsumer_MessageAcknowledgementTest {
 
 	
