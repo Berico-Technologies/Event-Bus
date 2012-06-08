@@ -167,7 +167,7 @@
           <includes>
             <include>**/*.class</include>
           </includes>
- 	      <excludedgroups>pegasus.core.testsupport.IntegrationTest</excludedgroups>
+          <excludedGroups>pegasus.core.testsupport.IntegrationTest</excludedGroups>
         </configuration>
       </plugin>	
       <plugin>
