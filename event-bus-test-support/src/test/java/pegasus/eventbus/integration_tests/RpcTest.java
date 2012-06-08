@@ -13,7 +13,7 @@ import pegasus.eventbus.client.EventResult;
 import pegasus.eventbus.testsupport.TestResponseEvent;
 import pegasus.eventbus.testsupport.TestResponseEvent2;
 import pegasus.eventbus.testsupport.TestSendEvent;
-import pegasus.cip.core.testsupport.IntegrationTest;
+import pegasus.core.testsupport.IntegrationTest;
 
 import static com.jayway.awaitility.Awaitility.*;
 import static org.hamcrest.Matchers.*;

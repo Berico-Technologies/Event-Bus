@@ -18,7 +18,7 @@ import pegasus.eventbus.client.Subscription;
 import pegasus.eventbus.client.SubscriptionToken;
 import pegasus.eventbus.testsupport.TestSendEvent;
 import pegasus.eventbus.testsupport.TestSendEvent2;
-import pegasus.cip.core.testsupport.IntegrationTest;
+import pegasus.core.testsupport.IntegrationTest;
 
 @Category(IntegrationTest.class)
 public class SubscriptionTest extends IntegrationTestBase {

@@ -18,7 +18,7 @@ import com.rabbitmq.client.GetResponse;
 import pegasus.eventbus.amqp.AmqpConnectionParameters;
 import pegasus.eventbus.amqp.RoutingInfo;
 import pegasus.eventbus.testsupport.RabbitManagementApiHelper;
-import pegasus.cip.core.testsupport.IntegrationTest;
+import pegasus.core.testsupport.IntegrationTest;
 
 @Category(IntegrationTest.class)
 public class RabbitMessageBus_TestBase {

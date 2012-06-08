@@ -17,7 +17,7 @@ import pegasus.eventbus.amqp.AmqpEventManager;
 import pegasus.eventbus.amqp.AmqpConnectionParameters;
 import pegasus.eventbus.client.EventManager;
 import pegasus.eventbus.testsupport.RabbitManagementApiHelper;
-import pegasus.cip.core.testsupport.IntegrationTest;
+import pegasus.core.testsupport.IntegrationTest;
 import pegasus.eventbus.testsupport.TestSendEvent;
 
 @Category(IntegrationTest.class)
