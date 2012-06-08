@@ -137,7 +137,7 @@
                 </dependency>
             </dependencies>
             <configuration>
-                <groups>pegasus.cip.core.testsupport.IntegrationTest</groups>
+                <groups>pegasus.core.testsupport.IntegrationTest</groups>
             </configuration>
             <executions>
                 <execution>
@@ -167,7 +167,7 @@
           <includes>
             <include>**/*.class</include>
           </includes>
- 	      <excludedgroups>pegasus.cip.core.testsupport.IntegrationTest</excludedgroups>
+ 	      <excludedgroups>pegasus.core.testsupport.IntegrationTest</excludedgroups>
         </configuration>
       </plugin>	
       <plugin>
