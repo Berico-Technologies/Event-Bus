@@ -36,7 +36,7 @@
     </dependency>
     <dependency>
       <groupId>pegasus.cip</groupId>
-      <artifactId>test</artifactId>
+      <artifactId>core</artifactId>
       <version>0.0.1-SNAPSHOT</version>
       <type>test-jar</type>
       <scope>test</scope>
