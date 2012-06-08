@@ -8,6 +8,7 @@ import java.io.IOException;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 import org.junit.*;
+import org.junit.experimental.categories.Category;
 import org.mockito.*;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
@@ -17,7 +18,9 @@ import com.rabbitmq.client.GetResponse;
 import pegasus.eventbus.amqp.AmqpConnectionParameters;
 import pegasus.eventbus.amqp.RoutingInfo;
 import pegasus.eventbus.testsupport.RabbitManagementApiHelper;
+import pegasus.cip.core.testsupport.IntegrationTest;
 
+@Category(IntegrationTest.class)
 public class RabbitMessageBus_TestBase {
 
     protected Logger                        log = Logger.getLogger(this.getClass());

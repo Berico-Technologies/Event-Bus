@@ -7,10 +7,14 @@ import org.junit.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.junit.experimental.categories.Category;
+
 import pegasus.eventbus.client.EventHandler;
 import pegasus.eventbus.client.EventResult;
 import pegasus.eventbus.testsupport.TestSendEvent;
+import pegasus.cip.core.testsupport.IntegrationTest;
 
+@Category(IntegrationTest.class)
 public class HousekeepingTest extends IntegrationTestBase {
 
     final Logger LOG = LoggerFactory.getLogger(HousekeepingTest.class);

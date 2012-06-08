@@ -10,14 +10,17 @@ import org.apache.log4j.Logger;
 import org.junit.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
+import org.junit.experimental.categories.Category;
 
 import pegasus.eventbus.amqp.AmqpConfiguration;
 import pegasus.eventbus.amqp.AmqpEventManager;
 import pegasus.eventbus.amqp.AmqpConnectionParameters;
 import pegasus.eventbus.client.EventManager;
 import pegasus.eventbus.testsupport.RabbitManagementApiHelper;
+import pegasus.cip.core.testsupport.IntegrationTest;
 import pegasus.eventbus.testsupport.TestSendEvent;
 
+@Category(IntegrationTest.class)
 public class IntegrationTestBase {
 
     protected String             virtualHostName;
