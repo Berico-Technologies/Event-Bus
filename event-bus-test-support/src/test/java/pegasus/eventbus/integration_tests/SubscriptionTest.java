@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.*;
+import org.junit.experimental.categories.Category;
 
 import pegasus.eventbus.client.Envelope;
 import pegasus.eventbus.client.EnvelopeHandler;
@@ -17,7 +18,9 @@ import pegasus.eventbus.client.Subscription;
 import pegasus.eventbus.client.SubscriptionToken;
 import pegasus.eventbus.testsupport.TestSendEvent;
 import pegasus.eventbus.testsupport.TestSendEvent2;
+import pegasus.cip.core.testsupport.IntegrationTest;
 
+@Category(IntegrationTest.class)
 public class SubscriptionTest extends IntegrationTestBase {
 
     TestSendEvent                       receivedEvent;
