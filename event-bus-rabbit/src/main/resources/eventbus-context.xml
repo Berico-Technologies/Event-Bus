@@ -37,7 +37,7 @@
 
     <bean id="connectionParameters" class="pegasus.eventbus.amqp.AmqpConnectionParameters">
         <property name="username" value="${event.bus.username:guest}" />
-        <property name="password" value="${event.bus.password:guest}" />
+        <property name="password" value="${event.bus.password:ENCRYPTED:0FB3C394D6C818BAB02B241122F45AE8B4E79D874C02AF9991E8}" />
         <property name="host" value="${event.bus.host:rabbit}" />
         <property name="vHost" value="${event.bus.vhost:/}" />
         <property name="port" value="${event.bus.port:5672}" />
