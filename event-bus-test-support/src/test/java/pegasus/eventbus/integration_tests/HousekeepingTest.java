@@ -12,7 +12,7 @@ import org.junit.experimental.categories.Category;
 import pegasus.eventbus.client.EventHandler;
 import pegasus.eventbus.client.EventResult;
 import pegasus.eventbus.testsupport.TestSendEvent;
-import pegasus.core.testsupport.IntegrationTest;
+import com.berico.testsupport.IntegrationTest;
 
 @Category(IntegrationTest.class)
 public class HousekeepingTest extends IntegrationTestBase {

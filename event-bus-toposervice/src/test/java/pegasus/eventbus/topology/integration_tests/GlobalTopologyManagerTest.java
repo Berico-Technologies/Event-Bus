@@ -11,6 +11,7 @@ import pegasus.eventbus.topology.events.TopologyUpdate;
 
 public class GlobalTopologyManagerTest extends IntegrationTestBase {
 
+    @Ignore
     @Test
     public void RegisteringAClientShouldReturnATopologyUpdateWithARegistry() throws InterruptedException, TimeoutException {
         @SuppressWarnings("unchecked")

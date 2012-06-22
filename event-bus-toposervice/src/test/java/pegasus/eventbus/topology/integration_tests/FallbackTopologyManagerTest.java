@@ -11,6 +11,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.httpclient.HttpException;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import pegasus.eventbus.client.EventHandler;
@@ -25,6 +26,7 @@ public class FallbackTopologyManagerTest extends IntegrationTestBase {
     UpdateHandler        handler;
     EventTypeRoutingInfo routeInfoResponseForNewType;
 
+    @Ignore
     @SuppressWarnings("unchecked")
     @Before
     @Override
@@ -50,12 +52,14 @@ public class FallbackTopologyManagerTest extends IntegrationTestBase {
         }
     }
 
+    @Ignore
     @Test
     public void gettingTheRouteForAnUnknownEventTypeShouldReturnARoute() {
         assertEquals(nameOfNewType, routeInfoResponseForNewType.getEventTypeCannonicalName());
         assertNotNull(routeInfoResponseForNewType.getRouteInfo());
     }
 
+    @Ignore
     @Test
     public void gettingTheRouteForAnUnknownEventTypeShouldCauseATopologyUpdateContainingTheNewRouteToBeBroadcase() {
         assertNotNull(handler.getReceivedEvent());

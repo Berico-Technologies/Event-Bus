@@ -12,6 +12,7 @@ import pegasus.eventbus.client.EventResult;
 
 public class PubSubTest extends IntegrationTestBase {
 
+    @Ignore
     @Test
     public void canSendAndReceiveEvents() throws Exception {
 

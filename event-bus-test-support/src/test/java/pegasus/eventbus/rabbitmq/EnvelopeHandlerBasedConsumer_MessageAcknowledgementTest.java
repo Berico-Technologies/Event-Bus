@@ -17,7 +17,7 @@ import com.rabbitmq.client.AMQP.BasicProperties;
 import pegasus.eventbus.client.Envelope;
 import pegasus.eventbus.client.EnvelopeHandler;
 import pegasus.eventbus.client.EventResult;
-import pegasus.core.testsupport.IntegrationTest;
+import com.berico.testsupport.IntegrationTest;
 
 @Category(IntegrationTest.class)
 public class EnvelopeHandlerBasedConsumer_MessageAcknowledgementTest {

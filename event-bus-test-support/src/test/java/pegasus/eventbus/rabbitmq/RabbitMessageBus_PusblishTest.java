@@ -18,7 +18,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 import pegasus.eventbus.amqp.RoutingInfo;
 import pegasus.eventbus.client.Envelope;
-import pegasus.core.testsupport.IntegrationTest;
+import com.berico.testsupport.IntegrationTest;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.GetResponse;

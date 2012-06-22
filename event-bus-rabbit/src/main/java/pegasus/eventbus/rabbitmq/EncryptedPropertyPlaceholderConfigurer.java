@@ -2,8 +2,8 @@ package pegasus.eventbus.rabbitmq;
 
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 
-import orion.crypto.OrionEncrypt;
-import orion.crypto.SimpleCrypto;
+import com.berico.crypto.OrionEncrypt;
+import com.berico.crypto.SimpleCrypto;
 
 public class EncryptedPropertyPlaceholderConfigurer extends PropertyPlaceholderConfigurer {
 	

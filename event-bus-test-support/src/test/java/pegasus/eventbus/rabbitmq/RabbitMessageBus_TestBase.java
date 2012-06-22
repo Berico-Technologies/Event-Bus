@@ -18,7 +18,7 @@ import com.rabbitmq.client.GetResponse;
 import pegasus.eventbus.amqp.AmqpConnectionParameters;
 import pegasus.eventbus.amqp.RoutingInfo;
 import pegasus.eventbus.testsupport.RabbitManagementApiHelper;
-import pegasus.core.testsupport.IntegrationTest;
+import com.berico.testsupport.IntegrationTest;
 
 @Category(IntegrationTest.class)
 public class RabbitMessageBus_TestBase {
@@ -50,9 +50,17 @@ public class RabbitMessageBus_TestBase {
 
     @After
     public void afterEachTest() {
-        rabbitBus.close();
-        rabbitManagementApi.deleteVirtualHost();
-        context.close();
+        if (rabbitBus != null) {
+            rabbitBus.close();
+        }
+
+        if (rabbitManagementApi != null) {
+            rabbitManagementApi.deleteVirtualHost();
+        }
+
+        if (context != null) {
+            context.close();
+        }
     }
 
     protected String getExchangeName() {

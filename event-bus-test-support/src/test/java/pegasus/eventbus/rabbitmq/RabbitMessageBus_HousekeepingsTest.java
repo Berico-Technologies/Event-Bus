@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import pegasus.eventbus.amqp.RoutingInfo;
-import pegasus.core.testsupport.IntegrationTest;
+import com.berico.testsupport.IntegrationTest;
 
 @Category(IntegrationTest.class)
 public class RabbitMessageBus_HousekeepingsTest extends RabbitMessageBus_TestBase {
