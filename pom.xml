@@ -8,20 +8,13 @@
   <name>Orion Event Bus</name>
   <description>The Event Bus component of the Orion High-capacity Computing Environment</description>
 
-    <parent>
-        <groupId>pegasus.cip</groupId>
-        <artifactId>base</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
-    </parent>
-
   <modules>
     <module>event-bus-client</module>
     <module>event-bus-rabbit</module>
-    <module>event-bus-test-support</module>
     <module>event-bus-toposervice</module>
     <module>event-bus-toposervice-war</module>
     <!--
+    <module>event-bus-test-support</module>
     <module>services/event-stream-processor</module>
     <module>services/event-stream-processor-war</module>
     <module>services/rabbit-status-service</module>
@@ -33,15 +26,22 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
+<dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.10</version>
+    </dependency>
+</dependencies>
   <dependencyManagement>
   <dependencies>
-      <!--
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
       <version>1.5.11</version>
       <scope>compile</scope>
     </dependency>
+      <!--
     <dependency>
       <groupId>pegasus.cip</groupId>
       <artifactId>core</artifactId>
@@ -49,6 +49,7 @@
       <type>test-jar</type>
       <scope>test</scope>
       </dependency>
+      -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
@@ -79,36 +80,28 @@
       <version>2.1</version>
       <scope>compile</scope>
     </dependency>
--->
     <dependency>
       <groupId>com.rabbitmq</groupId>
       <artifactId>amqp-client</artifactId>
       <version>2.7.1</version>
     </dependency>
-    <!--
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
       <version>3.1.0.RELEASE</version>
-      <scope>compile</scope>
+      <!--
       <exclusions>
       	<exclusion>
       		<artifactId>commons-logging</artifactId>
       		<groupId>commons-logging</groupId>
       	</exclusion>
       </exclusions>
+      -->
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context-support</artifactId>
       <version>3.1.0.RELEASE</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.8.1</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
@@ -120,13 +113,15 @@
       <groupId>commons-httpclient</groupId>
       <artifactId>commons-httpclient</artifactId>
       <version>3.1</version>
-      <scope>test</scope>
+      <!-- scope>test</scope -->
+  <!--
       <exclusions>
       	<exclusion>
       		<artifactId>commons-logging</artifactId>
       		<groupId>commons-logging</groupId>
       	</exclusion>
       </exclusions>
+-->
     </dependency>
     <dependency>
       <groupId>com.jayway.awaitility</groupId>
@@ -134,7 +129,6 @@
       <version>1.3.3</version>
       <scope>test</scope>
     </dependency>
--->
   </dependencies>
 </dependencyManagement>
 

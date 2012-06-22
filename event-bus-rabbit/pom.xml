@@ -4,8 +4,8 @@
   <parent>
     <groupId>pegasus.cip</groupId>
     <artifactId>event-bus</artifactId>
-    <version>0.0.4-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
+    <version>0.0.4-SNAPSHOT</version>
   </parent>
   <artifactId>event-bus-rabbit</artifactId>
   <name>Event Bus Client - Rabbit Impl</name>
@@ -24,6 +24,7 @@
     <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-beans</artifactId>
+      <version>3.1.0.RELEASE</version>
     </dependency>
     <dependency>
         <groupId>com.google.code.gson</groupId>
@@ -48,12 +49,16 @@
     <dependency>
       <groupId>pegasus.cip</groupId>
       <artifactId>event-bus-client</artifactId>
-      <version>0.0.4-SNAPSHOT</version>
+      <version>${project.parent.version}</version>
     </dependency>
     <dependency>
-      <groupId>pegasus.cip</groupId>
+      <groupId>com.berico</groupId>
       <artifactId>crypto</artifactId>
       <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.jayway.awaitility</groupId>
+      <artifactId>awaitility</artifactId>
     </dependency>
   </dependencies>
 
