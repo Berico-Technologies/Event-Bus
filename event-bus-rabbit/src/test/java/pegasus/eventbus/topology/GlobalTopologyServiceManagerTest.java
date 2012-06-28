@@ -11,8 +11,8 @@ import org.mockito.stubbing.Answer;
 import static org.mockito.Mockito.*;
 
 import pegasus.eventbus.client.EventManager;
-import pegasus.eventbus.topology.event.HeartBeat;
-import pegasus.eventbus.topology.event.TopologyUpdate;
+import pegasus.eventbus.topology.events.HeartBeat;
+import pegasus.eventbus.topology.events.TopologyUpdate;
 
 //TODO: Need to add tests to cover non-heartbeat related functionality.
 public class GlobalTopologyServiceManagerTest {

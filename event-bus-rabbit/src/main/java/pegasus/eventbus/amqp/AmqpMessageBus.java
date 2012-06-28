@@ -29,7 +29,7 @@ public interface AmqpMessageBus {
     void attachUnexpectedConnectionCloseListener(UnexpectedConnectionCloseListener listener);
 
     /**
-     * Attaches a listener that can react to changes in the bus status.
+     * Detaches a listener that can react to changes in the bus status.
      * 
      * @param listener
      *            The listener to detach. If the listener is not attached, the call is ignored.
@@ -37,7 +37,7 @@ public interface AmqpMessageBus {
     void detachUnexpectedConnectionCloseListener(UnexpectedConnectionCloseListener listener);
 
     /**
-     * Create and Exchange on the Bus.
+     * Create an Exchange on the Bus.
      * 
      * @param exchange
      *            Exchange Info

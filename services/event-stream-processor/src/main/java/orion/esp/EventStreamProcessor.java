@@ -28,6 +28,7 @@ import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.UpdateListener;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Lists;
 
 public class EventStreamProcessor {
 
@@ -46,7 +47,17 @@ public class EventStreamProcessor {
     private EventMonitorRepository repository;
 
     private final String espKey = this.getClass().getCanonicalName();
+    private Collection<Publisher> publishers = Lists.newArrayList();
 
+    /**
+     * This is a wrapper class around an EventMonitor to allow it to receive events
+     * from the Esper runtime.  It simplifies the API so that an EventMonitor registers its
+     * patterns with the ESP and has a 'receive' method that is called for each new
+     * Event Bean which may return an Inferred Event.
+     * 
+     * @author israel
+     *
+     */
     class EnvelopeListener implements UpdateListener {
 
         public EnvelopeListener(EventMonitor monitor) {
@@ -90,8 +101,6 @@ public class EventStreamProcessor {
     }
 
     class EventbusListener implements EnvelopeHandler {
-
-
 
         private void addHeader(Envelope env, String label, String val) {
             env.getHeaders().put(label, val);
@@ -191,7 +200,6 @@ public class EventStreamProcessor {
         try {
             attachToPublishingService(publishingService);
         } catch (RuntimeException e) {
-            System.err.println("@@@@ Error attaching to PS:");
             e.printStackTrace();
             throw e;
         }
@@ -206,13 +214,15 @@ public class EventStreamProcessor {
     
     public void detachFromPublishingService() {
         if (publishingService != null) {
-            //@todo - remove the publishers registered by esp
+            publishingService.removePublishers(publishers);
+            this.publishers.removeAll(publishers);
         }
     }
     
     private void schedulePublishers(Collection<Publisher> publishers) {
         if (publishingService != null) {
             publishingService.addPublishers(publishers);
+            this.publishers.addAll(publishers);
         } else {
             LOG.error("Publishing Service is null. Not reporting results");
         }

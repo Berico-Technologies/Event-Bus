@@ -5,14 +5,31 @@
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <context:property-placeholder location="classpath:eventbus.properties" />
+    <bean id="encryptedPropertyPlaceholderConfigurer" class="pegasus.eventbus.rabbitmq.EncryptedPropertyPlaceholderConfigurer">
+    	<property name="searchSystemEnvironment" value="true"/>
+    	<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+    	<property name="ignoreResourceNotFound" value="true"/>
+    	<property name="nullValue" value="null"/>
+    	<property name="locations">
+    		<array>
+    			<value>classpath:eventbus.properties</value>
+    			<value>file:/opt/pegasus/config/eventbus.properties</value>
+    		</array>
+    	</property>
+    </bean>
 
     <bean id="connectionParameters" class="pegasus.eventbus.amqp.AmqpConnectionParameters">
         <property name="username" value="${event.bus.username:guest}" />
-        <property name="password" value="${event.bus.password:guest}" />
+        <property name="password" value="${event.bus.password:ENCRYPTED:0FB3C394D6C818BAB02B241122F45AE8B4E79D874C02AF9991E8}" />
         <property name="host" value="${event.bus.host:rabbit}" />
         <property name="vHost" value="${event.bus.vhost:/}" />
         <property name="port" value="${event.bus.port:5672}" />
+        <property name="ssl" value="${event.bus.ssl:false}" />
+        <property name="oneWaySSL" value="${event.bus.ssl.oneway:true}" />
+        <property name="keyStore" value="${event.bus.ssl.keystore:null}" />
+        <property name="keyStorePassword" value="${event.bus.ssl.keystore.password:null}" />
+        <property name="trustStore" value="${event.bus.ssl.truststore:null}" />
+        <property name="trustStorePassword" value="${event.bus.ssl.truststore.password:null}" />
     </bean>
 
     <bean id="rabbitConnection" class="pegasus.eventbus.rabbitmq.RabbitConnection">

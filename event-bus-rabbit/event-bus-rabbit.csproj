@@ -42,7 +42,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\main\dotnet\amqp\AmqpConfiguration.cs" />
     <Compile Include="src\main\dotnet\amqp\AmqpEventManager.cs" />
+    <Compile Include="src\main\dotnet\amqp\AmqpFactory.cs" />
     <Compile Include="src\main\dotnet\amqp\Exchange.cs" />
     <Compile Include="src\main\dotnet\amqp\IAmqpMessageBus.cs" />
     <Compile Include="src\main\dotnet\amqp\IEventSerializer.cs" />
@@ -50,6 +52,16 @@
     <Compile Include="src\main\dotnet\amqp\RoutingInfo.cs" />
     <Compile Include="src\main\dotnet\amqp\RoutingInfoException.cs" />
     <Compile Include="src\main\dotnet\AssemblyInfo.cs" />
+    <Compile Include="src\main\dotnet\amqp\ActiveSubscription.cs" />
+    <Compile Include="src\main\dotnet\amqp\QueueListener.cs" />
+    <Compile Include="src\main\dotnet\amqp\Listeners.cs" />
+    <Compile Include="src\main\dotnet\rabbitmq\RabbitConnection.cs" />
+    <Compile Include="src\main\dotnet\amqp\AmqpConnectionParameters.cs" />
+    <Compile Include="src\main\dotnet\topology\CompositeTopologyManager.cs" />
+    <Compile Include="src\main\dotnet\topology\event\TopologyUpdate.cs" />
+    <Compile Include="src\main\dotnet\topology\GlobalTopologyService.cs" />
+    <Compile Include="src\main\dotnet\topology\StaticTopologyManager.cs" />
+    <Compile Include="src\main\dotnet\topology\TopologyRegistry.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\event-bus-client\event-bus-client.csproj">
@@ -68,4 +80,5 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup />
 </Project>

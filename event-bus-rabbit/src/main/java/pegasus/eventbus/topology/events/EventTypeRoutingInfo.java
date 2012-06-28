@@ -1,4 +1,4 @@
-package pegasus.eventbus.topology.event;
+package pegasus.eventbus.topology.events;
 
 import pegasus.eventbus.amqp.RoutingInfo;
 

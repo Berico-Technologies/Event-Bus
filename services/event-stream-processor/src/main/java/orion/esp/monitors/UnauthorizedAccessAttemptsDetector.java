@@ -12,7 +12,7 @@ import orion.esp.publish.Publisher;
 
 import com.espertech.esper.client.EventBean;
 
-class UnauthorizedAccessAttemptsDetector extends EventMonitor {
+public class UnauthorizedAccessAttemptsDetector extends EventMonitor {
 
     public static final String INFERRED_TYPE = "UnauthorizedAccessAttempts";
 

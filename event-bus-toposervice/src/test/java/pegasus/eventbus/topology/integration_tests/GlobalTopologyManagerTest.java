@@ -6,8 +6,8 @@ import java.util.concurrent.TimeoutException;
 
 import org.junit.*;
 
-import pegasus.eventbus.topology.event.RegisterClient;
-import pegasus.eventbus.topology.event.TopologyUpdate;
+import pegasus.eventbus.topology.events.RegisterClient;
+import pegasus.eventbus.topology.events.TopologyUpdate;
 
 public class GlobalTopologyManagerTest extends IntegrationTestBase {
 

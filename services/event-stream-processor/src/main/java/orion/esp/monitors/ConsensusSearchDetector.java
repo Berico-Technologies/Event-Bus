@@ -20,7 +20,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-class ConsensusSearchDetector extends EventMonitor {
+public class ConsensusSearchDetector extends EventMonitor {
 
 //    private static final String SEARCH = "Search";
     private static final String SEARCH = "pegasus.core.search.event.TextSearchEvent";

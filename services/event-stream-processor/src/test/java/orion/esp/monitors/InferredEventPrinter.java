@@ -17,7 +17,7 @@ import com.espertech.esper.client.EventBean;
  * @author israel
  *
  */
-class InferredEventPrinter extends EventMonitor {
+public class InferredEventPrinter extends EventMonitor {
 
     @Override
     public InferredEvent receive(EventBean eventBean) {

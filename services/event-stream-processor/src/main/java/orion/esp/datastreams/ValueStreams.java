@@ -123,6 +123,7 @@ public class ValueStreams {
 
     public ActiveRange getActiveRange(String range, String item) {
         Stream str = getStream(item);
-        return str.getActiveRange(range).adjust(lastTick);
+        ActiveRange activeRange = str.getActiveRange(range);
+        return activeRange.adjust(lastTick);
     }
 }
