@@ -198,7 +198,7 @@
           <includes>
             <include>**/*.class</include>
           </includes>
- 	      <excludedgroups>com.berico.testsupport.IntegrationTest</excludedgroups>
+ 	      <excludedGroups>com.berico.testsupport.IntegrationTest</excludedGroups>
         </configuration>
       </plugin>	
       <plugin>
