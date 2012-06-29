@@ -46,11 +46,17 @@
       <artifactId>event-bus-client</artifactId>
     <version>0.0.4-SNAPSHOT</version>
     </dependency>
-      <dependency>
+  <dependency>
       <groupId>pegasus.cip</groupId>
       <artifactId>event-bus-rabbit</artifactId>
-    <version>0.0.4-SNAPSHOT</version>
-    </dependency>
+      <version>0.0.4-SNAPSHOT</version>
+  </dependency>
+  <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.10</version>
+      <scope>compile</scope>
+  </dependency>
     <dependency>
       <groupId>commons-httpclient</groupId>
       <artifactId>commons-httpclient</artifactId>

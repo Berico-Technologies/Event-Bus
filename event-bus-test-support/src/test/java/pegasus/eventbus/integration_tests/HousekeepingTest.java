@@ -7,6 +7,7 @@ import org.junit.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+//Enable this class to be integrated as an integration test class
 import org.junit.experimental.categories.Category;
 
 import pegasus.eventbus.client.EventHandler;

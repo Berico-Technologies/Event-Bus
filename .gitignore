@@ -50,3 +50,6 @@ Ankh.NoLoad
 #NuGet
 packages/
 
+# Intellij
+.idea/
+*.iml
