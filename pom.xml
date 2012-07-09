@@ -195,6 +195,7 @@
           </dependency>
         </dependencies>
         <configuration>
+          <failIfNoTests>false</failIfNoTests>
           <includes>
             <include>**/*.class</include>
           </includes>
