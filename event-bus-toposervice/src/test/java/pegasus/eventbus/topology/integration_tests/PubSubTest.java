@@ -7,9 +7,15 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.*;
 
+//Enable this class to be integrated as an integration test class
+import org.junit.experimental.categories.Category;
+
 import pegasus.eventbus.client.EventHandler;
 import pegasus.eventbus.client.EventResult;
 
+import com.berico.testsupport.IntegrationTest;
+
+@Category(IntegrationTest.class)
 public class PubSubTest extends IntegrationTestBase {
 
     @Ignore
