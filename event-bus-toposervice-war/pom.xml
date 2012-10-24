@@ -10,30 +10,6 @@
   <artifactId>event-bus-toposervice-war</artifactId>
   <packaging>war</packaging>
   <name>Event Bus Topology Service War</name>
-  <dependencies>
-    <dependency>
-      <artifactId>event-bus-toposervice</artifactId>
-      <groupId>pegasus.cip</groupId>
-      <version>0.0.4-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-web</artifactId>
-      <version>3.1.0.RELEASE</version>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-      <version>1.5.11</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>1.2.16</version>
-      <scope>compile</scope>
-    </dependency>
-  </dependencies>
   <build>
     <finalName>event-bus-toposervice</finalName>
   </build>
