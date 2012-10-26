@@ -307,21 +307,17 @@
   </build>
 
   <distributionManagement>
-    <site>
-      <id>Pegasus</id>
-      <url>scp://berico.jira.com/wiki/display/PEGA/Project+Pegasus</url>
-    </site>
     <!-- Publish the versioned releases here -->
     <repository>
-      <id>pegasus-nexus</id>
-      <name>pegasus nexus</name>
+      <id>berico-releases</id>
+      <name>Berico Nexus Server for Releases</name>
       <url>http://ci.pegasus.gov:11111/nexus/content/repositories/releases</url>
     </repository>
 
     <!-- Publish the versioned releases here -->
     <snapshotRepository>
-      <id>pegasus-nexus</id>
-      <name>pegasus nexus</name>
+      <id>berico-snapshots</id>
+      <name>Berico Nexus Server for Snapshots</name>
       <url>http://ci.pegasus.gov:11111/nexus/content/repositories/snapshots</url>
     </snapshotRepository>
   </distributionManagement>
