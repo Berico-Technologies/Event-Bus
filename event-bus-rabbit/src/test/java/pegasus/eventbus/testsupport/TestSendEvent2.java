@@ -7,7 +7,8 @@ import java.util.UUID;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.junit.Assert.*;
 
@@ -75,9 +76,9 @@ public class TestSendEvent2{
 	}
 
 	public void handleEvent(Object event){
-	    Logger log = Logger.getLogger(TestSendEvent2.class);
+	    Logger log = LoggerFactory.getLogger(TestSendEvent2.class);
 		log.debug("\n*****************************************\n");
-		log.debug(event);
+		log.debug(event.toString());
 		log.debug("\n*****************************************\n");
 		
 	}

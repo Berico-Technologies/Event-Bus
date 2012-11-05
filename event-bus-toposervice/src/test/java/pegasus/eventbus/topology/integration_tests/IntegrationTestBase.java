@@ -4,7 +4,8 @@ package pegasus.eventbus.topology.integration_tests;
 import java.io.IOException;
 
 import org.apache.commons.httpclient.*;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.junit.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
@@ -14,7 +15,7 @@ import pegasus.eventbus.client.EventManager;
 public class IntegrationTestBase {
 
     protected String             virtualHostName;
-    protected Logger             log = Logger.getLogger(this.getClass());
+    protected Logger             log = LoggerFactory.getLogger(this.getClass());
     protected EventManager       manager;
     protected ApplicationContext context;
     protected TestEvent      sendEvent;

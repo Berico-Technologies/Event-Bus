@@ -5,8 +5,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.junit.After;
 import org.junit.Before;
 
@@ -28,7 +28,7 @@ import com.google.common.collect.Lists;
  */
 public abstract class AbstractDetectorTest {
 
-    protected final Log logger = LogFactory.getLog(this.getClass());
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private EventStreamProcessor esp;
     protected ArrayList<InferredEvent> envelopesDetected = Lists.newArrayList();
