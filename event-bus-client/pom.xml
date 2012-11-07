@@ -9,4 +9,17 @@
   <artifactId>event-bus-client</artifactId>
   <name>Event Bus Client API</name>
   <description>The Event Bus Client API for the Orion Event Bus.</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.berico</groupId>
+      <artifactId>testsupport</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 </project>

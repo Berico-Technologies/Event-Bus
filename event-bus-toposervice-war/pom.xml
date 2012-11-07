@@ -14,10 +14,20 @@
     <finalName>event-bus-toposervice</finalName>
   </build>
   <dependencies>
-      <dependency>
-          <artifactId>event-bus-toposervice</artifactId>
-          <groupId>pegasus.cip</groupId>
-          <version>0.0.4-SNAPSHOT</version>
-      </dependency>
+    <dependency>
+      <groupId>pegasus.cip</groupId>
+      <artifactId>event-bus-toposervice</artifactId>
+      <version>0.0.4-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.berico</groupId>
+      <artifactId>testsupport</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>
