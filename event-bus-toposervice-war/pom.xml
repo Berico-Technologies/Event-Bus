@@ -25,11 +25,4 @@
   <build>
     <finalName>event-bus-toposervice</finalName>
   </build>
-  <dependencies>
-    <dependency>
-      <groupId>pegasus.cip</groupId>
-      <artifactId>event-bus-toposervice</artifactId>
-      <version>0.0.4-SNAPSHOT</version>
-    </dependency>
-  </dependencies>
 </project>
