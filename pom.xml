@@ -26,11 +26,12 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
-<dependencies>
+  <dependencies>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.10</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.berico</groupId>
@@ -38,50 +39,26 @@
       <version>0.0.1-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
-</dependencies>
-
-  <dependencyManagement>
-  <dependencies>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>1.5.11</version>
-      <scope>compile</scope>
+      <version>1.7.2</version>
     </dependency>
-      <!--
     <dependency>
-      <groupId>pegasus.cip</groupId>
-      <artifactId>core</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
-      <type>test-jar</type>
-      <scope>test</scope>
-      </dependency>
-      -->
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>1.7.2</version>
+    </dependency>
+  </dependencies>
+
+  <dependencyManagement>
+    <dependencies>
       <dependency>
           <groupId>com.berico</groupId>
           <artifactId>common</artifactId>
           <version>0.0.1-SNAPSHOT</version>
           <type>test-jar</type>
      </dependency>
-
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-      <version>1.5.11</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-	  <groupId>org.slf4j</groupId>
-	  <artifactId>slf4j-simple</artifactId>
-	  <version>1.5.11</version>
-	  <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>1.2.16</version>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
@@ -103,14 +80,6 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
       <version>3.1.0.RELEASE</version>
-      <!--
-      <exclusions>
-      	<exclusion>
-      		<artifactId>commons-logging</artifactId>
-      		<groupId>commons-logging</groupId>
-      	</exclusion>
-      </exclusions>
-      -->
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
@@ -134,15 +103,6 @@
       <groupId>commons-httpclient</groupId>
       <artifactId>commons-httpclient</artifactId>
       <version>3.1</version>
-      <!-- scope>test</scope -->
-  <!--
-      <exclusions>
-      	<exclusion>
-      		<artifactId>commons-logging</artifactId>
-      		<groupId>commons-logging</groupId>
-      	</exclusion>
-      </exclusions>
--->
     </dependency>
     <dependency>
       <groupId>com.jayway.awaitility</groupId>
@@ -306,22 +266,50 @@
     </plugins>
   </build>
 
+    <repositories>
+		<repository>
+			<id>berico-snapshots</id>
+			<name>Berico Snapshots Repo</name>
+			<url>http://ci.pegasus.gov:11111/nexus/content/repositories/snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+                <checksumPolicy>warn</checksumPolicy>
+            </snapshots>
+		</repository>
+		<repository>
+			<id>berico-releases</id>
+			<name>Berico Releases Repo</name>
+			<url>http://ci.pegasus.gov:11111/nexus/content/repositories/releases</url>
+            <snapshots>
+                <enabled>false</enabled>
+                <updatePolicy>daily</updatePolicy>
+                <checksumPolicy>fail</checksumPolicy>
+            </snapshots>
+		</repository>
+        <repository>
+            <id>central</id>
+            <name>Maven Repository Switchboard</name>
+            <layout>default</layout>
+            <url>http://repo1.maven.org/maven2</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
   <distributionManagement>
-    <site>
-      <id>Pegasus</id>
-      <url>scp://berico.jira.com/wiki/display/PEGA/Project+Pegasus</url>
-    </site>
     <!-- Publish the versioned releases here -->
     <repository>
-      <id>pegasus-nexus</id>
-      <name>pegasus nexus</name>
+      <id>berico-releases</id>
+      <name>Berico Nexus Server for Releases</name>
       <url>http://ci.pegasus.gov:11111/nexus/content/repositories/releases</url>
     </repository>
 
     <!-- Publish the versioned releases here -->
     <snapshotRepository>
-      <id>pegasus-nexus</id>
-      <name>pegasus nexus</name>
+      <id>berico-snapshots</id>
+      <name>Berico Nexus Server for Snapshots</name>
       <url>http://ci.pegasus.gov:11111/nexus/content/repositories/snapshots</url>
     </snapshotRepository>
   </distributionManagement>

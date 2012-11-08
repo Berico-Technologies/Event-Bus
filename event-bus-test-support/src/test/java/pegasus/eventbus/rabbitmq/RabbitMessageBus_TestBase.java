@@ -6,7 +6,8 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.junit.*;
 import org.junit.experimental.categories.Category;
 import org.mockito.*;
@@ -23,7 +24,7 @@ import com.berico.testsupport.IntegrationTest;
 @Category(IntegrationTest.class)
 public class RabbitMessageBus_TestBase {
 
-    protected Logger                        log = Logger.getLogger(this.getClass());
+    protected Logger                        log = LoggerFactory.getLogger(this.getClass());
 
     protected AmqpConnectionParameters          connectionParameters;
     protected RabbitMessageBus              rabbitBus;

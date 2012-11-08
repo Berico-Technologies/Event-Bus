@@ -9,7 +9,8 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.Date;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.mockito.ArgumentCaptor;
@@ -31,7 +32,7 @@ public class AmqpEventManager_TestBase {
 
     protected static final String NAMED_EVENT_SET_NAME   = "test-event-set";
 
-    protected final Logger        log                    = Logger.getLogger(this.getClass());
+    protected final Logger        log                    = LoggerFactory.getLogger(this.getClass());
 
     protected String              clientName             = this.getClass().getSimpleName();
     protected TestSendEvent       sendEvent              = new TestSendEvent("John Doe", new Date(), 101, "weather", "wind", "age");                                                                ;
