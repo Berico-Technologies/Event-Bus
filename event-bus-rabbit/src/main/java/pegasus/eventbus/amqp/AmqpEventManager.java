@@ -349,7 +349,7 @@ public class AmqpEventManager implements EventManager, UnexpectedConnectionClose
 
         LOG.trace("Creating new queue listener for subscription.");
 
-        QueueListener queueListener = new QueueListener(messageBus, queueName, subscription.getIsDurable(), routes, handler);
+        QueueListener queueListener = new QueueListener(messageBus, queueName, subscription.getIsDurable(), routes, handler, 5);
 
         SubscriptionToken token = new SubscriptionToken();
         
