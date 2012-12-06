@@ -3,7 +3,6 @@ package pegasus.eventbus.amqp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 import pegasus.eventbus.client.EnvelopeHandler;
 
 /**
@@ -26,6 +25,8 @@ class QueueListener  {
     
     private volatile boolean       currentlyListening;
 
+    private Object numThreads;
+
     /**
      * Start up an new Queue Listener bound on the supplied queue name, with the provided EnvelopeHander dealing with new messages.
      * 
@@ -35,18 +36,46 @@ class QueueListener  {
      *            EnvelopeHandler that deals with new messages.
      * @param amqpEventManager
      *            The EventManager that is managing the subscription.
+     * @deprecated Use {@link #QueueListener(AmqpMessageBus,String,Boolean,RoutingInfo[],EnvelopeHandler,int)} instead
+     */
+    public QueueListener(
+    		AmqpMessageBus messageBus, 
+    		String queueName,
+    		Boolean queueIsDurable,
+    		RoutingInfo[] routes, 
+    		EnvelopeHandler envelopeHandler){
+                this(messageBus, queueName, queueIsDurable, routes,
+                                envelopeHandler, 5);
+            }
+
+    /**
+     * Start up an new Queue Listener bound on the supplied queue name, with the provided EnvelopeHander dealing with new messages.
+     * @param queueName
+     *            Name of the Queue to watch.
+     * @param envelopeHandler
+     *            EnvelopeHandler that deals with new messages.
+     * @param numberOfThreads TODO
+     * @param amqpEventManager
+     *            The EventManager that is managing the subscription.
      */
     public QueueListener(
 			AmqpMessageBus messageBus, 
 			String queueName,
 			Boolean queueIsDurable,
 			RoutingInfo[] routes, 
-			EnvelopeHandler envelopeHandler){
+			EnvelopeHandler envelopeHandler,
+			int numberOfThreads){
 		this.messageBus = messageBus;
 		this.queueName = queueName;
 		this.queueIsDurable = queueIsDurable;
 		this.routes = routes;
 		this.envelopeHandler = envelopeHandler;
+		
+		if (numberOfThreads > 0) {
+		    this.numThreads = numberOfThreads;
+		} else {
+		    throw new IllegalArgumentException("The number of threads has to be 1 or greater.");
+		}
 
         // Custom Logger for Each Queue Listener.
         //TODO: PEGA-727 Need to add tests to assert that this logger name is always valid (i.e. queue names with . and any other illegal chars are correctly mangled.)
