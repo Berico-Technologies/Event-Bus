@@ -270,7 +270,7 @@
 		<repository>
 			<id>berico-snapshots</id>
 			<name>Berico Snapshots Repo</name>
-			<url>http://ci.pegasus.gov:11111/nexus/content/repositories/snapshots</url>
+			<url>http://cireston.pegasus.bericotechnologies.com:11111/nexus/content/repositories/snapshots</url>
             <snapshots>
                 <enabled>true</enabled>
                 <updatePolicy>always</updatePolicy>
@@ -280,7 +280,7 @@
 		<repository>
 			<id>berico-releases</id>
 			<name>Berico Releases Repo</name>
-			<url>http://ci.pegasus.gov:11111/nexus/content/repositories/releases</url>
+			<url>http://cireston.pegasus.bericotechnologies.com:11111/nexus/content/repositories/releases</url>
             <snapshots>
                 <enabled>false</enabled>
                 <updatePolicy>daily</updatePolicy>
@@ -303,14 +303,14 @@
     <repository>
       <id>berico-releases</id>
       <name>Berico Nexus Server for Releases</name>
-      <url>http://ci.pegasus.gov:11111/nexus/content/repositories/releases</url>
+      <url>http://cireston.pegasus.bericotechnologies.com:11111/nexus/content/repositories/releases</url>
     </repository>
 
     <!-- Publish the versioned releases here -->
     <snapshotRepository>
       <id>berico-snapshots</id>
       <name>Berico Nexus Server for Snapshots</name>
-      <url>http://ci.pegasus.gov:11111/nexus/content/repositories/snapshots</url>
+      <url>http://cireston.pegasus.bericotechnologies.com:11111/nexus/content/repositories/snapshots</url>
     </snapshotRepository>
   </distributionManagement>
 
