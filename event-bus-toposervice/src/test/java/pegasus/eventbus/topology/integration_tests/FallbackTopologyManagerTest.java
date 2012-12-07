@@ -14,12 +14,16 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+//Enable this class to be integrated as an integration test class
+import org.junit.experimental.categories.Category;
 import pegasus.eventbus.client.EventHandler;
 import pegasus.eventbus.client.EventResult;
 import pegasus.eventbus.topology.events.EventTypeRoutingInfo;
 import pegasus.eventbus.topology.events.GetEventTypeRoute;
 import pegasus.eventbus.topology.events.TopologyUpdate;
+import com.berico.testsupport.IntegrationTest;
 
+@Category(IntegrationTest.class)
 public class FallbackTopologyManagerTest extends IntegrationTestBase {
 
     private final String nameOfNewType = UUID.randomUUID().toString();
