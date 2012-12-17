@@ -42,6 +42,7 @@ public class RabbitConnection implements ShutdownListener {
         connectionFactory.setVirtualHost(connectionParameters.getVHost());
         connectionFactory.setHost(connectionParameters.getHost());
         connectionFactory.setPort(connectionParameters.getPort());
+        connectionFactory.setThreadPoolSize(connectionParameters.getThreadPoolSize());
         if(connectionParameters.isSsl()){
         	connectionFactory.useSslProtocol(sslContextFactory.getInstance(connectionParameters));         	
         }

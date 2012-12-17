@@ -32,6 +32,7 @@ public class AmqpConnectionParameters implements EventBusConnectionParameters {
     private String trustStorePassword;
     private URL keyStore;
     private String keyStorePassword;
+    private int threadPoolSize;
     
     
 	/**
@@ -252,6 +253,20 @@ public class AmqpConnectionParameters implements EventBusConnectionParameters {
      */
     public void setValue(String key, String value) {
         parametersMap.put(key, value);
+    }
+
+    /**
+     *	@return				the threadPoolSize
+     */
+    public final int getThreadPoolSize() {
+        return threadPoolSize;
+    }
+
+    /**
+     *	@param	threadPoolSize	the threadPoolSize to set
+     */
+    public final void setThreadPoolSize(int threadPoolSize) {
+        this.threadPoolSize = threadPoolSize;
     }
 
     /**

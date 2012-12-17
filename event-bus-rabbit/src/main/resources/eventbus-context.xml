@@ -42,6 +42,7 @@
         <property name="vHost" value="${event.bus.vhost:/}" />
         <property name="port" value="${event.bus.port:5672}" />
         <property name="ssl" value="${event.bus.ssl:false}" />
+        <property name="threadPoolSize" value="${event.bus.threadPoolSize:10}" />
         <property name="oneWaySSL" value="${event.bus.ssl.oneway:true}" />
         <property name="keyStore" value="${event.bus.ssl.keystore:null}" />
         <property name="keyStorePassword" value="${event.bus.ssl.keystore.password:null}" />
