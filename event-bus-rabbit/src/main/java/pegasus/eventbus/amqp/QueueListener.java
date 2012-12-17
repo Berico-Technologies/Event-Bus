@@ -1,9 +1,7 @@
 package pegasus.eventbus.amqp;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,88 +14,18 @@ import pegasus.eventbus.client.EnvelopeHandler;
 class QueueListener  {
 
     
-    /**
-     *  A {@link Runnable} for creating queues and starting and stopping
-     *  message consumption on them. Because it's {@link Runnable}, the {@link
-     *  QueueListener} can invoke multiple ones in an {@link ExecutorService},
-     *  and PEGA-315 says that's a Good Thing.
-     */
-    public final class QueueTPie implements Runnable {
-        
-        /**
-         *  The unique identifier for this queue. The uniqueness has to be
-         *  enforced by the caller.
-         */
-        private final String        queueName;
-        
-        /**
-         *  The ID returned by {@link AmqpMessageBus#beginConsumingMessages(
-         *  String, EnvelopeHandler)}, which is then passed to {@link
-         *  AmqpMessageBus#stopConsumingMessages(String)} when {@link #stop()}
-         *  is called.
-         */
-        private String              consumerTag;
-        
-        /**
-         *  Construct the queue with the specified name.
-         *  
-         *	@param  qName           the name of the queue. It can't be {@code
-         *                          null}, unless you hate all that is good and
-         *                          proper.
-         */
-        public QueueTPie(final String qName) {
-            if (qName != null) {
-            queueName = qName;
-            } else {
-                throw new IllegalArgumentException(
-                                "The queue name cannot be null. "
-                                + "Didn't you read the documentation?");
-            }
-        }
-        
-        /**
-         *  {@linkplain AmqpMessageBus#createQueue(String, RoutingInfo[],
-         *  boolean) Create a queue on the message bus} and {@linkplain
-         *  AmqpMessageBus#beginConsumingMessages(String, EnvelopeHandler)
-         *  start consuming messages} on it.
-         *  
-         *	@see java.lang.Runnable#run()
-         */
-        @Override
-        public void run() {
-            LOG.trace("Creating new queue [{}] (if not already existing).", queueName);
-            messageBus.createQueue(queueName, routes, queueIsDurable);
-            consumerTag = messageBus.beginConsumingMessages(queueName, envelopeHandler);            
-            LOG.debug("Now consuming queue [" + queueName + "] with consumerTag [" + consumerTag + "].");
-        }
-        
-        /**
-         *  {@linkplain AmqpMessageBus#stopConsumingMessages(String) Stop
-         *  consuming messages} on this queue.
-         */
-        public void stop() {
-            LOG.debug("Stopping consume of queue [" + queueName + "], consumerTag [" + consumerTag + "].");    
-            messageBus.stopConsumingMessages(consumerTag);            
-            LOG.trace("Successfully stopped consume of queue [" + queueName + "], consumerTag [" + consumerTag + "].");
-        }
-        
-    }
-    
     protected final Logger         LOG;
 
     private final AmqpMessageBus   messageBus;
-    private final String           queueBaseName;
+    private final String           queueName;
 	private final Boolean          queueIsDurable;
     private final RoutingInfo[]    routes;
 
     private EnvelopeHandler        envelopeHandler;
     
     private volatile boolean       currentlyListening;
-
-    private final ExecutorService  executorService;
     private final int              numThreads;
-
-    private final List<QueueTPie>  queues;
+    private final Set<String>      consumerTags;
 
     /**
      * Start up an new Queue Listener bound on the supplied queue name, with the provided EnvelopeHander dealing with new messages.
@@ -138,15 +66,14 @@ class QueueListener  {
 			EnvelopeHandler envelopeHandler,
 			int numberOfThreads){
 		this.messageBus = messageBus;
-		this.queueBaseName = queueName;
+		this.queueName = queueName;
 		this.queueIsDurable = queueIsDurable;
 		this.routes = routes;
 		this.envelopeHandler = envelopeHandler;
+		this.consumerTags = new TreeSet<String>();
 		
 		if (numberOfThreads > 0) {
             this.numThreads = numberOfThreads;
-		    executorService = Executors.newFixedThreadPool(numThreads);
-		    queues = new ArrayList<QueueTPie>(numThreads);
 		} else {
 		    throw new IllegalArgumentException("The number of threads has to be 1 or greater.");
 		}
@@ -160,11 +87,13 @@ class QueueListener  {
      * Begin listening for messages on the Queue.
      */
     public synchronized void beginListening() {
+        LOG.trace("Creating new queue [{}] (if not already existing).", queueName);
+        messageBus.createQueue(queueName, routes, queueIsDurable);
+        
         for (int i = 0; i < numThreads; ++i) {
-            String queueName = queueBaseName + "-" + i;
-            QueueTPie queue = new QueueTPie(queueName);
-            queues.add(queue);
-            executorService.execute(queue);
+            String consumerTag = messageBus.beginConsumingMessages(queueName, envelopeHandler);  
+            consumerTags.add(consumerTag);
+            LOG.debug("Now consuming queue [" + queueName + "] with consumerTag [" + consumerTag + "].");
         }
         
         currentlyListening = true;
@@ -174,11 +103,12 @@ class QueueListener  {
      * Command the QueueListener to stop listening on the queue, thereby stopping the background thread.
      */
     public synchronized void StopListening() {
-        for (QueueTPie queue : queues) {
-            queue.stop();
+        for (String consumerTag : consumerTags) {
+            LOG.debug("Stopping consume of queue [" + queueName + "], consumerTag [" + consumerTag + "].");    
+            messageBus.stopConsumingMessages(consumerTag);            
+            LOG.trace("Successfully stopped consume of queue [" + queueName + "], consumerTag [" + consumerTag + "].");
         }
         
-        executorService.shutdown(); // or do we want shutdownNow()?
         currentlyListening = false;
     }
 
