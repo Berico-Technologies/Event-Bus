@@ -54,7 +54,7 @@ public class AmqpEventManager implements EventManager, UnexpectedConnectionClose
     	private Map<Object, EnvelopeWithCount> map          = new HashMap<Object, EnvelopeWithCount>();
     	
     	private static class EnvelopeWithCount {
-    		private int count = 0;
+    		private int count = 1;
     		private final Envelope envelope;
     		
     		public EnvelopeWithCount(Envelope envelope) {
@@ -112,9 +112,8 @@ public class AmqpEventManager implements EventManager, UnexpectedConnectionClose
 
 		@Override
 		public Envelope put(Object key, Envelope value) {
-			EnvelopeWithCount ewc = new EnvelopeWithCount(value);
-			map.put(key, ewc);
-			return ewc.get();
+			EnvelopeWithCount ewc = map.put(key, new EnvelopeWithCount(value));
+			return ewc == null ? null : ewc.get();
 		}
 
 		@Override
