@@ -97,7 +97,8 @@ public class AmqpEventManager implements EventManager, UnexpectedConnectionClose
 
 		@Override
 		public Envelope get(Object key) {
-			return map.get(key).get();
+			EnvelopeWithCount ewc = map.get(key);
+			return ewc == null ? null : ewc.get();
 		}
 
 		@Override
@@ -112,8 +113,16 @@ public class AmqpEventManager implements EventManager, UnexpectedConnectionClose
 
 		@Override
 		public Envelope put(Object key, Envelope value) {
-			EnvelopeWithCount ewc = map.put(key, new EnvelopeWithCount(value));
-			return ewc == null ? null : ewc.get();
+			synchronized (map) {
+				EnvelopeWithCount ewc = map.get(key);
+				if(ewc == null){
+					map.put(key, new EnvelopeWithCount(value));
+					return null;
+				} else {
+					ewc.incrementCount();
+					return ewc.get();
+				}
+			}
 		}
 
 		@Override
@@ -123,7 +132,17 @@ public class AmqpEventManager implements EventManager, UnexpectedConnectionClose
 
 		@Override
 		public Envelope remove(Object key) {
-			return map.remove(key).get();
+			synchronized (map) {
+				EnvelopeWithCount ewc = map.get(key);
+				if(ewc == null){
+					return null;
+				} else {
+					if(ewc.decrementCount()){
+						map.remove(key);
+					}
+					return ewc.get();
+				}
+			}
 		}
 
 		@Override
