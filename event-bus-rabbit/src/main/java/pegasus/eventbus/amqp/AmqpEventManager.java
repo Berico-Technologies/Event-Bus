@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.time.StopWatch;
 
 import org.slf4j.Logger;
@@ -42,12 +43,119 @@ public class AmqpEventManager implements EventManager, UnexpectedConnectionClose
     private final Serializer                           serializer;
 
     private Map<SubscriptionToken, ActiveSubscription> activeSubscriptions          = new HashMap<SubscriptionToken, ActiveSubscription>();
-    private Map<Object, Envelope>                      envelopesBeingHandled        = new HashMap<Object, Envelope>();
+    private CountingEnvelopeMap                        envelopesBeingHandled        = new CountingEnvelopeMap();
     private Set<StartListener>                         startListeners               = new HashSet<StartListener>();
     private Set<CloseListener>                         closeListeners               = new HashSet<CloseListener>();
     private Set<SubscribeListener>                     subscribeListeners           = new HashSet<SubscribeListener>();
     private Set<UnsubscribeListener>                   unsubscribeListeners         = new HashSet<UnsubscribeListener>();
 
+    private static class CountingEnvelopeMap implements Map<Object, Envelope> {
+
+    	private Map<Object, EnvelopeWithCount> map          = new HashMap<Object, EnvelopeWithCount>();
+    	
+    	private static class EnvelopeWithCount {
+    		private int count = 1;
+    		private final Envelope envelope;
+    		
+    		public EnvelopeWithCount(Envelope envelope) {
+    			this.envelope = envelope;
+    		}
+    		
+    		public void incrementCount() {
+    			count++;
+    		}
+    		
+    		public boolean decrementCount() {
+    			return --count < 1;
+    		}
+    		
+    		public Envelope get() {
+    			return envelope;
+    		}
+    	}
+    	
+		@Override
+		public void clear() {
+			map.clear();
+			
+		}
+
+		@Override
+		public boolean containsKey(Object key) {
+			return map.containsKey(key);
+		}
+
+		@Override
+		public boolean containsValue(Object value) {
+			throw new NotImplementedException("CountingEnvelopeMap does not implement containsValue().");
+		}
+
+		@Override
+		public Set<java.util.Map.Entry<Object, Envelope>> entrySet() {
+			throw new NotImplementedException("CountingEnvelopeMap does not implement entrySet().");
+		}
+
+		@Override
+		public Envelope get(Object key) {
+			EnvelopeWithCount ewc = map.get(key);
+			return ewc == null ? null : ewc.get();
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return map.isEmpty();
+		}
+
+		@Override
+		public Set<Object> keySet() {
+			return map.keySet();
+		}
+
+		@Override
+		public Envelope put(Object key, Envelope value) {
+			synchronized (map) {
+				EnvelopeWithCount ewc = map.get(key);
+				if(ewc == null){
+					map.put(key, new EnvelopeWithCount(value));
+					return null;
+				} else {
+					ewc.incrementCount();
+					return ewc.get();
+				}
+			}
+		}
+
+		@Override
+		public void putAll(Map<? extends Object, ? extends Envelope> inputMap) {
+			throw new NotImplementedException("CountingEnvelopeMap does not implement putAll().");			
+		}
+
+		@Override
+		public Envelope remove(Object key) {
+			synchronized (map) {
+				EnvelopeWithCount ewc = map.get(key);
+				if(ewc == null){
+					return null;
+				} else {
+					if(ewc.decrementCount()){
+						map.remove(key);
+					}
+					return ewc.get();
+				}
+			}
+		}
+
+		@Override
+		public int size() {
+			return map.size();
+		}
+
+		@Override
+		public Collection<Envelope> values() {
+			throw new NotImplementedException("CountingEnvelopeMap does not implement values().");
+		}
+    	
+    }
     /**
      * Instantiate the EventManager from configuration.
      * 
