@@ -51,7 +51,28 @@ public class AmqpEventManager implements EventManager, UnexpectedConnectionClose
 
     private static class CountingEnvelopeMap implements Map<Object, Envelope> {
 
-    	private Map<Object, Envelope> map          = new HashMap<Object, Envelope>();
+    	private Map<Object, EnvelopeWithCount> map          = new HashMap<Object, EnvelopeWithCount>();
+    	
+    	private static class EnvelopeWithCount {
+    		private int count = 0;
+    		private final Envelope envelope;
+    		
+    		public EnvelopeWithCount(Envelope envelope) {
+    			this.envelope = envelope;
+    		}
+    		
+    		public void incrementCount() {
+    			count++;
+    		}
+    		
+    		public boolean decrementCount() {
+    			return --count < 1;
+    		}
+    		
+    		public Envelope get() {
+    			return envelope;
+    		}
+    	}
     	
 		@Override
 		public void clear() {
@@ -76,7 +97,7 @@ public class AmqpEventManager implements EventManager, UnexpectedConnectionClose
 
 		@Override
 		public Envelope get(Object key) {
-			return map.get(key);
+			return map.get(key).get();
 		}
 
 		@Override
@@ -91,7 +112,9 @@ public class AmqpEventManager implements EventManager, UnexpectedConnectionClose
 
 		@Override
 		public Envelope put(Object key, Envelope value) {
-			return map.put(key, value);
+			EnvelopeWithCount ewc = new EnvelopeWithCount(value);
+			map.put(key, ewc);
+			return ewc.get();
 		}
 
 		@Override
@@ -101,7 +124,7 @@ public class AmqpEventManager implements EventManager, UnexpectedConnectionClose
 
 		@Override
 		public Envelope remove(Object key) {
-			return map.remove(key);
+			return map.remove(key).get();
 		}
 
 		@Override
