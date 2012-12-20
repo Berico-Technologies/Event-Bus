@@ -26,28 +26,7 @@ class QueueListener  {
     private volatile boolean       currentlyListening;
     private final int              numThreads;
     private final Set<String>      consumerTags;
-
-    /**
-     * Start up an new Queue Listener bound on the supplied queue name, with the provided EnvelopeHander dealing with new messages.
-     * 
-     * @param queueName
-     *            Name of the Queue to watch.
-     * @param envelopeHandler
-     *            EnvelopeHandler that deals with new messages.
-     * @param amqpEventManager
-     *            The EventManager that is managing the subscription.
-     * @deprecated Use {@link #QueueListener(AmqpMessageBus,String,Boolean,RoutingInfo[],EnvelopeHandler,int)} instead
-     */
-    public QueueListener(
-    		AmqpMessageBus messageBus, 
-    		String queueName,
-    		Boolean queueIsDurable,
-    		RoutingInfo[] routes, 
-    		EnvelopeHandler envelopeHandler){
-                this(messageBus, queueName, queueIsDurable, routes,
-                                envelopeHandler, 5);
-            }
-
+    
     /**
      * Start up an new Queue Listener bound on the supplied queue name, with the provided EnvelopeHander dealing with new messages.
      * @param queueName
