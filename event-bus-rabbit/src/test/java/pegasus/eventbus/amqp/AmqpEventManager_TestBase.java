@@ -2,12 +2,14 @@ package pegasus.eventbus.amqp;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +18,8 @@ import org.junit.Before;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import pegasus.eventbus.client.Envelope;
 import pegasus.eventbus.client.EnvelopeHandler;
@@ -74,6 +78,18 @@ public class AmqpEventManager_TestBase {
         when(topologyManager.getRoutingInfoForEvent(TestSendEvent2.class)).thenReturn(routingInfo2);
 
         when(topologyManager.getRoutingInfoForEvent(TestResponseEvent.class)).thenReturn(returnRoutingInfo);
+
+        when(messageBus.beginConsumingMessages(anyString(), any(EnvelopeHandler.class)))
+		.then(new Answer<String>(){
+
+			@Override
+			public String answer(InvocationOnMock invocation)
+					throws Throwable {
+				//Return the name of the queue as the token.
+				return UUID.randomUUID().toString();
+			}
+			
+		});
     }
 
     @After

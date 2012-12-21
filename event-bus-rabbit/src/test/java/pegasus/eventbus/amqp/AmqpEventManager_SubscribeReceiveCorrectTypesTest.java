@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 import static com.jayway.awaitility.Awaitility.*;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -62,7 +63,7 @@ public class AmqpEventManager_SubscribeReceiveCorrectTypesTest extends AmqpEvent
 				handler.handleEnvelope(messageOfTypeTestSendEvent);
 				handler.handleEnvelope(messageOfTypeTestSendEvent2);
 				handler.handleEnvelope(messageOfTypeTestResponseEvent);
-				return null;
+				return UUID.randomUUID().toString();
 			}
 		});
 		
