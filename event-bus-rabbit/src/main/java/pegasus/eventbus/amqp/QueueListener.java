@@ -69,6 +69,8 @@ class QueueListener  {
         LOG.trace("Creating new queue [{}] (if not already existing).", queueName);
         messageBus.createQueue(queueName, routes, queueIsDurable);
         
+        consumerTags.clear();
+        
         for (int i = 0; i < numThreads; ++i) {
             String consumerTag = messageBus.beginConsumingMessages(queueName, envelopeHandler);  
             consumerTags.add(consumerTag);
