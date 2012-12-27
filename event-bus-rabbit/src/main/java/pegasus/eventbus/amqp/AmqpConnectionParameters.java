@@ -32,7 +32,7 @@ public class AmqpConnectionParameters implements EventBusConnectionParameters {
     private String trustStorePassword;
     private URL keyStore;
     private String keyStorePassword;
-    private int threadPoolSize;
+    private int threadPoolSize = 10;
     
     
 	/**

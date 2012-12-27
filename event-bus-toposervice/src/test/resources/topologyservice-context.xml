@@ -13,6 +13,7 @@
         <property name="host" value="${event.bus.host:rabbit}" />
         <property name="vHost" value="${event.bus.vhost:/}" />
         <property name="port" value="${event.bus.port:5672}" />
+     	<property name="threadPoolSize" value="${event.bus.threadPoolSize:10}" />
     </bean>
 
     <bean id="rabbitConnection" class="pegasus.eventbus.rabbitmq.RabbitConnection">

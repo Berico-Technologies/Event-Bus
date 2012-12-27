@@ -30,6 +30,7 @@
         <property name="keyStorePassword" value="${event.bus.ssl.keystore.password:null}" />
         <property name="trustStore" value="${event.bus.ssl.truststore:null}" />
         <property name="trustStorePassword" value="${event.bus.ssl.truststore.password:null}" />
+     	<property name="threadPoolSize" value="${event.bus.threadPoolSize:10}" />
     </bean>    
     
     <bean id="connection" class="pegasus.eventbus.rabbitmq.RabbitConnection">

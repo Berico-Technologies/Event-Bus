@@ -14,6 +14,7 @@
         <property name="vHost" value="${event.bus.vhost:/}" />
         <property name="port" value="${event.bus.port:5672}" />
         <property name="connectionRetryTimeout" value="${event.bus.connectionRetryTimeout:30000}" />
+      	<property name="threadPoolSize" value="${event.bus.threadPoolSize:10}" />
     </bean>
 
     <bean id="connection" class="pegasus.eventbus.rabbitmq.RabbitConnection">
