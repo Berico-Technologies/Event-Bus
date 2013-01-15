@@ -395,7 +395,10 @@ public class RabbitMessageBus implements AmqpMessageBus, UnexpectedCloseListener
         }
 
         try {
+        	LOG.trace("Setting prefetch to 1 for ConsumerTag [{}].", consumerTag);
 
+        	consumerChannel.basicQos(1);
+        	
             LOG.trace("Beginning basicConsume for ConsumerTag [{}].", consumerTag);
 
             consumerChannel.basicConsume(queueName, false, consumerTag, new EnvelopeHandlerBasedConsumer(consumerChannel, consumerTag, consumer));

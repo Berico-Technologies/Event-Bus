@@ -11,13 +11,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.httpclient.HttpException;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -78,7 +75,6 @@ public class MultiThreadedSubscriptionTest extends IntegrationTestBase {
     }
    
     @Test
-    @Ignore("Rabbit is sending round-robinning all messages to each consumer before any message is acked!")
     public void eventsShouldBeProcessedInTheOrderSent() throws Exception {
     	for(int i = 0; i < 4; i++){
     		assertEquals(i+1, receivedEvents.get(i).getId());
